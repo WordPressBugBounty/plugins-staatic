@@ -131,7 +131,7 @@ class GuzzleRetryMiddleware
             case !$this->ensureMethod($options, $request):
                 return \false;
             case $options['should_retry_callback']:
-                return (bool) call_user_func($options['should_retry_callback'], $options, $response);
+                return (bool) call_user_func($options['should_retry_callback'], $options, $response, $request);
             case !$hasRetryAfterHeader && $options['retry_only_if_retry_after_header']:
                 return \false;
             default:

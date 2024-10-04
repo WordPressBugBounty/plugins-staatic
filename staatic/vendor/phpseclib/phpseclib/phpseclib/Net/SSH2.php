@@ -91,6 +91,7 @@ class SSH2
     const MASK_LOGIN_REQ = 0x4;
     const MASK_LOGIN = 0x8;
     const MASK_SHELL = 0x10;
+    const MASK_DISCONNECT = 0x20;
     const CHANNEL_EXEC = 1;
     const CHANNEL_SHELL = 2;
     const CHANNEL_SUBSYSTEM = 3;
@@ -281,7 +282,6 @@ class SSH2
         }
         $this->bitmap |= self::MASK_CONSTRUCTOR;
         $this->curTimeout = $this->timeout;
-        $this->last_packet = microtime(\true);
         if (!is_resource($this->fsock)) {
             $start = microtime(\true);
             $this->fsock = @fsockopen($this->host, $this->port, $errno, $errstr, ($this->curTimeout == 0) ? 100000 : $this->curTimeout);
@@ -296,12 +296,21 @@ class SSH2
                     throw new RuntimeException('Connection timed out whilst attempting to open socket connection');
                 }
             }
+            if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
+                $this->append_log('(fsockopen took ' . round($elapsed, 4) . 's)', '');
+            }
         }
         $this->identifier = $this->generate_identifier();
         if ($this->send_id_string_first) {
+            $start = microtime(\true);
             fputs($this->fsock, $this->identifier . "\r\n");
+            $elapsed = round(microtime(\true) - $start, 4);
+            if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
+                $this->append_log("-> (network: {$elapsed})", $this->identifier . "\r\n");
+            }
         }
         $data = '';
+        $totalElapsed = 0;
         while (!feof($this->fsock) && !preg_match('#(.*)^(SSH-(\d\.\d+).*)#ms', $data, $matches)) {
             $line = '';
             while (\true) {
@@ -318,30 +327,31 @@ class SSH2
                         throw new RuntimeException('Connection timed out whilst receiving server identification string');
                     }
                     $elapsed = microtime(\true) - $start;
+                    $totalElapsed += $elapsed;
                     $this->curTimeout -= $elapsed;
                 }
                 $temp = stream_get_line($this->fsock, 255, "\n");
                 if ($temp === \false) {
-                    throw new RuntimeException('Error reading from socket');
+                    throw new RuntimeException('Error reading SSH identification string; are you sure you\'re connecting to an SSH server?');
                 }
+                $line .= $temp;
                 if (strlen($temp) == 255) {
                     continue;
                 }
-                $line .= "{$temp}\n";
+                $line .= "\n";
                 break;
             }
             $data .= $line;
         }
+        if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
+            $this->append_log('<- (network: ' . round($totalElapsed, 4) . ')', $line);
+        }
         if (feof($this->fsock)) {
             $this->bitmap = 0;
-            throw new ConnectionClosedException('Connection closed by server');
+            throw new ConnectionClosedException('Connection closed by server; are you sure you\'re connected to an SSH server?');
         }
         $extra = $matches[1];
-        if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
-            $this->append_log('<-', $matches[0]);
-            $this->append_log('->', $this->identifier . "\r\n");
-        }
-        $this->server_identifier = trim($temp, "\r\n");
+        $this->server_identifier = trim($data, "\r\n");
         if (strlen($extra)) {
             $this->errors[] = $data;
         }
@@ -355,8 +365,14 @@ class SSH2
         $match = $match && version_compare('6.9', $matches[1], '>=');
         $this->errorOnMultipleChannels = $match;
         if (!$this->send_id_string_first) {
+            $start = microtime(\true);
             fputs($this->fsock, $this->identifier . "\r\n");
+            $elapsed = round(microtime(\true) - $start, 4);
+            if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
+                $this->append_log("-> (network: {$elapsed})", $this->identifier . "\r\n");
+            }
         }
+        $this->last_packet = microtime(\true);
         if (!$this->send_kex_first) {
             $response = $this->get_binary_packet_or_close(NET_SSH2_MSG_KEXINIT);
             $this->key_exchange($response);
@@ -2279,7 +2295,11 @@ class SSH2
     }
     protected function disconnect_helper($reason)
     {
-        if ($this->bitmap & self::MASK_CONNECTED) {
+        if ($this->bitmap & self::MASK_DISCONNECT) {
+            return \false;
+        }
+        $this->bitmap |= self::MASK_DISCONNECT;
+        if ($this->isConnected()) {
             $data = Strings::packSSH2('CNss', NET_SSH2_MSG_DISCONNECT, $reason, '', '');
             try {
                 $this->send_binary_packet($data);
@@ -2324,9 +2344,12 @@ class SSH2
     {
         $output = '';
         for ($i = 0; $i < count($message_log); $i++) {
-            $output .= $message_number_log[$i] . "\r\n";
+            $output .= $message_number_log[$i];
             $current_log = $message_log[$i];
             $j = 0;
+            if (strlen($current_log)) {
+                $output .= "\r\n";
+            }
             do {
                 if (strlen($current_log)) {
                     $output .= str_pad(dechex($j), 7, '0', \STR_PAD_LEFT) . '0  ';
@@ -2428,7 +2451,7 @@ class SSH2
     }
     public static function getSupportedMACAlgorithms()
     {
-        return ['hmac-sha2-256-etm@openssh.com', 'hmac-sha2-512-etm@openssh.com', 'umac-64-etm@openssh.com', 'umac-128-etm@openssh.com', 'hmac-sha1-etm@openssh.com', 'hmac-sha2-256', 'hmac-sha2-512', 'umac-64@openssh.com', 'umac-128@openssh.com', 'hmac-sha1-96', 'hmac-sha1', 'hmac-md5-96', 'hmac-md5'];
+        return ['hmac-sha2-256-etm@openssh.com', 'hmac-sha2-512-etm@openssh.com', 'hmac-sha1-etm@openssh.com', 'hmac-sha2-256', 'hmac-sha2-512', 'hmac-sha1-96', 'hmac-sha1', 'hmac-md5-96', 'hmac-md5', 'umac-64-etm@openssh.com', 'umac-128-etm@openssh.com', 'umac-64@openssh.com', 'umac-128@openssh.com'];
     }
     public static function getSupportedCompressionAlgorithms()
     {
@@ -2460,23 +2483,23 @@ class SSH2
     {
         $preferred = $methods;
         if (isset($preferred['kex'])) {
-            $preferred['kex'] = array_intersect($preferred['kex'], static::getSupportedKEXAlgorithms());
+            $preferred['kex'] = array_intersect(is_string($preferred['kex']) ? [$preferred['kex']] : $preferred['kex'], static::getSupportedKEXAlgorithms());
         }
         if (isset($preferred['hostkey'])) {
-            $preferred['hostkey'] = array_intersect($preferred['hostkey'], static::getSupportedHostKeyAlgorithms());
+            $preferred['hostkey'] = array_intersect(is_string($preferred['hostkey']) ? [$preferred['hostkey']] : $preferred['hostkey'], static::getSupportedHostKeyAlgorithms());
         }
         $keys = ['client_to_server', 'server_to_client'];
         foreach ($keys as $key) {
             if (isset($preferred[$key])) {
                 $a =& $preferred[$key];
                 if (isset($a['crypt'])) {
-                    $a['crypt'] = array_intersect($a['crypt'], static::getSupportedEncryptionAlgorithms());
+                    $a['crypt'] = array_intersect(is_string($a['crypt']) ? [$a['crypt']] : $a['crypt'], static::getSupportedEncryptionAlgorithms());
                 }
                 if (isset($a['comp'])) {
-                    $a['comp'] = array_intersect($a['comp'], static::getSupportedCompressionAlgorithms());
+                    $a['comp'] = array_intersect(is_string($a['comp']) ? [$a['comp']] : $a['comp'], static::getSupportedCompressionAlgorithms());
                 }
                 if (isset($a['mac'])) {
-                    $a['mac'] = array_intersect($a['mac'], static::getSupportedMACAlgorithms());
+                    $a['mac'] = array_intersect(is_string($a['mac']) ? [$a['mac']] : $a['mac'], static::getSupportedMACAlgorithms());
                 }
             }
         }

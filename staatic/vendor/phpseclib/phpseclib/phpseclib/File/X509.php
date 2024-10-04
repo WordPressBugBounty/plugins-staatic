@@ -1714,11 +1714,11 @@ class X509
         $version = isset($tbsCertList['version']) ? $tbsCertList['version'] : 0;
         if (!$version) {
             if (!empty($tbsCertList['crlExtensions'])) {
-                $version = 1;
+                $version = 'v2';
             } elseif (!empty($tbsCertList['revokedCertificates'])) {
                 foreach ($tbsCertList['revokedCertificates'] as $cert) {
                     if (!empty($cert['crlEntryExtensions'])) {
-                        $version = 1;
+                        $version = 'v2';
                     }
                 }
             }

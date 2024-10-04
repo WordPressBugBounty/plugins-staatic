@@ -74,6 +74,7 @@ use const Staatic\Vendor\NET_SFTP_TYPE_SOCKET;
 use const Staatic\Vendor\NET_SFTP_TYPE_SPECIAL;
 use const Staatic\Vendor\NET_SSH2_MSG_CHANNEL_CLOSE;
 use const Staatic\Vendor\NET_SFTP_LOGGING;
+use const Staatic\Vendor\NET_SFTP_EXTENDED_REPLY;
 use Staatic\Vendor\phpseclib3\Common\Functions\Strings;
 use Staatic\Vendor\phpseclib3\Exception\FileNotFoundException;
 class SFTP extends SSH2
@@ -120,7 +121,7 @@ class SFTP extends SSH2
         parent::__construct($host, $port, $timeout);
         $this->max_sftp_packet = 1 << 15;
         if (empty(self::$packet_types)) {
-            self::$packet_types = [1 => 'Staatic\Vendor\NET_SFTP_INIT', 2 => 'Staatic\Vendor\NET_SFTP_VERSION', 3 => 'Staatic\Vendor\NET_SFTP_OPEN', 4 => 'Staatic\Vendor\NET_SFTP_CLOSE', 5 => 'Staatic\Vendor\NET_SFTP_READ', 6 => 'Staatic\Vendor\NET_SFTP_WRITE', 7 => 'Staatic\Vendor\NET_SFTP_LSTAT', 9 => 'Staatic\Vendor\NET_SFTP_SETSTAT', 10 => 'Staatic\Vendor\NET_SFTP_FSETSTAT', 11 => 'Staatic\Vendor\NET_SFTP_OPENDIR', 12 => 'Staatic\Vendor\NET_SFTP_READDIR', 13 => 'Staatic\Vendor\NET_SFTP_REMOVE', 14 => 'Staatic\Vendor\NET_SFTP_MKDIR', 15 => 'Staatic\Vendor\NET_SFTP_RMDIR', 16 => 'Staatic\Vendor\NET_SFTP_REALPATH', 17 => 'Staatic\Vendor\NET_SFTP_STAT', 18 => 'Staatic\Vendor\NET_SFTP_RENAME', 19 => 'Staatic\Vendor\NET_SFTP_READLINK', 20 => 'Staatic\Vendor\NET_SFTP_SYMLINK', 21 => 'Staatic\Vendor\NET_SFTP_LINK', 101 => 'Staatic\Vendor\NET_SFTP_STATUS', 102 => 'Staatic\Vendor\NET_SFTP_HANDLE', 103 => 'Staatic\Vendor\NET_SFTP_DATA', 104 => 'Staatic\Vendor\NET_SFTP_NAME', 105 => 'Staatic\Vendor\NET_SFTP_ATTRS', 200 => 'Staatic\Vendor\NET_SFTP_EXTENDED'];
+            self::$packet_types = [1 => 'Staatic\Vendor\NET_SFTP_INIT', 2 => 'Staatic\Vendor\NET_SFTP_VERSION', 3 => 'Staatic\Vendor\NET_SFTP_OPEN', 4 => 'Staatic\Vendor\NET_SFTP_CLOSE', 5 => 'Staatic\Vendor\NET_SFTP_READ', 6 => 'Staatic\Vendor\NET_SFTP_WRITE', 7 => 'Staatic\Vendor\NET_SFTP_LSTAT', 9 => 'Staatic\Vendor\NET_SFTP_SETSTAT', 10 => 'Staatic\Vendor\NET_SFTP_FSETSTAT', 11 => 'Staatic\Vendor\NET_SFTP_OPENDIR', 12 => 'Staatic\Vendor\NET_SFTP_READDIR', 13 => 'Staatic\Vendor\NET_SFTP_REMOVE', 14 => 'Staatic\Vendor\NET_SFTP_MKDIR', 15 => 'Staatic\Vendor\NET_SFTP_RMDIR', 16 => 'Staatic\Vendor\NET_SFTP_REALPATH', 17 => 'Staatic\Vendor\NET_SFTP_STAT', 18 => 'Staatic\Vendor\NET_SFTP_RENAME', 19 => 'Staatic\Vendor\NET_SFTP_READLINK', 20 => 'Staatic\Vendor\NET_SFTP_SYMLINK', 21 => 'Staatic\Vendor\NET_SFTP_LINK', 101 => 'Staatic\Vendor\NET_SFTP_STATUS', 102 => 'Staatic\Vendor\NET_SFTP_HANDLE', 103 => 'Staatic\Vendor\NET_SFTP_DATA', 104 => 'Staatic\Vendor\NET_SFTP_NAME', 105 => 'Staatic\Vendor\NET_SFTP_ATTRS', 200 => 'Staatic\Vendor\NET_SFTP_EXTENDED', 201 => 'Staatic\Vendor\NET_SFTP_EXTENDED_REPLY'];
             self::$status_codes = [0 => 'Staatic\Vendor\NET_SFTP_STATUS_OK', 1 => 'Staatic\Vendor\NET_SFTP_STATUS_EOF', 2 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_SUCH_FILE', 3 => 'Staatic\Vendor\NET_SFTP_STATUS_PERMISSION_DENIED', 4 => 'Staatic\Vendor\NET_SFTP_STATUS_FAILURE', 5 => 'Staatic\Vendor\NET_SFTP_STATUS_BAD_MESSAGE', 6 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_CONNECTION', 7 => 'Staatic\Vendor\NET_SFTP_STATUS_CONNECTION_LOST', 8 => 'Staatic\Vendor\NET_SFTP_STATUS_OP_UNSUPPORTED', 9 => 'Staatic\Vendor\NET_SFTP_STATUS_INVALID_HANDLE', 10 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_SUCH_PATH', 11 => 'Staatic\Vendor\NET_SFTP_STATUS_FILE_ALREADY_EXISTS', 12 => 'Staatic\Vendor\NET_SFTP_STATUS_WRITE_PROTECT', 13 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_MEDIA', 14 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_SPACE_ON_FILESYSTEM', 15 => 'Staatic\Vendor\NET_SFTP_STATUS_QUOTA_EXCEEDED', 16 => 'Staatic\Vendor\NET_SFTP_STATUS_UNKNOWN_PRINCIPAL', 17 => 'Staatic\Vendor\NET_SFTP_STATUS_LOCK_CONFLICT', 18 => 'Staatic\Vendor\NET_SFTP_STATUS_DIR_NOT_EMPTY', 19 => 'Staatic\Vendor\NET_SFTP_STATUS_NOT_A_DIRECTORY', 20 => 'Staatic\Vendor\NET_SFTP_STATUS_INVALID_FILENAME', 21 => 'Staatic\Vendor\NET_SFTP_STATUS_LINK_LOOP', 22 => 'Staatic\Vendor\NET_SFTP_STATUS_CANNOT_DELETE', 23 => 'Staatic\Vendor\NET_SFTP_STATUS_INVALID_PARAMETER', 24 => 'Staatic\Vendor\NET_SFTP_STATUS_FILE_IS_A_DIRECTORY', 25 => 'Staatic\Vendor\NET_SFTP_STATUS_BYTE_RANGE_LOCK_CONFLICT', 26 => 'Staatic\Vendor\NET_SFTP_STATUS_BYTE_RANGE_LOCK_REFUSED', 27 => 'Staatic\Vendor\NET_SFTP_STATUS_DELETE_PENDING', 28 => 'Staatic\Vendor\NET_SFTP_STATUS_FILE_CORRUPT', 29 => 'Staatic\Vendor\NET_SFTP_STATUS_OWNER_INVALID', 30 => 'Staatic\Vendor\NET_SFTP_STATUS_GROUP_INVALID', 31 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK'];
             self::$attributes = [0x1 => 'Staatic\Vendor\NET_SFTP_ATTR_SIZE', 0x2 => 'Staatic\Vendor\NET_SFTP_ATTR_UIDGID', 0x80 => 'Staatic\Vendor\NET_SFTP_ATTR_OWNERGROUP', 0x4 => 'Staatic\Vendor\NET_SFTP_ATTR_PERMISSIONS', 0x8 => 'Staatic\Vendor\NET_SFTP_ATTR_ACCESSTIME', 0x10 => 'Staatic\Vendor\NET_SFTP_ATTR_CREATETIME', 0x20 => 'Staatic\Vendor\NET_SFTP_ATTR_MODIFYTIME', 0x40 => 'Staatic\Vendor\NET_SFTP_ATTR_ACL', 0x100 => 'Staatic\Vendor\NET_SFTP_ATTR_SUBSECOND_TIMES', 0x200 => 'Staatic\Vendor\NET_SFTP_ATTR_BITS', 0x400 => 'Staatic\Vendor\NET_SFTP_ATTR_ALLOCATION_SIZE', 0x800 => 'Staatic\Vendor\NET_SFTP_ATTR_TEXT_HINT', 0x1000 => 'Staatic\Vendor\NET_SFTP_ATTR_MIME_TYPE', 0x2000 => 'Staatic\Vendor\NET_SFTP_ATTR_LINK_COUNT', 0x4000 => 'Staatic\Vendor\NET_SFTP_ATTR_UNTRANSLATED_NAME', 0x8000 => 'Staatic\Vendor\NET_SFTP_ATTR_CTIME', (\PHP_INT_SIZE == 4) ? -1 << 31 : 0x80000000 => 'Staatic\Vendor\NET_SFTP_ATTR_EXTENDED'];
             self::$open_flags = [0x1 => 'Staatic\Vendor\NET_SFTP_OPEN_READ', 0x2 => 'Staatic\Vendor\NET_SFTP_OPEN_WRITE', 0x4 => 'Staatic\Vendor\NET_SFTP_OPEN_APPEND', 0x8 => 'Staatic\Vendor\NET_SFTP_OPEN_CREATE', 0x10 => 'Staatic\Vendor\NET_SFTP_OPEN_TRUNCATE', 0x20 => 'Staatic\Vendor\NET_SFTP_OPEN_EXCL', 0x40 => 'Staatic\Vendor\NET_SFTP_OPEN_TEXT'];
@@ -1862,6 +1863,16 @@ class SFTP extends SSH2
         }
         return $temp;
     }
+    public function getSupportedExtensions()
+    {
+        if (!($this->bitmap & SSH2::MASK_LOGIN)) {
+            return \false;
+        }
+        if (!$this->partial_init) {
+            $this->partial_init_sftp_connection();
+        }
+        return $this->extensions;
+    }
     public function getNegotiatedVersion()
     {
         if (!$this->precheck()) {
@@ -1885,5 +1896,57 @@ class SFTP extends SSH2
     public function disableDatePreservation()
     {
         $this->preserveTime = \false;
+    }
+    public function posix_rename($oldname, $newname)
+    {
+        if (!$this->precheck()) {
+            return \false;
+        }
+        $oldname = $this->realpath($oldname);
+        $newname = $this->realpath($newname);
+        if ($oldname === \false || $newname === \false) {
+            return \false;
+        }
+        if ($this->version >= 5) {
+            $packet = Strings::packSSH2('ssN', $oldname, $newname, 2);
+            $this->send_sftp_packet(NET_SFTP_RENAME, $packet);
+        } elseif (isset($this->extensions['posix-rename@openssh.com']) && $this->extensions['posix-rename@openssh.com'] === '1') {
+            $packet = Strings::packSSH2('sss', 'posix-rename@openssh.com', $oldname, $newname);
+            $this->send_sftp_packet(NET_SFTP_EXTENDED, $packet);
+        } else {
+            throw new RuntimeException("Extension 'posix-rename@openssh.com' is not supported by the server. " . "Call getSupportedVersions() to see a list of supported extension");
+        }
+        $response = $this->get_sftp_packet();
+        if ($this->packet_type != NET_SFTP_STATUS) {
+            throw new UnexpectedValueException('Expected NET_SFTP_STATUS. ' . 'Got packet type: ' . $this->packet_type);
+        }
+        list($status) = Strings::unpackSSH2('N', $response);
+        if ($status != NET_SFTP_STATUS_OK) {
+            $this->logError($response, $status);
+            return \false;
+        }
+        $this->remove_from_stat_cache($oldname);
+        $this->remove_from_stat_cache($newname);
+        return \true;
+    }
+    public function statvfs($path)
+    {
+        if (!$this->precheck()) {
+            return \false;
+        }
+        if (!isset($this->extensions['statvfs@openssh.com']) || $this->extensions['statvfs@openssh.com'] !== '2') {
+            throw new RuntimeException("Extension 'statvfs@openssh.com' is not supported by the server. " . "Call getSupportedVersions() to see a list of supported extension");
+        }
+        $realpath = $this->realpath($path);
+        if ($realpath === \false) {
+            return \false;
+        }
+        $packet = Strings::packSSH2('ss', 'statvfs@openssh.com', $realpath);
+        $this->send_sftp_packet(NET_SFTP_EXTENDED, $packet);
+        $response = $this->get_sftp_packet();
+        if ($this->packet_type !== NET_SFTP_EXTENDED_REPLY) {
+            throw new UnexpectedValueException('Expected SSH_FXP_EXTENDED_REPLY. ' . 'Got packet type: ' . $this->packet_type);
+        }
+        return array_combine(['bsize', 'frsize', 'blocks', 'bfree', 'bavail', 'files', 'ffree', 'favail', 'fsid', 'flag', 'namemax'], Strings::unpackSSH2('QQQQQQQQQQQ', $response));
     }
 }

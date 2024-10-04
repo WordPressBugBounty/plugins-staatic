@@ -62,6 +62,14 @@ echo $publication->userId() ? \esc_html($publication->publisher()->data->display
             </tr>
             <tr>
                 <th scope="row"><?php 
+\esc_html_e('Type', 'staatic');
+?></th>
+                <td><?php 
+echo \esc_html($publication->type()->label());
+?></td>
+            </tr>
+            <tr>
+                <th scope="row"><?php 
 \esc_html_e('Status', 'staatic');
 ?></th>
                 <td><?php 

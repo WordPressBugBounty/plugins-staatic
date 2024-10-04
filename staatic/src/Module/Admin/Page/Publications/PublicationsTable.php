@@ -71,7 +71,7 @@ class PublicationsTable extends AbstractListTable
         ]), $this->columnFactory->create(UserColumn::class, [
             'name' => 'user_id',
             'label' => __('Publisher', 'staatic')
-        ]), new PublicationStatusColumn(
+        ]), new PublicationTypeColumn('type', __('Type', 'staatic')), new PublicationStatusColumn(
             $this->formatter,
             $this->publicationTaskProvider,
             'status',

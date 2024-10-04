@@ -30,17 +30,8 @@ class AdditionalPaths
             if (!$path) {
                 continue;
             }
-            if (!self::isAbsolutePath($path)) {
-                $errors->add('invalid_additional_path', sprintf(
-                    /* translators: 1: Additional path. */
-                    __('Path "%1$s" should be absolute.', 'staatic'),
-                    esc_html($path)
-                ));
-                $newValue[] = "# {$line}";
-
-                continue;
-            }
-            if (realpath($path) === \false) {
+            $absolutePath = self::isAbsolutePath($path) ? $path : "{$wordpressPath}/{$path}";
+            if (realpath($absolutePath) === \false) {
                 $errors->add('invalid_additional_path', sprintf(
                     /* translators: 1: Additional path. */
                     __('Path "%1$s" is not readable.', 'staatic'),
@@ -50,7 +41,7 @@ class AdditionalPaths
 
                 continue;
             }
-            $normalizedPath = wp_normalize_path($path);
+            $normalizedPath = wp_normalize_path($absolutePath);
             if (untrailingslashit($normalizedPath) === untrailingslashit($wordpressPath)) {
                 $errors->add('invalid_additional_path', sprintf(
                     /* translators: 1: Additional path. */

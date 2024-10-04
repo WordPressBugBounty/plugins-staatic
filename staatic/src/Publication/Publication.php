@@ -133,6 +133,18 @@ final class Publication
         return $this->status;
     }
 
+    public function type(): PublicationType
+    {
+        if (!$this->build()->parentId()) {
+            return PublicationType::create(PublicationType::TYPE_FULL);
+        }
+        if ($this->metadataByKey('subset') !== null) {
+            return PublicationType::create(PublicationType::TYPE_SUBSET);
+        }
+
+        return PublicationType::create(PublicationType::TYPE_PARTIAL);
+    }
+
     public function dateFinished(): ?DateTimeInterface
     {
         return $this->dateFinished;

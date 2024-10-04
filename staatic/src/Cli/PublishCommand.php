@@ -45,11 +45,6 @@ class PublishCommand
     use PublishesFromCli;
 
     /**
-     * @var bool
-     */
-    private $preview;
-
-    /**
      * @param mixed $logger
      */
     public function __construct($logger, Formatter $formatter, PublicationRepository $publicationRepository, PublicationManagerInterface $publicationManager, PublicationTaskProvider $taskProvider)
@@ -72,15 +67,15 @@ class PublishCommand
      * [--only-paths=<paths>]
      * : Optionally a comma-separated list of filesystem paths to update when publishing selectively.
      *
-     * [--[no-]deploy]
-     * : Whether or not to deploy the publication using the configured deployment method.
-     * ---
-     * default: true
-     *
      * [--[no-]preview]
      * : Whether or not to create a preview build, if supported by the deployment method.
      * ---
      * default: false
+     *
+     * [--[no-]deploy]
+     * : Whether or not to deploy the publication using the configured deployment method.
+     * ---
+     * default: true
      *
      * [--[no-]force]
      * : Whether or not to force publishing, even if another publication is in progress.
@@ -101,8 +96,8 @@ class PublishCommand
      */
     public function __invoke($args, $assoc_args): void
     {
-        $this->preview = get_flag_value($assoc_args, 'preview', \false);
         $deploy = get_flag_value($assoc_args, 'deploy', \true);
+        $preview = get_flag_value($assoc_args, 'preview', \false);
         $verbose = get_flag_value($assoc_args, 'verbose', \false);
         $force = get_flag_value($assoc_args, 'force', \false);
         if ($verbose && $this->logger instanceof LoggerInterface) {
@@ -124,7 +119,7 @@ class PublishCommand
             return trim($value);
         }, explode(',', get_flag_value($assoc_args, 'only-paths', '')))));
         $this->validateRequest($urls, $paths);
-        $publication = $this->createPublication($urls, $paths, $deploy);
+        $publication = $this->createPublication($urls, $paths, $deploy, $preview);
         if ($this->publicationManager->claimPublication($publication)) {
             $this->startPublication($publication);
         } else {
@@ -153,8 +148,9 @@ class PublishCommand
      * @param string $urls
      * @param string $paths
      * @param bool $deploy
+     * @param bool $preview
      */
-    protected function createPublication($urls, $paths, $deploy): Publication
+    protected function createPublication($urls, $paths, $deploy, $preview): Publication
     {
         $metadata = [];
         if ($urls || $paths) {
@@ -167,6 +163,6 @@ class PublishCommand
             $metadata['skipDeploy'] = \true;
         }
 
-        return $this->publicationManager->createPublication($metadata, null, null, $this->preview);
+        return $this->publicationManager->createPublication($metadata, null, null, $preview);
     }
 }

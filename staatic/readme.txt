@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.10.5
+Stable tag: 1.10.6
 Tested up to: 6.6.2
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -97,6 +97,18 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 3. Configure and fine tune the way Staatic processes your site to suit your specific needs.
 
 == Changelog ==
+
+= 1.10.6 =
+
+Release date: October 4th, 2024.
+
+**Improvements**
+
+* Adds publication type to the publication list table and detail pages.
+* Extends support for relative file paths in selective publication with examples.
+* Introduces `--merge` option for the `staatic publish` command.
+* Expands MIME type support for optimizing generated web server configurations.
+* Updates external dependencies.
 
 = 1.10.5 =
 

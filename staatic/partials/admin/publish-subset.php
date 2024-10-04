@@ -70,8 +70,8 @@ echo \esc_html($urls);
 ?></textarea>
             <p class="description"><?php 
 echo \sprintf(
-    /* translators: %s: Example URLs. */
-    \__('Add the (absolute or relative) URLs to be included in this publication.<br>%s', 'staatic'),
+    /* translators: %1$s: Example URLs. */
+    \__('Add the (absolute or relative) URLs to be included in this publication.<br>%1$s', 'staatic'),
     \sprintf('%s: <code>%s</code>.', \__('Examples', 'staatic'), \implode('</code>, <code>', ['/', '/specific-page/']))
 );
 ?></p>
@@ -107,11 +107,25 @@ echo \esc_attr($rootUrlPath);
             ><?php 
 echo \esc_html($paths);
 ?></textarea>
+            <?php 
+$uploadPath = \wp_get_upload_dir()['path'];
+?>
             <p class="description"><?php 
 echo \sprintf(
-    /* translators: %s: Root path. */
-    \__('Add the (filesystem) paths to be included in this publication.<br>Base path: <code>%s</code>', 'staatic'),
-    \esc_html($rootPath)
+    /* translators: %1$s: Examples. */
+    \__('Add the (filesystem) paths to be included in this publication.<br>%1$s', 'staatic'),
+    \sprintf(
+        '%s: <code>%s</code>.',
+        \__('Examples', 'staatic'),
+        \implode('</code>, <code>', [
+            \str_starts_with($uploadPath, $rootPath) ? $uploadPath : "{$rootPath}/wp-content/uploads",
+            \str_starts_with($uploadPath, $rootPath) ? \str_replace(
+                "{$rootPath}/",
+                '',
+                $uploadPath
+            ) : "wp-content/uploads"
+        ])
+    )
 );
 ?></p>
         </fieldset>
