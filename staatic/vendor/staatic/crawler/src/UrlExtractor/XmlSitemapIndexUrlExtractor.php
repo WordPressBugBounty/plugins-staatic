@@ -6,6 +6,6 @@ final class XmlSitemapIndexUrlExtractor extends AbstractPatternUrlExtractor
 {
     protected function getPatterns(): array
     {
-        return ['~<loc(?:[^>]*)>\s*([^<]+?)\s*</loc>~'];
+        return ['~<loc(?:[^>]*)>\s*([^<]+?)\s*</loc>~', '~<loc(?:[^>]*)>\s*<!\[CDATA\[(.*?)\]\]>\s*</loc>~'];
     }
 }

@@ -38,8 +38,9 @@ final class UrlTransformerFactory
         if ($destinationUrl === null) {
             $destinationUrl = new Uri($this->destinationUrl->value());
         }
-        if ((string) $destinationUrl === '') {
-            return new OfflineUrlTransformer();
+        $destinationUrlStr = (string) $destinationUrl;
+        if ($destinationUrlStr === '' || $destinationUrlStr === '#no-index') {
+            return new OfflineUrlTransformer($destinationUrlStr === '');
         }
         if ($baseUrl === null) {
             $baseUrl = ($this->siteUrlProvider)();

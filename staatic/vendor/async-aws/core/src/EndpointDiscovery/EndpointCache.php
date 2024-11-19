@@ -78,7 +78,7 @@ class EndpointCache
     {
         $parsed = parse_url($address);
         if (isset($parsed['host'])) {
-            return rtrim(sprintf('%s://%s/%s', $parsed['scheme'] ?? 'https', $parsed['host'], ltrim($parsed['path'] ?? '/', '/')), '/');
+            return rtrim(\sprintf('%s://%s/%s', $parsed['scheme'] ?? 'https', $parsed['host'], ltrim($parsed['path'] ?? '/', '/')), '/');
         }
         if (isset($parsed['path'])) {
             $split = explode('/', $parsed['path'], 2);
@@ -88,8 +88,8 @@ class EndpointCache
             } else {
                 $parsed['path'] = '';
             }
-            return rtrim(sprintf('%s://%s/%s', $parsed['scheme'] ?? 'https', $parsed['host'], ltrim($parsed['path'], '/')), '/');
+            return rtrim(\sprintf('%s://%s/%s', $parsed['scheme'] ?? 'https', $parsed['host'], ltrim($parsed['path'], '/')), '/');
         }
-        throw new LogicException(sprintf('The supplied endpoint "%s" is invalid.', $address));
+        throw new LogicException(\sprintf('The supplied endpoint "%s" is invalid.', $address));
     }
 }

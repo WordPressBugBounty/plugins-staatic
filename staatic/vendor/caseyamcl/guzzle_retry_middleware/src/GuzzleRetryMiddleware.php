@@ -8,6 +8,7 @@ use Closure;
 use DateTime;
 use Staatic\Vendor\GuzzleHttp\Exception\BadResponseException;
 use Staatic\Vendor\GuzzleHttp\Exception\ConnectException;
+use Staatic\Vendor\GuzzleHttp\Exception\RequestException;
 use Staatic\Vendor\GuzzleHttp\Promise\Promise;
 use Staatic\Vendor\GuzzleHttp\Promise\PromiseInterface;
 use Staatic\Vendor\Psr\Http\Message\RequestInterface;
@@ -76,6 +77,12 @@ class GuzzleRetryMiddleware
                 }
             } elseif ($reason instanceof ConnectException) {
                 if ($this->shouldRetryConnectException($options, $request)) {
+                    return $this->doRetry($request, $options, null, $reason);
+                }
+            } elseif ($reason instanceof RequestException) {
+                $context = $reason->getHandlerContext();
+                $errNo = $context['errno'] ?? null;
+                if ($errNo == 104 && $this->shouldRetryConnectException($options, $request)) {
                     return $this->doRetry($request, $options, null, $reason);
                 }
             }

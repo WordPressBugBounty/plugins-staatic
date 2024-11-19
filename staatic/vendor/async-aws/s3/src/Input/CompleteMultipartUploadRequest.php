@@ -22,6 +22,7 @@ final class CompleteMultipartUploadRequest extends Input
     private $checksumSha256;
     private $requestPayer;
     private $expectedBucketOwner;
+    private $ifNoneMatch;
     private $sseCustomerAlgorithm;
     private $sseCustomerKey;
     private $sseCustomerKeyMd5;
@@ -37,6 +38,7 @@ final class CompleteMultipartUploadRequest extends Input
         $this->checksumSha256 = $input['ChecksumSHA256'] ?? null;
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
+        $this->ifNoneMatch = $input['IfNoneMatch'] ?? null;
         $this->sseCustomerAlgorithm = $input['SSECustomerAlgorithm'] ?? null;
         $this->sseCustomerKey = $input['SSECustomerKey'] ?? null;
         $this->sseCustomerKeyMd5 = $input['SSECustomerKeyMD5'] ?? null;
@@ -69,6 +71,10 @@ final class CompleteMultipartUploadRequest extends Input
     public function getExpectedBucketOwner(): ?string
     {
         return $this->expectedBucketOwner;
+    }
+    public function getIfNoneMatch(): ?string
+    {
+        return $this->ifNoneMatch;
     }
     public function getKey(): ?string
     {
@@ -115,12 +121,15 @@ final class CompleteMultipartUploadRequest extends Input
         }
         if (null !== $this->requestPayer) {
             if (!RequestPayer::exists($this->requestPayer)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
+                throw new InvalidArgument(\sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
             }
             $headers['x-amz-request-payer'] = $this->requestPayer;
         }
         if (null !== $this->expectedBucketOwner) {
             $headers['x-amz-expected-bucket-owner'] = $this->expectedBucketOwner;
+        }
+        if (null !== $this->ifNoneMatch) {
+            $headers['If-None-Match'] = $this->ifNoneMatch;
         }
         if (null !== $this->sseCustomerAlgorithm) {
             $headers['x-amz-server-side-encryption-customer-algorithm'] = $this->sseCustomerAlgorithm;
@@ -133,16 +142,16 @@ final class CompleteMultipartUploadRequest extends Input
         }
         $query = [];
         if (null === $v = $this->uploadId) {
-            throw new InvalidArgument(sprintf('Missing parameter "UploadId" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "UploadId" for "%s". The value cannot be null.', __CLASS__));
         }
         $query['uploadId'] = $v;
         $uri = [];
         if (null === $v = $this->bucket) {
-            throw new InvalidArgument(sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Bucket'] = $v;
         if (null === $v = $this->key) {
-            throw new InvalidArgument(sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Key'] = $v;
         $uriString = '/' . rawurlencode($uri['Bucket']) . '/' . str_replace('%2F', '/', rawurlencode($uri['Key']));
@@ -198,6 +207,14 @@ final class CompleteMultipartUploadRequest extends Input
     public function setExpectedBucketOwner($value): self
     {
         $this->expectedBucketOwner = $value;
+        return $this;
+    }
+    /**
+     * @param string|null $value
+     */
+    public function setIfNoneMatch($value): self
+    {
+        $this->ifNoneMatch = $value;
         return $this;
     }
     /**

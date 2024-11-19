@@ -20,7 +20,7 @@ final class PublicationCleanup
     private $repository;
 
     /** @var int */
-    public const CLEANUP_AFTER_NUM_DAYS = 7;
+    public const DEFAULT_NUM_DAYS = 7;
 
     public function __construct(LoggerInterface $logger, PublicationRepository $repository)
     {
@@ -30,6 +30,7 @@ final class PublicationCleanup
 
     public function cleanup(): void
     {
+        $numDays = (int) apply_filters('staatic_publication_cleanup_num_days', self::DEFAULT_NUM_DAYS);
         $now = new DateTimeImmutable();
         foreach ($this->repository->findAll() as $publication) {
             if (in_array(
@@ -44,7 +45,7 @@ final class PublicationCleanup
             )) {
                 continue;
             }
-            if ($publication->dateCreated()->diff($now)->days > self::CLEANUP_AFTER_NUM_DAYS) {
+            if ($publication->dateCreated()->diff($now)->days > $numDays) {
                 $this->logger->info(sprintf(
                     /* translators: %s: Publication ID. */
                     __('Cleaning up publication #%s', 'staatic'),

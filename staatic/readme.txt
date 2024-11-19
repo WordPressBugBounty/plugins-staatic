@@ -1,8 +1,8 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.10.6
-Tested up to: 6.6.2
+Stable tag: 1.10.7
+Tested up to: 6.7
 Requires at least: 5.0
 Requires PHP: 7.1
 License: BSD-3-Clause
@@ -97,6 +97,20 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 3. Configure and fine tune the way Staatic processes your site to suit your specific needs.
 
 == Changelog ==
+
+= 1.10.7 =
+
+Release date: November 19th, 2024.
+
+**Improvements**
+
+* Adds `staatic delete` WP-CLI command to allow publications to be deleted.
+* Adds `staatic_publication_cleanup_num_days` filter hook to control when publications are cleaned up.
+* Adds `staatic_log_cleanup_num_days` filter hook to control when log entries are cleaned up.
+* Adds option to disable `/index.html` suffix on directory URLs for offline usage.
+* Adds support for “ap-southeast-5” region to AWS deployment method.
+* Improves XML sitemap handling by adding support for URLs wrapped in CDATA sections.
+* Updates external dependencies.
 
 = 1.10.6 =
 

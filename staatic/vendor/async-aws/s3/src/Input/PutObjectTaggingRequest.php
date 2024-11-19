@@ -78,7 +78,7 @@ final class PutObjectTaggingRequest extends Input
         }
         if (null !== $this->checksumAlgorithm) {
             if (!ChecksumAlgorithm::exists($this->checksumAlgorithm)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ChecksumAlgorithm" for "%s". The value "%s" is not a valid "ChecksumAlgorithm".', __CLASS__, $this->checksumAlgorithm));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ChecksumAlgorithm" for "%s". The value "%s" is not a valid "ChecksumAlgorithm".', __CLASS__, $this->checksumAlgorithm));
             }
             $headers['x-amz-sdk-checksum-algorithm'] = $this->checksumAlgorithm;
         }
@@ -87,7 +87,7 @@ final class PutObjectTaggingRequest extends Input
         }
         if (null !== $this->requestPayer) {
             if (!RequestPayer::exists($this->requestPayer)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
+                throw new InvalidArgument(\sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
             }
             $headers['x-amz-request-payer'] = $this->requestPayer;
         }
@@ -97,11 +97,11 @@ final class PutObjectTaggingRequest extends Input
         }
         $uri = [];
         if (null === $v = $this->bucket) {
-            throw new InvalidArgument(sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Bucket'] = $v;
         if (null === $v = $this->key) {
-            throw new InvalidArgument(sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Key'] = $v;
         $uriString = '/' . rawurlencode($uri['Bucket']) . '/' . str_replace('%2F', '/', rawurlencode($uri['Key'])) . '?tagging';
@@ -178,7 +178,7 @@ final class PutObjectTaggingRequest extends Input
     private function requestBody(DOMNode $node, DOMDocument $document): void
     {
         if (null === $v = $this->tagging) {
-            throw new InvalidArgument(sprintf('Missing parameter "Tagging" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Tagging" for "%s". The value cannot be null.', __CLASS__));
         }
         $node->appendChild($child = $document->createElement('Tagging'));
         $child->setAttribute('xmlns', 'http://s3.amazonaws.com/doc/2006-03-01/');

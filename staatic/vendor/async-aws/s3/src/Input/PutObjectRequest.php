@@ -34,6 +34,7 @@ final class PutObjectRequest extends Input
     private $checksumSha1;
     private $checksumSha256;
     private $expires;
+    private $ifNoneMatch;
     private $grantFullControl;
     private $grantRead;
     private $grantReadAcp;
@@ -73,6 +74,7 @@ final class PutObjectRequest extends Input
         $this->checksumSha1 = $input['ChecksumSHA1'] ?? null;
         $this->checksumSha256 = $input['ChecksumSHA256'] ?? null;
         $this->expires = (!isset($input['Expires'])) ? null : (($input['Expires'] instanceof DateTimeImmutable) ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
+        $this->ifNoneMatch = $input['IfNoneMatch'] ?? null;
         $this->grantFullControl = $input['GrantFullControl'] ?? null;
         $this->grantRead = $input['GrantRead'] ?? null;
         $this->grantReadAcp = $input['GrantReadACP'] ?? null;
@@ -188,6 +190,10 @@ final class PutObjectRequest extends Input
     {
         return $this->grantWriteAcp;
     }
+    public function getIfNoneMatch(): ?string
+    {
+        return $this->ifNoneMatch;
+    }
     public function getKey(): ?string
     {
         return $this->key;
@@ -253,7 +259,7 @@ final class PutObjectRequest extends Input
         $headers = [];
         if (null !== $this->acl) {
             if (!ObjectCannedACL::exists($this->acl)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ACL" for "%s". The value "%s" is not a valid "ObjectCannedACL".', __CLASS__, $this->acl));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ACL" for "%s". The value "%s" is not a valid "ObjectCannedACL".', __CLASS__, $this->acl));
             }
             $headers['x-amz-acl'] = $this->acl;
         }
@@ -280,7 +286,7 @@ final class PutObjectRequest extends Input
         }
         if (null !== $this->checksumAlgorithm) {
             if (!ChecksumAlgorithm::exists($this->checksumAlgorithm)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ChecksumAlgorithm" for "%s". The value "%s" is not a valid "ChecksumAlgorithm".', __CLASS__, $this->checksumAlgorithm));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ChecksumAlgorithm" for "%s". The value "%s" is not a valid "ChecksumAlgorithm".', __CLASS__, $this->checksumAlgorithm));
             }
             $headers['x-amz-sdk-checksum-algorithm'] = $this->checksumAlgorithm;
         }
@@ -299,6 +305,9 @@ final class PutObjectRequest extends Input
         if (null !== $this->expires) {
             $headers['Expires'] = $this->expires->setTimezone(new DateTimeZone('GMT'))->format(DateTimeInterface::RFC7231);
         }
+        if (null !== $this->ifNoneMatch) {
+            $headers['If-None-Match'] = $this->ifNoneMatch;
+        }
         if (null !== $this->grantFullControl) {
             $headers['x-amz-grant-full-control'] = $this->grantFullControl;
         }
@@ -313,13 +322,13 @@ final class PutObjectRequest extends Input
         }
         if (null !== $this->serverSideEncryption) {
             if (!ServerSideEncryption::exists($this->serverSideEncryption)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ServerSideEncryption" for "%s". The value "%s" is not a valid "ServerSideEncryption".', __CLASS__, $this->serverSideEncryption));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ServerSideEncryption" for "%s". The value "%s" is not a valid "ServerSideEncryption".', __CLASS__, $this->serverSideEncryption));
             }
             $headers['x-amz-server-side-encryption'] = $this->serverSideEncryption;
         }
         if (null !== $this->storageClass) {
             if (!StorageClass::exists($this->storageClass)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "StorageClass" for "%s". The value "%s" is not a valid "StorageClass".', __CLASS__, $this->storageClass));
+                throw new InvalidArgument(\sprintf('Invalid parameter "StorageClass" for "%s". The value "%s" is not a valid "StorageClass".', __CLASS__, $this->storageClass));
             }
             $headers['x-amz-storage-class'] = $this->storageClass;
         }
@@ -346,7 +355,7 @@ final class PutObjectRequest extends Input
         }
         if (null !== $this->requestPayer) {
             if (!RequestPayer::exists($this->requestPayer)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
+                throw new InvalidArgument(\sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
             }
             $headers['x-amz-request-payer'] = $this->requestPayer;
         }
@@ -355,7 +364,7 @@ final class PutObjectRequest extends Input
         }
         if (null !== $this->objectLockMode) {
             if (!ObjectLockMode::exists($this->objectLockMode)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ObjectLockMode" for "%s". The value "%s" is not a valid "ObjectLockMode".', __CLASS__, $this->objectLockMode));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ObjectLockMode" for "%s". The value "%s" is not a valid "ObjectLockMode".', __CLASS__, $this->objectLockMode));
             }
             $headers['x-amz-object-lock-mode'] = $this->objectLockMode;
         }
@@ -364,7 +373,7 @@ final class PutObjectRequest extends Input
         }
         if (null !== $this->objectLockLegalHoldStatus) {
             if (!ObjectLockLegalHoldStatus::exists($this->objectLockLegalHoldStatus)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ObjectLockLegalHoldStatus" for "%s". The value "%s" is not a valid "ObjectLockLegalHoldStatus".', __CLASS__, $this->objectLockLegalHoldStatus));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ObjectLockLegalHoldStatus" for "%s". The value "%s" is not a valid "ObjectLockLegalHoldStatus".', __CLASS__, $this->objectLockLegalHoldStatus));
             }
             $headers['x-amz-object-lock-legal-hold'] = $this->objectLockLegalHoldStatus;
         }
@@ -379,11 +388,11 @@ final class PutObjectRequest extends Input
         $query = [];
         $uri = [];
         if (null === $v = $this->bucket) {
-            throw new InvalidArgument(sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Bucket'] = $v;
         if (null === $v = $this->key) {
-            throw new InvalidArgument(sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Key'] = $v;
         $uriString = '/' . rawurlencode($uri['Bucket']) . '/' . str_replace('%2F', '/', rawurlencode($uri['Key']));
@@ -561,6 +570,14 @@ final class PutObjectRequest extends Input
     public function setGrantWriteAcp($value): self
     {
         $this->grantWriteAcp = $value;
+        return $this;
+    }
+    /**
+     * @param string|null $value
+     */
+    public function setIfNoneMatch($value): self
+    {
+        $this->ifNoneMatch = $value;
         return $this;
     }
     /**

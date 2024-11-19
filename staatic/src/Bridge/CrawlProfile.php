@@ -22,8 +22,9 @@ final class CrawlProfile extends AbstractCrawlProfile
         $this->urlNormalizer = new InternalUrlNormalizer([
             'lowercase' => $lowercaseUrls
         ]);
-        if ((string) $destinationUrl === '') {
-            $this->urlTransformer = new OfflineUrlTransformer();
+        $destinationUrlStr = (string) $destinationUrl;
+        if ($destinationUrlStr === '' || $destinationUrlStr === '#no-index') {
+            $this->urlTransformer = new OfflineUrlTransformer($destinationUrlStr === '');
         } else {
             $this->urlTransformer = new StandardUrlTransformer($baseUrl, $destinationUrl);
         }

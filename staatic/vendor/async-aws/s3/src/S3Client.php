@@ -211,7 +211,7 @@ class S3Client extends AbstractApi
     {
         $input = ListBucketsRequest::create($input);
         $response = $this->getResponse($input->request(), new RequestContext(['operation' => 'ListBuckets', 'region' => $input->getRegion()]));
-        return new ListBucketsOutput($response);
+        return new ListBucketsOutput($response, $this, $input);
     }
     public function listMultipartUploads($input): ListMultipartUploadsOutput
     {
@@ -338,6 +338,7 @@ class S3Client extends AbstractApi
             case 'ap-southeast-2':
             case 'ap-southeast-3':
             case 'ap-southeast-4':
+            case 'ap-southeast-5':
             case 'ca-central-1':
             case 'ca-west-1':
             case 'eu-central-1':

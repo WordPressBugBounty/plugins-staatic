@@ -58,7 +58,7 @@ final class PutBucketCorsRequest extends Input
         }
         if (null !== $this->checksumAlgorithm) {
             if (!ChecksumAlgorithm::exists($this->checksumAlgorithm)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ChecksumAlgorithm" for "%s". The value "%s" is not a valid "ChecksumAlgorithm".', __CLASS__, $this->checksumAlgorithm));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ChecksumAlgorithm" for "%s". The value "%s" is not a valid "ChecksumAlgorithm".', __CLASS__, $this->checksumAlgorithm));
             }
             $headers['x-amz-sdk-checksum-algorithm'] = $this->checksumAlgorithm;
         }
@@ -68,7 +68,7 @@ final class PutBucketCorsRequest extends Input
         $query = [];
         $uri = [];
         if (null === $v = $this->bucket) {
-            throw new InvalidArgument(sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Bucket'] = $v;
         $uriString = '/' . rawurlencode($uri['Bucket']) . '?cors';
@@ -121,7 +121,7 @@ final class PutBucketCorsRequest extends Input
     private function requestBody(DOMNode $node, DOMDocument $document): void
     {
         if (null === $v = $this->corsConfiguration) {
-            throw new InvalidArgument(sprintf('Missing parameter "CORSConfiguration" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "CORSConfiguration" for "%s". The value cannot be null.', __CLASS__));
         }
         $node->appendChild($child = $document->createElement('CORSConfiguration'));
         $child->setAttribute('xmlns', 'http://s3.amazonaws.com/doc/2006-03-01/');

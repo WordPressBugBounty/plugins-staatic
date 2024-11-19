@@ -176,7 +176,7 @@ final class GetObjectRequest extends Input
         }
         if (null !== $this->requestPayer) {
             if (!RequestPayer::exists($this->requestPayer)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
+                throw new InvalidArgument(\sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
             }
             $headers['x-amz-request-payer'] = $this->requestPayer;
         }
@@ -185,7 +185,7 @@ final class GetObjectRequest extends Input
         }
         if (null !== $this->checksumMode) {
             if (!ChecksumMode::exists($this->checksumMode)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "ChecksumMode" for "%s". The value "%s" is not a valid "ChecksumMode".', __CLASS__, $this->checksumMode));
+                throw new InvalidArgument(\sprintf('Invalid parameter "ChecksumMode" for "%s". The value "%s" is not a valid "ChecksumMode".', __CLASS__, $this->checksumMode));
             }
             $headers['x-amz-checksum-mode'] = $this->checksumMode;
         }
@@ -216,11 +216,11 @@ final class GetObjectRequest extends Input
         }
         $uri = [];
         if (null === $v = $this->bucket) {
-            throw new InvalidArgument(sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Bucket'] = $v;
         if (null === $v = $this->key) {
-            throw new InvalidArgument(sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Key" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Key'] = $v;
         $uriString = '/' . rawurlencode($uri['Bucket']) . '/' . str_replace('%2F', '/', rawurlencode($uri['Key']));

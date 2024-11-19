@@ -267,7 +267,7 @@ final class Response
             $context['aws_message'] = $this->resolveResult->getAwsMessage();
             $context['aws_type'] = $this->resolveResult->getAwsType();
             $context['aws_detail'] = $this->resolveResult->getAwsDetail();
-            $message = sprintf('HTTP %d returned for "%s".', $code, $url);
+            $message = \sprintf('HTTP %d returned for "%s".', $code, $url);
         }
         if ($this->resolveResult instanceof Exception) {
             $this->logger->log((404 === $code) ? LogLevel::INFO : LogLevel::ERROR, $message ?? $this->resolveResult->getMessage(), $context);

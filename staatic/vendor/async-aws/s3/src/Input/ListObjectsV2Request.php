@@ -90,7 +90,7 @@ final class ListObjectsV2Request extends Input
         $headers = ['content-type' => 'application/xml'];
         if (null !== $this->requestPayer) {
             if (!RequestPayer::exists($this->requestPayer)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
+                throw new InvalidArgument(\sprintf('Invalid parameter "RequestPayer" for "%s". The value "%s" is not a valid "RequestPayer".', __CLASS__, $this->requestPayer));
             }
             $headers['x-amz-request-payer'] = $this->requestPayer;
         }
@@ -101,7 +101,7 @@ final class ListObjectsV2Request extends Input
             $items = [];
             foreach ($this->optionalObjectAttributes as $value) {
                 if (!OptionalObjectAttributes::exists($value)) {
-                    throw new InvalidArgument(sprintf('Invalid parameter "OptionalObjectAttributes" for "%s". The value "%s" is not a valid "OptionalObjectAttributes".', __CLASS__, $value));
+                    throw new InvalidArgument(\sprintf('Invalid parameter "OptionalObjectAttributes" for "%s". The value "%s" is not a valid "OptionalObjectAttributes".', __CLASS__, $value));
                 }
                 $items[] = $value;
             }
@@ -113,7 +113,7 @@ final class ListObjectsV2Request extends Input
         }
         if (null !== $this->encodingType) {
             if (!EncodingType::exists($this->encodingType)) {
-                throw new InvalidArgument(sprintf('Invalid parameter "EncodingType" for "%s". The value "%s" is not a valid "EncodingType".', __CLASS__, $this->encodingType));
+                throw new InvalidArgument(\sprintf('Invalid parameter "EncodingType" for "%s". The value "%s" is not a valid "EncodingType".', __CLASS__, $this->encodingType));
             }
             $query['encoding-type'] = $this->encodingType;
         }
@@ -134,7 +134,7 @@ final class ListObjectsV2Request extends Input
         }
         $uri = [];
         if (null === $v = $this->bucket) {
-            throw new InvalidArgument(sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
+            throw new InvalidArgument(\sprintf('Missing parameter "Bucket" for "%s". The value cannot be null.', __CLASS__));
         }
         $uri['Bucket'] = $v;
         $uriString = '/' . rawurlencode($uri['Bucket']) . '?list-type=2';

@@ -8,6 +8,14 @@ use Staatic\Vendor\Psr\Http\Message\UriInterface;
 final class OfflineUrlTransformer implements UrlTransformerInterface
 {
     /**
+     * @var bool
+     */
+    private $appendIndex = \true;
+    public function __construct(bool $appendIndex = \true)
+    {
+        $this->appendIndex = $appendIndex;
+    }
+    /**
      * @param UriInterface $url
      * @param UriInterface|null $foundOnUrl
      * @param mixed[] $context
@@ -21,10 +29,12 @@ final class OfflineUrlTransformer implements UrlTransformerInterface
         }
         $transformedUrl = (new Uri())->withPath($url->getPath())->withQuery($url->getQuery())->withFragment($url->getFragment());
         $effectiveUrl = $foundOnUrl ? UriResolver::relativize($foundOnUrl, $url) : new Uri('');
-        $effectiveUrl = $this->addIndexIfNeeded($effectiveUrl);
+        if ($this->appendIndex) {
+            $effectiveUrl = $this->maybeAppendIndex($effectiveUrl);
+        }
         return new UrlTransformation($transformedUrl, $effectiveUrl);
     }
-    private function addIndexIfNeeded(UriInterface $url): UriInterface
+    private function maybeAppendIndex(UriInterface $url): UriInterface
     {
         $path = $url->getPath();
         if ($path === '') {

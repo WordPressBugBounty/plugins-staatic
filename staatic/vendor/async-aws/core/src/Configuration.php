@@ -32,7 +32,7 @@ final class Configuration
     public static function create(array $options): self
     {
         if (0 < \count($invalidOptions = array_diff_key($options, self::AVAILABLE_OPTIONS))) {
-            throw new InvalidArgument(sprintf('Invalid option(s) "%s" passed to "%s::%s". ', implode('", "', array_keys($invalidOptions)), __CLASS__, __METHOD__));
+            throw new InvalidArgument(\sprintf('Invalid option(s) "%s" passed to "%s::%s". ', implode('", "', array_keys($invalidOptions)), __CLASS__, __METHOD__));
         }
         $options = array_map(static function ($value) {
             return (null !== $value) ? (string) $value : $value;
@@ -51,21 +51,21 @@ final class Configuration
     public function get(string $name): ?string
     {
         if (!isset(self::AVAILABLE_OPTIONS[$name])) {
-            throw new InvalidArgument(sprintf('Invalid option "%s" passed to "%s::%s". ', $name, __CLASS__, __METHOD__));
+            throw new InvalidArgument(\sprintf('Invalid option "%s" passed to "%s::%s". ', $name, __CLASS__, __METHOD__));
         }
         return $this->data[$name] ?? null;
     }
     public function has(string $name): bool
     {
         if (!isset(self::AVAILABLE_OPTIONS[$name])) {
-            throw new InvalidArgument(sprintf('Invalid option "%s" passed to "%s::%s". ', $name, __CLASS__, __METHOD__));
+            throw new InvalidArgument(\sprintf('Invalid option "%s" passed to "%s::%s". ', $name, __CLASS__, __METHOD__));
         }
         return isset($this->data[$name]);
     }
     public function isDefault(string $name): bool
     {
         if (!isset(self::AVAILABLE_OPTIONS[$name])) {
-            throw new InvalidArgument(sprintf('Invalid option "%s" passed to "%s::%s". ', $name, __CLASS__, __METHOD__));
+            throw new InvalidArgument(\sprintf('Invalid option "%s" passed to "%s::%s". ', $name, __CLASS__, __METHOD__));
         }
         return empty($this->userData[$name]);
     }

@@ -69,13 +69,13 @@ final class InstanceProvider implements CredentialProvider
         try {
             $content = json_decode($content, \true, 512, \JSON_BIGINT_AS_STRING | ((\PHP_VERSION_ID >= 70300) ? 0 : 0));
         } catch (\JsonException $e) {
-            throw new JsonException(sprintf('%s for "%s".', $e->getMessage(), $response->getInfo('url')), $e->getCode());
+            throw new JsonException(\sprintf('%s for "%s".', $e->getMessage(), $response->getInfo('url')), $e->getCode());
         }
         if (\PHP_VERSION_ID < 70300 && \JSON_ERROR_NONE !== json_last_error()) {
-            throw new JsonException(sprintf('%s for "%s".', json_last_error_msg(), $response->getInfo('url')), json_last_error());
+            throw new JsonException(\sprintf('%s for "%s".', json_last_error_msg(), $response->getInfo('url')), json_last_error());
         }
         if (!\is_array($content)) {
-            throw new JsonException(sprintf('JSON content was expected to decode to an array, %s returned for "%s".', \gettype($content), $response->getInfo('url')));
+            throw new JsonException(\sprintf('JSON content was expected to decode to an array, %s returned for "%s".', \gettype($content), $response->getInfo('url')));
         }
         return $content;
     }

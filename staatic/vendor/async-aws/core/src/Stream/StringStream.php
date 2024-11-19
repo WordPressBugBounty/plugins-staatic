@@ -23,7 +23,7 @@ final class StringStream implements RequestStream
         if (\is_string($content)) {
             return new self($content);
         }
-        throw new InvalidArgument(sprintf('Expect content to be a "%s" or as "string". "%s" given.', RequestStream::class, \is_object($content) ? \get_class($content) : \gettype($content)));
+        throw new InvalidArgument(\sprintf('Expect content to be a "%s" or as "string". "%s" given.', RequestStream::class, \is_object($content) ? \get_class($content) : \gettype($content)));
     }
     public function length(): int
     {

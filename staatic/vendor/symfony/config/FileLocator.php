@@ -53,7 +53,7 @@ class FileLocator implements FileLocatorInterface
     }
     private function isAbsolutePath(string $file): bool
     {
-        if ('/' === $file[0] || '\\' === $file[0] || \strlen($file) > 3 && ctype_alpha($file[0]) && ':' === $file[1] && ('\\' === $file[2] || '/' === $file[2]) || null !== parse_url($file, \PHP_URL_SCHEME)) {
+        if ('/' === $file[0] || '\\' === $file[0] || \strlen($file) > 3 && ctype_alpha($file[0]) && ':' === $file[1] && ('\\' === $file[2] || '/' === $file[2]) || parse_url($file, \PHP_URL_SCHEME) || strncmp($file, 'phar:///', strlen('phar:///')) === 0) {
             return \true;
         }
         return \false;

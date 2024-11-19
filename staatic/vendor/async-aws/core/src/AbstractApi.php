@@ -38,7 +38,7 @@ abstract class AbstractApi
         if (\is_array($configuration)) {
             $configuration = Configuration::create($configuration);
         } elseif (!$configuration instanceof Configuration) {
-            throw new InvalidArgument(sprintf('First argument to "%s::__construct()" must be an array or an instance of "%s"', static::class, Configuration::class));
+            throw new InvalidArgument(\sprintf('First argument to "%s::__construct()" must be an array or an instance of "%s"', static::class, Configuration::class));
         }
         $this->logger = $logger ?? new NullLogger();
         $this->awsErrorFactory = $this->getAwsErrorFactory();
@@ -72,15 +72,15 @@ abstract class AbstractApi
     }
     protected function getServiceCode(): string
     {
-        throw new LogicException(sprintf('The method "%s" should not be called. The Client "%s" must implement the "%s" method.', __FUNCTION__, \get_class($this), 'getEndpointMetadata'));
+        throw new LogicException(\sprintf('The method "%s" should not be called. The Client "%s" must implement the "%s" method.', __FUNCTION__, \get_class($this), 'getEndpointMetadata'));
     }
     protected function getSignatureVersion(): string
     {
-        throw new LogicException(sprintf('The method "%s" should not be called. The Client "%s" must implement the "%s" method.', __FUNCTION__, \get_class($this), 'getEndpointMetadata'));
+        throw new LogicException(\sprintf('The method "%s" should not be called. The Client "%s" must implement the "%s" method.', __FUNCTION__, \get_class($this), 'getEndpointMetadata'));
     }
     protected function getSignatureScopeName(): string
     {
-        throw new LogicException(sprintf('The method "%s" should not be called. The Client "%s" must implement the "%s" method.', __FUNCTION__, \get_class($this), 'getEndpointMetadata'));
+        throw new LogicException(\sprintf('The method "%s" should not be called. The Client "%s" must implement the "%s" method.', __FUNCTION__, \get_class($this), 'getEndpointMetadata'));
     }
     /**
      * @param Request $request
@@ -154,7 +154,7 @@ abstract class AbstractApi
      */
     protected function discoverEndpoints($region): array
     {
-        throw new LogicException(sprintf('The Client "%s" must implement the "%s" method.', \get_class($this), 'discoverEndpoints'));
+        throw new LogicException(\sprintf('The Client "%s" must implement the "%s" method.', \get_class($this), 'discoverEndpoints'));
     }
     private function getDiscoveredEndpoint(string $uri, array $query, ?string $region, bool $usesEndpointDiscovery, bool $requiresEndpointDiscovery)
     {
@@ -175,7 +175,7 @@ abstract class AbstractApi
             }
             if (null === $endpoint && null === $endpoint = $this->endpointCache->getExpiredEndpoint($region)) {
                 if ($requiresEndpointDiscovery) {
-                    throw new RuntimeException(sprintf('The Client "%s" failed to fetch the endpoint.', \get_class($this)), 0, $previous);
+                    throw new RuntimeException(\sprintf('The Client "%s" failed to fetch the endpoint.', \get_class($this)), 0, $previous);
                 }
                 return $this->getEndpoint($uri, $query, $region);
             }
@@ -205,7 +205,7 @@ abstract class AbstractApi
                 }
             }
             if (null === $factory) {
-                throw new InvalidArgument(sprintf('None of the signatures "%s" is implemented.', implode(', ', $metadata['signVersions'])));
+                throw new InvalidArgument(\sprintf('None of the signatures "%s" is implemented.', implode(', ', $metadata['signVersions'])));
             }
             $this->signers[$region] = $factory($metadata['signService'], $metadata['signRegion']);
         }

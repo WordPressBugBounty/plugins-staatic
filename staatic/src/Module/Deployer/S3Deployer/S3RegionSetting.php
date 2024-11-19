@@ -59,7 +59,7 @@ final class S3RegionSetting extends AbstractSetting
             'ap-east-1' => 'Asia Pacific (Hong Kong)',
             'ap-south-2' => 'Asia Pacific (Hyderabad)',
             'ap-southeast-3' => 'Asia Pacific (Jakarta)',
-            // 'ap-southeast-5' => 'Asia Pacific (Malaysia)', (NOT RELEASED)
+            'ap-southeast-5' => 'Asia Pacific (Malaysia)',
             'ap-southeast-4' => 'Asia Pacific (Melbourne)',
             'ap-south-1' => 'Asia Pacific (Mumbai)',
             'ap-northeast-3' => 'Asia Pacific (Osaka)',
@@ -82,7 +82,7 @@ final class S3RegionSetting extends AbstractSetting
             'me-central-1' => 'Middle East (UAE)',
             'sa-east-1' => 'South America (São Paulo)',
             'cn-north-1' => 'China (Beijing)',
-            'cn-northwest-1' => 'China (Ningxia)',
+            'cn-northwest-1' => 'China (Ningxia)'
         ];
         foreach ($regions as $region => $label) {
             $regions[$region] = sprintf('%s > %s', $label, $region);
