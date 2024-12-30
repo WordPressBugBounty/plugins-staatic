@@ -71,7 +71,7 @@ final class CrawlProfileFactory
         $wordpressPrefix = rtrim(WordpressEnv::getWordpressUrlPath(), '/');
         $patterns = array_map(function ($pattern) use ($wordpressPrefix) {
             return sprintf($pattern, preg_quote($wordpressPrefix, '~'));
-        }, ['~^%s/(xmlrpc|wp-comments-post|wp-login)\.php~', '~%s/wp-admin/?$~', '~/\?p=\d+~']);
+        }, ['~^%s/(xmlrpc|wp-comments-post|wp-login)\.php~', '~%s/wp-admin/?$~', '~/\?p=\d+~', '~\.htaccess$~']);
 
         return array_merge($excludeUrls, $patterns);
     }

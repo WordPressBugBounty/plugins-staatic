@@ -102,7 +102,7 @@ class Montgomery extends Base
     public function multiplyPoint($p, $d)
     {
         $p1 = [$this->one, $this->zero];
-        $alreadyInternal = isset($x[1]);
+        $alreadyInternal = isset($p[1]);
         $p2 = $this->convertToInternal($p);
         $x = $p[0];
         $b = $d->toBits();

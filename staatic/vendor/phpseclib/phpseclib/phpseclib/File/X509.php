@@ -161,10 +161,6 @@ class X509
             default:
                 $cert['tbsCertificate']['subjectPublicKeyInfo'] = new Element(base64_decode(preg_replace('#-.+-|[\r\n]#', '', $cert['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'])));
         }
-        if ($algorithm == 'rsaEncryption') {
-            $cert['signatureAlgorithm']['parameters'] = null;
-            $cert['tbsCertificate']['signature']['parameters'] = null;
-        }
         $filters = [];
         $type_utf8_string = ['type' => ASN1::TYPE_UTF8_STRING];
         $filters['tbsCertificate']['signature']['parameters'] = $type_utf8_string;
@@ -928,9 +924,6 @@ class X509
             $dn = array_splice($dn, 0, 0);
         }
     }
-    /**
-     * @param mixed[]|null $dn
-     */
     public function getDNProp($propName, $dn = null, $withType = \false)
     {
         if (!isset($dn)) {
@@ -1009,9 +1002,6 @@ class X509
         }
         return \true;
     }
-    /**
-     * @param mixed[]|null $dn
-     */
     public function getDN($format = self::DN_ARRAY, $dn = null)
     {
         if (!isset($dn)) {
@@ -1633,7 +1623,7 @@ class X509
             }
             $this->currentCert['certificationRequestInfo']['subjectPKInfo'] = $publicKey;
         } else {
-            $this->currentCert = ['certificationRequestInfo' => ['version' => 'v1', 'subject' => $this->dn, 'subjectPKInfo' => $publicKey], 'signatureAlgorithm' => $signatureAlgorithm, 'signature' => \false];
+            $this->currentCert = ['certificationRequestInfo' => ['version' => 'v1', 'subject' => $this->dn, 'subjectPKInfo' => $publicKey, 'attributes' => []], 'signatureAlgorithm' => $signatureAlgorithm, 'signature' => \false];
         }
         $certificationRequestInfo = $this->currentCert['certificationRequestInfo'];
         $this->loadCSR($this->saveCSR($this->currentCert));
@@ -1766,7 +1756,7 @@ class X509
                 case 'sha256':
                 case 'sha384':
                 case 'sha512':
-                    return ['algorithm' => $key->getHash() . 'WithRSAEncryption'];
+                    return ['algorithm' => $key->getHash() . 'WithRSAEncryption', 'parameters' => null];
             }
             throw new UnsupportedAlgorithmException('The only supported hash algorithms for RSA are: md2, md5, sha1, sha224, sha256, sha384, sha512');
         }
@@ -1855,7 +1845,7 @@ class X509
         }
         return $root;
     }
-    private function &subArray(array &$root = null, $path, $create = \false)
+    private function &subArray(&$root, $path, $create = \false)
     {
         $false = \false;
         if (!is_array($root)) {
@@ -1875,7 +1865,7 @@ class X509
         }
         return $root;
     }
-    private function &extensions(array &$root = null, $path = null, $create = \false)
+    private function &extensions(&$root, $path = null, $create = \false)
     {
         if (!isset($root)) {
             $root = $this->currentCert;
@@ -1934,7 +1924,7 @@ class X509
         }
         return $result;
     }
-    private function getExtensionHelper($id, array $cert = null, $path = null)
+    private function getExtensionHelper($id, $cert = null, $path = null)
     {
         $extensions = $this->extensions($cert, $path);
         if (!is_array($extensions)) {
@@ -1947,7 +1937,7 @@ class X509
         }
         return \false;
     }
-    private function getExtensionsHelper(array $cert = null, $path = null)
+    private function getExtensionsHelper($cert = null, $path = null)
     {
         $exts = $this->extensions($cert, $path);
         $extensions = [];
@@ -1981,16 +1971,10 @@ class X509
     {
         return $this->removeExtensionHelper($id);
     }
-    /**
-     * @param mixed[]|null $cert
-     */
     public function getExtension($id, $cert = null, $path = null)
     {
         return $this->getExtensionHelper($id, $cert, $path);
     }
-    /**
-     * @param mixed[]|null $cert
-     */
     public function getExtensions($cert = null, $path = null)
     {
         return $this->getExtensionsHelper($cert, $path);
@@ -2035,9 +2019,6 @@ class X509
         $attributes = array_values($attributes);
         return $result;
     }
-    /**
-     * @param mixed[]|null $csr
-     */
     public function getAttribute($id, $disposition = self::ATTR_ALL, $csr = null)
     {
         if (empty($csr)) {
@@ -2066,9 +2047,17 @@ class X509
         }
         return \false;
     }
-    /**
-     * @param mixed[]|null $csr
-     */
+    public function getRequestedCertificateExtensions($csr = null)
+    {
+        if (empty($csr)) {
+            $csr = $this->currentCert;
+        }
+        $requestedExtensions = $this->getAttribute('pkcs-9-at-extensionRequest');
+        if ($requestedExtensions === \false) {
+            return \false;
+        }
+        return $this->getAttribute('pkcs-9-at-extensionRequest')[0];
+    }
     public function getAttributes($csr = null)
     {
         if (empty($csr)) {
@@ -2270,9 +2259,6 @@ class X509
         }
         return \false;
     }
-    /**
-     * @param mixed[]|null $crl
-     */
     public function listRevoked($crl = null)
     {
         if (!isset($crl)) {
@@ -2298,9 +2284,6 @@ class X509
         }
         return \false;
     }
-    /**
-     * @param mixed[]|null $crl
-     */
     public function getRevokedCertificateExtension($serial, $id, $crl = null)
     {
         if (!isset($crl)) {
@@ -2313,9 +2296,6 @@ class X509
         }
         return \false;
     }
-    /**
-     * @param mixed[]|null $crl
-     */
     public function getRevokedCertificateExtensions($serial, $crl = null)
     {
         if (!isset($crl)) {

@@ -22,10 +22,7 @@ final class AttributeAutoconfigurationPass extends AbstractRecursivePass
     private $methodAttributeConfigurators = [];
     private $propertyAttributeConfigurators = [];
     private $parameterAttributeConfigurators = [];
-    /**
-     * @param ContainerBuilder $container
-     */
-    public function process($container): void
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->getAutoconfiguredAttributes()) {
             return;
@@ -71,10 +68,9 @@ final class AttributeAutoconfigurationPass extends AbstractRecursivePass
     }
     /**
      * @param mixed $value
-     * @param bool $isRoot
      * @return mixed
      */
-    protected function processValue($value, $isRoot = \false)
+    protected function processValue($value, bool $isRoot = \false)
     {
         if (!$value instanceof Definition || !$value->isAutoconfigured() || $value->isAbstract() || $value->hasTag('container.ignore_attributes') || !$classReflector = $this->container->getReflectionClass($value->getClass(), \false)) {
             return parent::processValue($value, $isRoot);
@@ -96,7 +92,7 @@ final class AttributeAutoconfigurationPass extends AbstractRecursivePass
             }
             if ($constructorReflector) {
                 foreach ($constructorReflector->getParameters() as $parameterReflector) {
-                    foreach (method_exists($parameterReflector, 'getAttributes') ? $parameterReflector->getAttributes() : [] as $attribute) {
+                    foreach ($parameterReflector->getAttributes() as $attribute) {
                         if ($configurator = $this->parameterAttributeConfigurators[$attribute->getName()] ?? null) {
                             $configurator($conditionals, $attribute->newInstance(), $parameterReflector);
                         }

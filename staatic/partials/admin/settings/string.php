@@ -42,6 +42,9 @@ echo \esc_attr($setting->name());
 echo \esc_attr($setting->value());
 ?>"
             <?php 
+echo ($attributes['disabled'] ?? \false) ? 'disabled="disabled"' : '';
+?>
+            <?php 
 echo isset($attributes['options']) ? 'list="' . \esc_attr($setting->name()) . '_options' . '"' : '';
 ?>
         >
@@ -70,6 +73,15 @@ if (isset($attributes['options'])) {
     }
     ?>
             </datalist>
+        <?php 
+}
+?>
+        <?php 
+if (isset($attributes['locked'])) {
+    ?>
+            <span class="staatic-adornment dashicons dashicons-lock" title="<?php 
+    echo \esc_attr($attributes['locked']);
+    ?>"></span>
         <?php 
 }
 ?>

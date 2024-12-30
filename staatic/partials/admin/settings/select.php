@@ -45,6 +45,9 @@ echo \esc_attr($setting->name());
             id="<?php 
 echo \esc_attr($setting->name());
 ?>"
+            <?php 
+echo ($attributes['disabled'] ?? \false) ? 'disabled="disabled"' : '';
+?>
         >
             <?php 
 foreach ($attributes['selectOptions'] as $optionName => $optionLabel) {
@@ -65,6 +68,15 @@ foreach ($attributes['selectOptions'] as $optionName => $optionLabel) {
 }
 ?>
         </select>
+        <?php 
+if (isset($attributes['locked'])) {
+    ?>
+            <span class="staatic-adornment dashicons dashicons-lock" title="<?php 
+    echo \esc_attr($attributes['locked']);
+    ?>"></span>
+        <?php 
+}
+?>
     <?php 
 if (!isset($attributes['composed'])) {
     ?>

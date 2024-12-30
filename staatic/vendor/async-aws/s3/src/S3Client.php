@@ -24,11 +24,15 @@ use Staatic\Vendor\AsyncAws\S3\Enum\StorageClass;
 use Staatic\Vendor\AsyncAws\S3\Enum\TaggingDirective;
 use Staatic\Vendor\AsyncAws\S3\Exception\BucketAlreadyExistsException;
 use Staatic\Vendor\AsyncAws\S3\Exception\BucketAlreadyOwnedByYouException;
+use Staatic\Vendor\AsyncAws\S3\Exception\EncryptionTypeMismatchException;
 use Staatic\Vendor\AsyncAws\S3\Exception\InvalidObjectStateException;
+use Staatic\Vendor\AsyncAws\S3\Exception\InvalidRequestException;
+use Staatic\Vendor\AsyncAws\S3\Exception\InvalidWriteOffsetException;
 use Staatic\Vendor\AsyncAws\S3\Exception\NoSuchBucketException;
 use Staatic\Vendor\AsyncAws\S3\Exception\NoSuchKeyException;
 use Staatic\Vendor\AsyncAws\S3\Exception\NoSuchUploadException;
 use Staatic\Vendor\AsyncAws\S3\Exception\ObjectNotInActiveTierErrorException;
+use Staatic\Vendor\AsyncAws\S3\Exception\TooManyPartsException;
 use Staatic\Vendor\AsyncAws\S3\Input\AbortMultipartUploadRequest;
 use Staatic\Vendor\AsyncAws\S3\Input\CompleteMultipartUploadRequest;
 use Staatic\Vendor\AsyncAws\S3\Input\CopyObjectRequest;
@@ -270,7 +274,7 @@ class S3Client extends AbstractApi
     public function putObject($input): PutObjectOutput
     {
         $input = PutObjectRequest::create($input);
-        $response = $this->getResponse($input->request(), new RequestContext(['operation' => 'PutObject', 'region' => $input->getRegion()]));
+        $response = $this->getResponse($input->request(), new RequestContext(['operation' => 'PutObject', 'region' => $input->getRegion(), 'exceptionMapping' => ['InvalidRequest' => InvalidRequestException::class, 'InvalidWriteOffset' => InvalidWriteOffsetException::class, 'TooManyParts' => TooManyPartsException::class, 'EncryptionTypeMismatch' => EncryptionTypeMismatchException::class]]));
         return new PutObjectOutput($response);
     }
     public function putObjectAcl($input): PutObjectAclOutput

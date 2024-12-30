@@ -30,6 +30,7 @@ abstract class PKCS8 extends PKCS
     private static $defaultPRF = 'id-hmacWithSHA256';
     private static $defaultIterationCount = 2048;
     private static $oidsLoaded = \false;
+    private static $binary = \false;
     public static function setEncryptionAlgorithm($algo)
     {
         self::$defaultEncryptionAlgorithm = $algo;
@@ -305,6 +306,10 @@ abstract class PKCS8 extends PKCS
         }
         throw new RuntimeException('Unable to parse using either OneAsymmetricKey or PublicKeyInfo ASN1 maps');
     }
+    public static function setBinaryOutput($enabled)
+    {
+        self::$binary = $enabled;
+    }
     /**
      * @param mixed[] $options
      */
@@ -357,11 +362,20 @@ abstract class PKCS8 extends PKCS
             $key = $crypto->encrypt($key);
             $key = ['encryptionAlgorithm' => ['algorithm' => $encryptionAlgorithm, 'parameters' => new Element($params)], 'encryptedData' => $key];
             $key = ASN1::encodeDER($key, EncryptedPrivateKeyInfo::MAP);
+            if (isset($options['binary']) ? $options['binary'] : self::$binary) {
+                return $key;
+            }
             return "-----BEGIN ENCRYPTED PRIVATE KEY-----\r\n" . chunk_split(Strings::base64_encode($key), 64) . "-----END ENCRYPTED PRIVATE KEY-----";
+        }
+        if (isset($options['binary']) ? $options['binary'] : self::$binary) {
+            return $key;
         }
         return "-----BEGIN PRIVATE KEY-----\r\n" . chunk_split(Strings::base64_encode($key), 64) . "-----END PRIVATE KEY-----";
     }
-    protected static function wrapPublicKey($key, $params, $oid = null)
+    /**
+     * @param mixed[] $options
+     */
+    protected static function wrapPublicKey($key, $params, $oid = null, $options = [])
     {
         self::initialize_static_variables();
         $key = ['publicKeyAlgorithm' => ['algorithm' => is_string(static::OID_NAME) ? static::OID_NAME : $oid], 'publicKey' => "\x00" . $key];
@@ -369,6 +383,9 @@ abstract class PKCS8 extends PKCS
             $key['publicKeyAlgorithm']['parameters'] = $params;
         }
         $key = ASN1::encodeDER($key, PublicKeyInfo::MAP);
+        if (isset($options['binary']) ? $options['binary'] : self::$binary) {
+            return $key;
+        }
         return "-----BEGIN PUBLIC KEY-----\r\n" . chunk_split(Strings::base64_encode($key), 64) . "-----END PUBLIC KEY-----";
     }
     private static function preParse(&$key)

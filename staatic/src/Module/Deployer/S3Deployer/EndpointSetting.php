@@ -45,7 +45,7 @@ final class EndpointSetting extends AbstractSetting
     {
         $this->renderer->render('admin/settings/s3_endpoint.php', [
             'setting' => $this,
-            'attributes' => $attributes
+            'attributes' => array_merge($this->defaultAttributes(), $attributes)
         ]);
     }
 }

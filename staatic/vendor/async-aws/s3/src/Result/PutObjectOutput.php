@@ -21,6 +21,7 @@ class PutObjectOutput extends Result
     private $sseKmsKeyId;
     private $sseKmsEncryptionContext;
     private $bucketKeyEnabled;
+    private $size;
     private $requestCharged;
     public function getBucketKeyEnabled(): ?bool
     {
@@ -67,6 +68,11 @@ class PutObjectOutput extends Result
         $this->initialize();
         return $this->serverSideEncryption;
     }
+    public function getSize(): ?int
+    {
+        $this->initialize();
+        return $this->size;
+    }
     public function getSseCustomerAlgorithm(): ?string
     {
         $this->initialize();
@@ -111,6 +117,7 @@ class PutObjectOutput extends Result
         $this->sseKmsKeyId = $headers['x-amz-server-side-encryption-aws-kms-key-id'][0] ?? null;
         $this->sseKmsEncryptionContext = $headers['x-amz-server-side-encryption-context'][0] ?? null;
         $this->bucketKeyEnabled = isset($headers['x-amz-server-side-encryption-bucket-key-enabled'][0]) ? filter_var($headers['x-amz-server-side-encryption-bucket-key-enabled'][0], \FILTER_VALIDATE_BOOLEAN) : null;
+        $this->size = isset($headers['x-amz-object-size'][0]) ? (int) $headers['x-amz-object-size'][0] : null;
         $this->requestCharged = $headers['x-amz-request-charged'][0] ?? null;
     }
 }

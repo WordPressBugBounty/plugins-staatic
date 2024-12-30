@@ -2,6 +2,9 @@
 
 namespace Staatic\Vendor\AsyncAws\S3\Input;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use DateTimeInterface;
 use Staatic\Vendor\AsyncAws\Core\Exception\InvalidArgument;
 use Staatic\Vendor\AsyncAws\Core\Input;
 use Staatic\Vendor\AsyncAws\Core\Request;
@@ -14,6 +17,7 @@ final class AbortMultipartUploadRequest extends Input
     private $uploadId;
     private $requestPayer;
     private $expectedBucketOwner;
+    private $ifMatchInitiatedTime;
     public function __construct(array $input = [])
     {
         $this->bucket = $input['Bucket'] ?? null;
@@ -21,6 +25,7 @@ final class AbortMultipartUploadRequest extends Input
         $this->uploadId = $input['UploadId'] ?? null;
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
+        $this->ifMatchInitiatedTime = (!isset($input['IfMatchInitiatedTime'])) ? null : (($input['IfMatchInitiatedTime'] instanceof DateTimeImmutable) ? $input['IfMatchInitiatedTime'] : new DateTimeImmutable($input['IfMatchInitiatedTime']));
         parent::__construct($input);
     }
     public static function create($input): self
@@ -34,6 +39,10 @@ final class AbortMultipartUploadRequest extends Input
     public function getExpectedBucketOwner(): ?string
     {
         return $this->expectedBucketOwner;
+    }
+    public function getIfMatchInitiatedTime(): ?DateTimeImmutable
+    {
+        return $this->ifMatchInitiatedTime;
     }
     public function getKey(): ?string
     {
@@ -58,6 +67,9 @@ final class AbortMultipartUploadRequest extends Input
         }
         if (null !== $this->expectedBucketOwner) {
             $headers['x-amz-expected-bucket-owner'] = $this->expectedBucketOwner;
+        }
+        if (null !== $this->ifMatchInitiatedTime) {
+            $headers['x-amz-if-match-initiated-time'] = $this->ifMatchInitiatedTime->setTimezone(new DateTimeZone('GMT'))->format(DateTimeInterface::RFC7231);
         }
         $query = [];
         if (null === $v = $this->uploadId) {
@@ -91,6 +103,14 @@ final class AbortMultipartUploadRequest extends Input
     public function setExpectedBucketOwner($value): self
     {
         $this->expectedBucketOwner = $value;
+        return $this;
+    }
+    /**
+     * @param DateTimeImmutable|null $value
+     */
+    public function setIfMatchInitiatedTime($value): self
+    {
+        $this->ifMatchInitiatedTime = $value;
         return $this;
     }
     /**

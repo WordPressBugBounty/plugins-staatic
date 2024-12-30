@@ -5,6 +5,8 @@ namespace Staatic\Vendor;
 use stdClass;
 abstract class WP_Background_Process extends WP_Async_Request
 {
+    const CHAIN_ID_ARG_NAME = 'chain_id';
+    private $chain_id;
     protected $action = 'background_process';
     protected $start_time = 0;
     protected $cron_hook_identifier;
@@ -28,10 +30,15 @@ abstract class WP_Background_Process extends WP_Async_Request
         $this->cron_interval_identifier = $this->identifier . '_cron_interval';
         \add_action($this->cron_hook_identifier, array($this, 'handle_cron_healthcheck'));
         \add_filter('cron_schedules', array($this, 'schedule_cron_healthcheck'));
+        \add_filter($this->identifier . '_query_args', array($this, 'filter_dispatch_query_args'));
     }
     public function dispatch()
     {
         if ($this->is_processing()) {
+            return \false;
+        }
+        $cancel = \apply_filters($this->identifier . '_pre_dispatch', \false, $this->get_chain_id());
+        if ($cancel) {
             return \false;
         }
         $this->schedule_event();
@@ -79,12 +86,11 @@ abstract class WP_Background_Process extends WP_Async_Request
     }
     public function is_cancelled()
     {
-        $status = \get_site_option($this->get_status_key(), 0);
-        return \absint($status) === self::STATUS_CANCELLED;
+        return $this->get_status() === self::STATUS_CANCELLED;
     }
     protected function cancelled()
     {
-        \do_action($this->identifier . '_cancelled');
+        \do_action($this->identifier . '_cancelled', $this->get_chain_id());
     }
     public function pause()
     {
@@ -92,12 +98,11 @@ abstract class WP_Background_Process extends WP_Async_Request
     }
     public function is_paused()
     {
-        $status = \get_site_option($this->get_status_key(), 0);
-        return \absint($status) === self::STATUS_PAUSED;
+        return $this->get_status() === self::STATUS_PAUSED;
     }
     protected function paused()
     {
-        \do_action($this->identifier . '_paused');
+        \do_action($this->identifier . '_paused', $this->get_chain_id());
     }
     public function resume()
     {
@@ -108,7 +113,7 @@ abstract class WP_Background_Process extends WP_Async_Request
     }
     protected function resumed()
     {
-        \do_action($this->identifier . '_resumed');
+        \do_action($this->identifier . '_resumed', $this->get_chain_id());
     }
     public function is_queued()
     {
@@ -128,9 +133,20 @@ abstract class WP_Background_Process extends WP_Async_Request
     {
         return $this->identifier . '_status';
     }
+    protected function get_status()
+    {
+        global $wpdb;
+        if (\is_multisite()) {
+            $status = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM {$wpdb->sitemeta} WHERE meta_key = %s AND site_id = %d LIMIT 1", $this->get_status_key(), \get_current_network_id()));
+        } else {
+            $status = $wpdb->get_var($wpdb->prepare("SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $this->get_status_key()));
+        }
+        return \absint($status);
+    }
     public function maybe_handle()
     {
         \session_write_close();
+        \check_ajax_referer($this->identifier, 'nonce');
         if ($this->is_processing()) {
             return $this->maybe_wp_die();
         }
@@ -147,7 +163,6 @@ abstract class WP_Background_Process extends WP_Async_Request
         if ($this->is_queue_empty()) {
             return $this->maybe_wp_die();
         }
-        \check_ajax_referer($this->identifier, 'nonce');
         $this->handle();
         return $this->maybe_wp_die();
     }
@@ -166,16 +181,21 @@ abstract class WP_Background_Process extends WP_Async_Request
         }
         return \false;
     }
-    protected function lock_process()
+    public function lock_process($reset_start_time = \true)
     {
-        $this->start_time = \time();
+        if ($reset_start_time) {
+            $this->start_time = \time();
+        }
         $lock_duration = \property_exists($this, 'queue_lock_time') ? $this->queue_lock_time : 60;
         $lock_duration = \apply_filters($this->identifier . '_queue_lock_time', $lock_duration);
-        \set_site_transient($this->identifier . '_process_lock', \microtime(), $lock_duration);
+        $microtime = \microtime();
+        $locked = \set_site_transient($this->identifier . '_process_lock', $microtime, $lock_duration);
+        \do_action($this->identifier . '_process_locked', $locked, $microtime, $lock_duration, $this->get_chain_id());
     }
     protected function unlock_process()
     {
-        \delete_site_transient($this->identifier . '_process_lock');
+        $unlocked = \delete_site_transient($this->identifier . '_process_lock');
+        \do_action($this->identifier . '_process_unlocked', $unlocked, $this->get_chain_id());
         return $this;
     }
     protected function get_batch()
@@ -242,14 +262,14 @@ abstract class WP_Background_Process extends WP_Async_Request
                     $this->update($batch->key, $batch->data);
                 }
                 \sleep($throttle_seconds);
-                if ($this->time_exceeded() || $this->memory_exceeded() || $this->is_paused() || $this->is_cancelled()) {
+                if (!$this->should_continue()) {
                     break;
                 }
             }
             if (empty($batch->data)) {
                 $this->delete($batch->key);
             }
-        } while (!$this->time_exceeded() && !$this->memory_exceeded() && !$this->is_queue_empty() && !$this->is_paused() && !$this->is_cancelled());
+        } while (!$this->is_queue_empty() && $this->should_continue());
         $this->unlock_process();
         if (!$this->is_queue_empty()) {
             $this->dispatch();
@@ -297,7 +317,7 @@ abstract class WP_Background_Process extends WP_Async_Request
     }
     protected function completed()
     {
-        \do_action($this->identifier . '_completed');
+        \do_action($this->identifier . '_completed', $this->get_chain_id());
     }
     public function get_cron_interval()
     {
@@ -358,5 +378,47 @@ abstract class WP_Background_Process extends WP_Async_Request
             return @\unserialize($data, $options);
         }
         return $data;
+    }
+    public function should_continue()
+    {
+        return \apply_filters($this->identifier . '_should_continue', !($this->time_exceeded() || $this->memory_exceeded() || $this->is_paused() || $this->is_cancelled()), $this->get_chain_id());
+    }
+    public function get_identifier()
+    {
+        return $this->identifier;
+    }
+    public function get_chain_id()
+    {
+        if (empty($this->chain_id) && \wp_doing_ajax()) {
+            \check_ajax_referer($this->identifier, 'nonce');
+            if (!empty($_GET[$this->get_chain_id_arg_name()])) {
+                $chain_id = \sanitize_key($_GET[$this->get_chain_id_arg_name()]);
+                if (\wp_is_uuid($chain_id)) {
+                    $this->chain_id = $chain_id;
+                    return $this->chain_id;
+                }
+            }
+        }
+        if (empty($this->chain_id)) {
+            $this->chain_id = \wp_generate_uuid4();
+        }
+        return $this->chain_id;
+    }
+    public function filter_dispatch_query_args($args)
+    {
+        $args[$this->get_chain_id_arg_name()] = $this->get_chain_id();
+        return $args;
+    }
+    private function get_chain_id_arg_name()
+    {
+        static $chain_id_arg_name;
+        if (!empty($chain_id_arg_name)) {
+            return $chain_id_arg_name;
+        }
+        $chain_id_arg_name = \apply_filters($this->identifier . '_chain_id_arg_name', self::CHAIN_ID_ARG_NAME);
+        if (!\is_string($chain_id_arg_name) || empty($chain_id_arg_name)) {
+            $chain_id_arg_name = self::CHAIN_ID_ARG_NAME;
+        }
+        return $chain_id_arg_name;
     }
 }

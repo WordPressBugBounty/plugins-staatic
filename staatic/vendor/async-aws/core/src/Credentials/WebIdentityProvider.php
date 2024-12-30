@@ -13,6 +13,7 @@ use Staatic\Vendor\Symfony\Contracts\HttpClient\HttpClientInterface;
 final class WebIdentityProvider implements CredentialProvider
 {
     use DateFromResult;
+    use TokenFileLoader;
     private $iniFileLoader;
     private $logger;
     private $httpClient;
@@ -72,21 +73,5 @@ final class WebIdentityProvider implements CredentialProvider
             return null;
         }
         return new Credentials($credentials->getAccessKeyId(), $credentials->getSecretAccessKey(), $credentials->getSessionToken(), Credentials::adjustExpireDate($credentials->getExpiration(), $this->getDateFromResult($result)));
-    }
-    private function getTokenFileContent(string $tokenFile): string
-    {
-        $token = @file_get_contents($tokenFile);
-        if (\false !== $token) {
-            return $token;
-        }
-        $tokenDir = \dirname($tokenFile);
-        $tokenLink = readlink($tokenFile);
-        clearstatcache(\true, $tokenDir . \DIRECTORY_SEPARATOR . $tokenLink);
-        clearstatcache(\true, $tokenDir . \DIRECTORY_SEPARATOR . \dirname($tokenLink));
-        clearstatcache(\true, $tokenFile);
-        if (\false === $token = file_get_contents($tokenFile)) {
-            throw new RuntimeException('Failed to read data');
-        }
-        return $token;
     }
 }

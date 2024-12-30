@@ -2,6 +2,9 @@
 
 namespace Staatic\Vendor\AsyncAws\S3\Input;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use DateTimeInterface;
 use Staatic\Vendor\AsyncAws\Core\Exception\InvalidArgument;
 use Staatic\Vendor\AsyncAws\Core\Input;
 use Staatic\Vendor\AsyncAws\Core\Request;
@@ -16,6 +19,9 @@ final class DeleteObjectRequest extends Input
     private $requestPayer;
     private $bypassGovernanceRetention;
     private $expectedBucketOwner;
+    private $ifMatch;
+    private $ifMatchLastModifiedTime;
+    private $ifMatchSize;
     public function __construct(array $input = [])
     {
         $this->bucket = $input['Bucket'] ?? null;
@@ -25,6 +31,9 @@ final class DeleteObjectRequest extends Input
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->bypassGovernanceRetention = $input['BypassGovernanceRetention'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
+        $this->ifMatch = $input['IfMatch'] ?? null;
+        $this->ifMatchLastModifiedTime = (!isset($input['IfMatchLastModifiedTime'])) ? null : (($input['IfMatchLastModifiedTime'] instanceof DateTimeImmutable) ? $input['IfMatchLastModifiedTime'] : new DateTimeImmutable($input['IfMatchLastModifiedTime']));
+        $this->ifMatchSize = $input['IfMatchSize'] ?? null;
         parent::__construct($input);
     }
     public static function create($input): self
@@ -42,6 +51,18 @@ final class DeleteObjectRequest extends Input
     public function getExpectedBucketOwner(): ?string
     {
         return $this->expectedBucketOwner;
+    }
+    public function getIfMatch(): ?string
+    {
+        return $this->ifMatch;
+    }
+    public function getIfMatchLastModifiedTime(): ?DateTimeImmutable
+    {
+        return $this->ifMatchLastModifiedTime;
+    }
+    public function getIfMatchSize(): ?int
+    {
+        return $this->ifMatchSize;
     }
     public function getKey(): ?string
     {
@@ -76,6 +97,15 @@ final class DeleteObjectRequest extends Input
         }
         if (null !== $this->expectedBucketOwner) {
             $headers['x-amz-expected-bucket-owner'] = $this->expectedBucketOwner;
+        }
+        if (null !== $this->ifMatch) {
+            $headers['If-Match'] = $this->ifMatch;
+        }
+        if (null !== $this->ifMatchLastModifiedTime) {
+            $headers['x-amz-if-match-last-modified-time'] = $this->ifMatchLastModifiedTime->setTimezone(new DateTimeZone('GMT'))->format(DateTimeInterface::RFC7231);
+        }
+        if (null !== $this->ifMatchSize) {
+            $headers['x-amz-if-match-size'] = (string) $this->ifMatchSize;
         }
         $query = [];
         if (null !== $this->versionId) {
@@ -116,6 +146,30 @@ final class DeleteObjectRequest extends Input
     public function setExpectedBucketOwner($value): self
     {
         $this->expectedBucketOwner = $value;
+        return $this;
+    }
+    /**
+     * @param string|null $value
+     */
+    public function setIfMatch($value): self
+    {
+        $this->ifMatch = $value;
+        return $this;
+    }
+    /**
+     * @param DateTimeImmutable|null $value
+     */
+    public function setIfMatchLastModifiedTime($value): self
+    {
+        $this->ifMatchLastModifiedTime = $value;
+        return $this;
+    }
+    /**
+     * @param int|null $value
+     */
+    public function setIfMatchSize($value): self
+    {
+        $this->ifMatchSize = $value;
         return $this;
     }
     /**

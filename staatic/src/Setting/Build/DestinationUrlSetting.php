@@ -7,9 +7,13 @@ namespace Staatic\WordPress\Setting\Build;
 use Staatic\Vendor\GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Staatic\Vendor\GuzzleHttp\Psr7\Uri;
 use Staatic\WordPress\Setting\AbstractSetting;
+use Staatic\WordPress\Setting\ReadsFromEnvInterface;
+use Staatic\WordPress\Setting\ReadsFromEnvTrait;
 
-final class DestinationUrlSetting extends AbstractSetting
+final class DestinationUrlSetting extends AbstractSetting implements ReadsFromEnvInterface
 {
+    use ReadsFromEnvTrait;
+
     public function name(): string
     {
         return 'staatic_destination_url';
@@ -37,6 +41,10 @@ final class DestinationUrlSetting extends AbstractSetting
 
     public function sanitizeValue($value)
     {
+        if ($value === null) {
+            return null;
+        }
+
         try {
             $url = new Uri($value);
         } catch (MalformedUriException $e) {
@@ -59,7 +67,12 @@ final class DestinationUrlSetting extends AbstractSetting
     {
         $this->renderer->render('admin/settings/destination_url.php', [
             'setting' => $this,
-            'attributes' => $attributes
+            'attributes' => array_merge($this->defaultAttributes(), $attributes)
         ]);
+    }
+
+    public function envName(): string
+    {
+        return 'STAATIC_DESTINATION_URL';
     }
 }

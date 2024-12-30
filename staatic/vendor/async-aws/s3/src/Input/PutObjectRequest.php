@@ -34,12 +34,14 @@ final class PutObjectRequest extends Input
     private $checksumSha1;
     private $checksumSha256;
     private $expires;
+    private $ifMatch;
     private $ifNoneMatch;
     private $grantFullControl;
     private $grantRead;
     private $grantReadAcp;
     private $grantWriteAcp;
     private $key;
+    private $writeOffsetBytes;
     private $metadata;
     private $serverSideEncryption;
     private $storageClass;
@@ -74,12 +76,14 @@ final class PutObjectRequest extends Input
         $this->checksumSha1 = $input['ChecksumSHA1'] ?? null;
         $this->checksumSha256 = $input['ChecksumSHA256'] ?? null;
         $this->expires = (!isset($input['Expires'])) ? null : (($input['Expires'] instanceof DateTimeImmutable) ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
+        $this->ifMatch = $input['IfMatch'] ?? null;
         $this->ifNoneMatch = $input['IfNoneMatch'] ?? null;
         $this->grantFullControl = $input['GrantFullControl'] ?? null;
         $this->grantRead = $input['GrantRead'] ?? null;
         $this->grantReadAcp = $input['GrantReadACP'] ?? null;
         $this->grantWriteAcp = $input['GrantWriteACP'] ?? null;
         $this->key = $input['Key'] ?? null;
+        $this->writeOffsetBytes = $input['WriteOffsetBytes'] ?? null;
         $this->metadata = $input['Metadata'] ?? null;
         $this->serverSideEncryption = $input['ServerSideEncryption'] ?? null;
         $this->storageClass = $input['StorageClass'] ?? null;
@@ -190,6 +194,10 @@ final class PutObjectRequest extends Input
     {
         return $this->grantWriteAcp;
     }
+    public function getIfMatch(): ?string
+    {
+        return $this->ifMatch;
+    }
     public function getIfNoneMatch(): ?string
     {
         return $this->ifNoneMatch;
@@ -254,6 +262,10 @@ final class PutObjectRequest extends Input
     {
         return $this->websiteRedirectLocation;
     }
+    public function getWriteOffsetBytes(): ?int
+    {
+        return $this->writeOffsetBytes;
+    }
     public function request(): Request
     {
         $headers = [];
@@ -305,6 +317,9 @@ final class PutObjectRequest extends Input
         if (null !== $this->expires) {
             $headers['Expires'] = $this->expires->setTimezone(new DateTimeZone('GMT'))->format(DateTimeInterface::RFC7231);
         }
+        if (null !== $this->ifMatch) {
+            $headers['If-Match'] = $this->ifMatch;
+        }
         if (null !== $this->ifNoneMatch) {
             $headers['If-None-Match'] = $this->ifNoneMatch;
         }
@@ -319,6 +334,9 @@ final class PutObjectRequest extends Input
         }
         if (null !== $this->grantWriteAcp) {
             $headers['x-amz-grant-write-acp'] = $this->grantWriteAcp;
+        }
+        if (null !== $this->writeOffsetBytes) {
+            $headers['x-amz-write-offset-bytes'] = (string) $this->writeOffsetBytes;
         }
         if (null !== $this->serverSideEncryption) {
             if (!ServerSideEncryption::exists($this->serverSideEncryption)) {
@@ -575,6 +593,14 @@ final class PutObjectRequest extends Input
     /**
      * @param string|null $value
      */
+    public function setIfMatch($value): self
+    {
+        $this->ifMatch = $value;
+        return $this;
+    }
+    /**
+     * @param string|null $value
+     */
     public function setIfNoneMatch($value): self
     {
         $this->ifNoneMatch = $value;
@@ -698,6 +724,14 @@ final class PutObjectRequest extends Input
     public function setWebsiteRedirectLocation($value): self
     {
         $this->websiteRedirectLocation = $value;
+        return $this;
+    }
+    /**
+     * @param int|null $value
+     */
+    public function setWriteOffsetBytes($value): self
+    {
+        $this->writeOffsetBytes = $value;
         return $this;
     }
 }

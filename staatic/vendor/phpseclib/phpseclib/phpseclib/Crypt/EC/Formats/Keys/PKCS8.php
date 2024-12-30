@@ -94,11 +94,11 @@ abstract class PKCS8 extends Progenitor
             throw new UnsupportedCurveException('Montgomery Curves are not supported');
         }
         if ($curve instanceof TwistedEdwardsCurve) {
-            return self::wrapPublicKey($curve->encodePoint($publicKey), null, ($curve instanceof Ed25519) ? 'id-Ed25519' : 'id-Ed448');
+            return self::wrapPublicKey($curve->encodePoint($publicKey), null, ($curve instanceof Ed25519) ? 'id-Ed25519' : 'id-Ed448', $options);
         }
         $params = new Element(self::encodeParameters($curve, \false, $options));
         $key = "\x04" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
-        return self::wrapPublicKey($key, $params, 'id-ecPublicKey');
+        return self::wrapPublicKey($key, $params, 'id-ecPublicKey', $options);
     }
     /**
      * @param BigInteger $privateKey

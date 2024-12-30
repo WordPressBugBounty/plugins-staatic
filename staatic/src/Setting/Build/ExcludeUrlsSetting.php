@@ -63,7 +63,7 @@ final class ExcludeUrlsSetting extends AbstractSetting
     {
         $this->renderer->render('admin/settings/excluded_urls.php', [
             'setting' => $this,
-            'attributes' => $attributes
+            'attributes' => array_merge($this->defaultAttributes(), $attributes)
         ]);
     }
 

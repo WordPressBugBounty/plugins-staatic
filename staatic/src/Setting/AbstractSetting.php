@@ -74,11 +74,25 @@ abstract class AbstractSetting implements SettingInterface, RendersPartialsInter
      */
     public function render($attributes = []): void
     {
-        $path = sprintf('admin/settings/%s.php', $this->template());
-        $this->renderer->render($path, [
+        $this->renderer->render("admin/settings/{$this->template()}.php", [
             'setting' => $this,
-            'attributes' => $attributes
+            'attributes' => array_merge($this->defaultAttributes(), $attributes)
         ]);
+    }
+
+    protected function defaultAttributes(): array
+    {
+        $attributes = [];
+        if ($this instanceof ReadsFromEnvInterface && $this->envValue()) {
+            $attributes['disabled'] = \true;
+            $attributes['locked'] = sprintf(
+                /* translators: %1$s: Environment variable name. */
+                __('Value managed by %1$s environment variable.', 'staatic'),
+                $this->envName()
+            );
+        }
+
+        return $attributes;
     }
 
     /**

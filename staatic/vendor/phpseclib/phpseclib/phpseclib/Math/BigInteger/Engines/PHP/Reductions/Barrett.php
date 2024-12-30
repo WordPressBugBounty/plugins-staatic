@@ -14,7 +14,7 @@ abstract class Barrett extends Base
     {
         static $cache = [self::VARIABLE => [], self::DATA => []];
         $m_length = count($m);
-        if (count($n) >= 2 * $m_length) {
+        if (count($n) > 2 * $m_length) {
             $lhs = new $class();
             $rhs = new $class();
             $lhs->value = $n;
@@ -24,6 +24,13 @@ abstract class Barrett extends Base
         }
         if ($m_length < 5) {
             return self::regularBarrett($n, $m, $class);
+        }
+        $correctionNeeded = \false;
+        if ($m_length & 1) {
+            $correctionNeeded = \true;
+            array_unshift($n, 0);
+            array_unshift($m, 0);
+            $m_length++;
         }
         if (($key = array_search($m, $cache[self::VARIABLE])) === \false) {
             $key = count($cache[self::VARIABLE]);
@@ -54,6 +61,9 @@ abstract class Barrett extends Base
         $result = $class::subtractHelper($n[self::VALUE], \false, $temp[self::VALUE], \false);
         while (self::compareHelper($result[self::VALUE], $result[self::SIGN], $m, \false) >= 0) {
             $result = $class::subtractHelper($result[self::VALUE], $result[self::SIGN], $m, \false);
+        }
+        if ($correctionNeeded) {
+            array_shift($result[self::VALUE]);
         }
         return $result[self::VALUE];
     }

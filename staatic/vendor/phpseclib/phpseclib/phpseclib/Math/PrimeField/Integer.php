@@ -13,7 +13,7 @@ class Integer extends Base
     protected static $modulo;
     protected static $reduce;
     protected static $zero;
-    public function __construct($instanceID, BigInteger $num = null)
+    public function __construct($instanceID, $num = null)
     {
         $this->instanceID = $instanceID;
         if (!isset($num)) {

@@ -44,7 +44,19 @@ echo \esc_attr($setting->value());
             <?php 
 echo ($attributes['disableAutocomplete'] ?? \false) ? 'autocomplete="new-password"' : '';
 ?>
+            <?php 
+echo ($attributes['disabled'] ?? \false) ? 'disabled="disabled"' : '';
+?>
         >
+        <?php 
+if (isset($attributes['locked'])) {
+    ?>
+            <span class="staatic-adornment dashicons dashicons-lock" title="<?php 
+    echo \esc_attr($attributes['locked']);
+    ?>"></span>
+        <?php 
+}
+?>
     <?php 
 if (!isset($attributes['composed'])) {
     ?>

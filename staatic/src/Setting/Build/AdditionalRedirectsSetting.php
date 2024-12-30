@@ -42,7 +42,7 @@ final class AdditionalRedirectsSetting extends AbstractSetting
     {
         $this->renderer->render('admin/settings/additional_redirects.php', [
             'setting' => $this,
-            'attributes' => $attributes
+            'attributes' => array_merge($this->defaultAttributes(), $attributes)
         ]);
     }
 

@@ -20,16 +20,13 @@ class GetBucketCorsOutput extends Result
     protected function populateResult($response): void
     {
         $data = new SimpleXMLElement($response->getContent());
-        $this->corsRules = (!$data->CORSRule) ? [] : $this->populateResultCORSRules($data->CORSRule);
+        $this->corsRules = (0 === ($v = $data->CORSRule)->count()) ? [] : $this->populateResultCORSRules($v);
     }
     private function populateResultAllowedHeaders(SimpleXMLElement $xml): array
     {
         $items = [];
         foreach ($xml as $item) {
-            $a = ($v = $item) ? (string) $v : null;
-            if (null !== $a) {
-                $items[] = $a;
-            }
+            $items[] = (string) $item;
         }
         return $items;
     }
@@ -37,10 +34,7 @@ class GetBucketCorsOutput extends Result
     {
         $items = [];
         foreach ($xml as $item) {
-            $a = ($v = $item) ? (string) $v : null;
-            if (null !== $a) {
-                $items[] = $a;
-            }
+            $items[] = (string) $item;
         }
         return $items;
     }
@@ -48,18 +42,19 @@ class GetBucketCorsOutput extends Result
     {
         $items = [];
         foreach ($xml as $item) {
-            $a = ($v = $item) ? (string) $v : null;
-            if (null !== $a) {
-                $items[] = $a;
-            }
+            $items[] = (string) $item;
         }
         return $items;
+    }
+    private function populateResultCORSRule(SimpleXMLElement $xml): CORSRule
+    {
+        return new CORSRule(['ID' => (null !== $v = $xml->ID[0]) ? (string) $v : null, 'AllowedHeaders' => (0 === ($v = $xml->AllowedHeader)->count()) ? null : $this->populateResultAllowedHeaders($v), 'AllowedMethods' => $this->populateResultAllowedMethods($xml->AllowedMethod), 'AllowedOrigins' => $this->populateResultAllowedOrigins($xml->AllowedOrigin), 'ExposeHeaders' => (0 === ($v = $xml->ExposeHeader)->count()) ? null : $this->populateResultExposeHeaders($v), 'MaxAgeSeconds' => (null !== $v = $xml->MaxAgeSeconds[0]) ? (int) (string) $v : null]);
     }
     private function populateResultCORSRules(SimpleXMLElement $xml): array
     {
         $items = [];
         foreach ($xml as $item) {
-            $items[] = new CORSRule(['ID' => ($v = $item->ID) ? (string) $v : null, 'AllowedHeaders' => (!$item->AllowedHeader) ? null : $this->populateResultAllowedHeaders($item->AllowedHeader), 'AllowedMethods' => $this->populateResultAllowedMethods($item->AllowedMethod), 'AllowedOrigins' => $this->populateResultAllowedOrigins($item->AllowedOrigin), 'ExposeHeaders' => (!$item->ExposeHeader) ? null : $this->populateResultExposeHeaders($item->ExposeHeader), 'MaxAgeSeconds' => ($v = $item->MaxAgeSeconds) ? (int) (string) $v : null]);
+            $items[] = $this->populateResultCORSRule($item);
         }
         return $items;
     }
@@ -67,10 +62,7 @@ class GetBucketCorsOutput extends Result
     {
         $items = [];
         foreach ($xml as $item) {
-            $a = ($v = $item) ? (string) $v : null;
-            if (null !== $a) {
-                $items[] = $a;
-            }
+            $items[] = (string) $item;
         }
         return $items;
     }

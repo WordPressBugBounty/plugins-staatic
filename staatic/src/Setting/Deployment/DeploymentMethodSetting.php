@@ -6,9 +6,13 @@ namespace Staatic\WordPress\Setting\Deployment;
 
 use Staatic\WordPress\Module\Deployer\FilesystemDeployer\FilesystemDeployerModule;
 use Staatic\WordPress\Setting\AbstractSetting;
+use Staatic\WordPress\Setting\ReadsFromEnvInterface;
+use Staatic\WordPress\Setting\ReadsFromEnvTrait;
 
-final class DeploymentMethodSetting extends AbstractSetting
+final class DeploymentMethodSetting extends AbstractSetting implements ReadsFromEnvInterface
 {
+    use ReadsFromEnvTrait;
+
     public function name(): string
     {
         return 'staatic_deployment_method';
@@ -62,5 +66,10 @@ final class DeploymentMethodSetting extends AbstractSetting
         uksort($deploymentMethods, 'strnatcmp');
 
         return $deploymentMethods;
+    }
+
+    public function envName(): string
+    {
+        return 'STAATIC_DEPLOYMENT_METHOD';
     }
 }

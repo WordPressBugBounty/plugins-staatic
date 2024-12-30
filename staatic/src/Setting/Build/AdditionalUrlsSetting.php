@@ -68,7 +68,7 @@ final class AdditionalUrlsSetting extends AbstractSetting
     {
         $this->renderer->render('admin/settings/additional_urls.php', [
             'setting' => $this,
-            'attributes' => $attributes
+            'attributes' => array_merge($this->defaultAttributes(), $attributes)
         ]);
     }
 

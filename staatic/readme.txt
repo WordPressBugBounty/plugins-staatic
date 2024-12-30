@@ -1,8 +1,8 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.10.7
-Tested up to: 6.7
+Stable tag: 1.10.8
+Tested up to: 6.7.1
 Requires at least: 5.0
 Requires PHP: 7.1
 License: BSD-3-Clause
@@ -97,6 +97,16 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 3. Configure and fine tune the way Staatic processes your site to suit your specific needs.
 
 == Changelog ==
+
+= 1.10.8 =
+
+Release date: December 30th, 2024.
+
+**Improvements**
+
+* Adds ability to override various settings via environment variables.
+* Automatically excludes .htaccess files during crawling.
+* Updates external dependencies.
 
 = 1.10.7 =
 

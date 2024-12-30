@@ -22,6 +22,7 @@ final class CompleteMultipartUploadRequest extends Input
     private $checksumSha256;
     private $requestPayer;
     private $expectedBucketOwner;
+    private $ifMatch;
     private $ifNoneMatch;
     private $sseCustomerAlgorithm;
     private $sseCustomerKey;
@@ -38,6 +39,7 @@ final class CompleteMultipartUploadRequest extends Input
         $this->checksumSha256 = $input['ChecksumSHA256'] ?? null;
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
+        $this->ifMatch = $input['IfMatch'] ?? null;
         $this->ifNoneMatch = $input['IfNoneMatch'] ?? null;
         $this->sseCustomerAlgorithm = $input['SSECustomerAlgorithm'] ?? null;
         $this->sseCustomerKey = $input['SSECustomerKey'] ?? null;
@@ -71,6 +73,10 @@ final class CompleteMultipartUploadRequest extends Input
     public function getExpectedBucketOwner(): ?string
     {
         return $this->expectedBucketOwner;
+    }
+    public function getIfMatch(): ?string
+    {
+        return $this->ifMatch;
     }
     public function getIfNoneMatch(): ?string
     {
@@ -127,6 +133,9 @@ final class CompleteMultipartUploadRequest extends Input
         }
         if (null !== $this->expectedBucketOwner) {
             $headers['x-amz-expected-bucket-owner'] = $this->expectedBucketOwner;
+        }
+        if (null !== $this->ifMatch) {
+            $headers['If-Match'] = $this->ifMatch;
         }
         if (null !== $this->ifNoneMatch) {
             $headers['If-None-Match'] = $this->ifNoneMatch;
@@ -207,6 +216,14 @@ final class CompleteMultipartUploadRequest extends Input
     public function setExpectedBucketOwner($value): self
     {
         $this->expectedBucketOwner = $value;
+        return $this;
+    }
+    /**
+     * @param string|null $value
+     */
+    public function setIfMatch($value): self
+    {
+        $this->ifMatch = $value;
         return $this;
     }
     /**

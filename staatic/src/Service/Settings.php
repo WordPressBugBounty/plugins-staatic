@@ -10,6 +10,7 @@ use Staatic\WordPress\Service\Encrypter\InvalidValueException;
 use Staatic\WordPress\Service\Encrypter\PossiblyUnencryptedValueException;
 use Staatic\WordPress\Setting\ActsOnUpdateInterface;
 use Staatic\WordPress\Setting\ComposedSettingInterface;
+use Staatic\WordPress\Setting\ReadsFromEnvInterface;
 use Staatic\WordPress\Setting\RendersPartialsInterface;
 use Staatic\WordPress\Setting\SettingInterface;
 use Staatic\WordPress\Setting\StoresEncryptedInterface;
@@ -27,15 +28,13 @@ final class Settings
      */
     private $encrypterFactory;
 
-    /** @var SettingGroupInterface[] */
+    /** @var array<string,SettingGroupInterface> */
     private $groups = [];
 
-    /** @var SettingInterface[] */
+    /** @var array<string,SettingInterface> */
     private $settings = [];
 
-    /**
-     * @var mixed[]
-     */
+    /** @var array<string,string> */
     private $settingsToGroups = [];
 
     public function __construct(PartialRenderer $renderer, EncrypterFactory $encrypterFactory)
@@ -81,13 +80,32 @@ final class Settings
                     'sanitize_callback' => [$innerSetting, 'sanitizeValue'],
                     'default' => $innerSetting->defaultValue()
                 ]);
+                if ($innerSetting instanceof ReadsFromEnvInterface) {
+                    add_filter("pre_option_{$innerSetting->name()}", function ($value) use ($innerSetting) {
+                        return $innerSetting->envValue($value, \false);
+                    });
+                }
                 if ($innerSetting instanceof StoresEncryptedInterface) {
                     add_filter("option_{$innerSetting->name()}", function ($value) {
                         return $this->decryptOptionValue($value);
                     }, \PHP_INT_MIN);
-                    add_filter("pre_update_option_{$innerSetting->name()}", function ($value) {
-                        return $this->encryptOptionValue($value);
-                    }, \PHP_INT_MAX);
+                }
+                if ($innerSetting instanceof StoresEncryptedInterface || $innerSetting instanceof ReadsFromEnvInterface) {
+                    add_filter("pre_update_option_{$innerSetting->name()}", function ($value, $oldValue) use (
+                        $innerSetting
+                    ) {
+                        // Return old value if the option is disabled
+                        if ($innerSetting instanceof ReadsFromEnvInterface && $value === null) {
+                            return $oldValue;
+                        }
+                        // Encrypt value if needed
+                        if ($innerSetting instanceof StoresEncryptedInterface) {
+                            return $this->encryptOptionValue($value);
+                        }
+
+                        // Default return value
+                        return $value;
+                    }, \PHP_INT_MAX, 2);
                 }
                 if ($innerSetting instanceof ActsOnUpdateInterface) {
                     add_action("add_option_{$innerSetting->name()}", function ($option, $value) use ($innerSetting) {
