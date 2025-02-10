@@ -17,7 +17,7 @@ final class Comparator extends \Staatic\Vendor\SebastianBergmann\Comparator\Comp
         }
         throw new ComparisonFailure($expected, $actual, $this->formatEnum($expected), $this->formatEnum($actual), \false, 'Failed asserting that two Enums are equal.');
     }
-    private function formatEnum(Enum $enum = null)
+    private function formatEnum(?Enum $enum = null)
     {
         if ($enum === null) {
             return "null";

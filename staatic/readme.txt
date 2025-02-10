@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.10.8
+Stable tag: 1.10.9
 Tested up to: 6.7.1
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -97,6 +97,19 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 3. Configure and fine tune the way Staatic processes your site to suit your specific needs.
 
 == Changelog ==
+
+= 1.10.9 =
+
+Release date: February 10th, 2025.
+
+**Improvements**
+
+* Adds support for AWS S3 regions `ap-southeast-7` (Thailand) and `mx-central-1` (Mexico).
+* Updates external dependencies.
+
+**Fixes**
+
+* Fixes SFTP deployments SSH key authentication.
 
 = 1.10.8 =
 

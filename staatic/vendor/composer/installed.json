@@ -63,17 +63,17 @@
         },
         {
             "name": "async-aws/core",
-            "version": "1.23.0",
-            "version_normalized": "1.23.0.0",
+            "version": "1.24.1",
+            "version_normalized": "1.24.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/core.git",
-                "reference": "f2f40b895f1b2834a793c78d6c1ff8e1a1c39a12"
+                "reference": "241c8ab0e4cd4f47b2226a31a5132fb36a73a57b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/core/zipball/f2f40b895f1b2834a793c78d6c1ff8e1a1c39a12",
-                "reference": "f2f40b895f1b2834a793c78d6c1ff8e1a1c39a12",
+                "url": "https://api.github.com/repos/async-aws/core/zipball/241c8ab0e4cd4f47b2226a31a5132fb36a73a57b",
+                "reference": "241c8ab0e4cd4f47b2226a31a5132fb36a73a57b",
                 "shasum": ""
             },
             "require": {
@@ -92,11 +92,11 @@
                 "async-aws/s3": "<1.1",
                 "symfony/http-client": "5.2.0"
             },
-            "time": "2024-11-24T11:42:17+00:00",
+            "time": "2025-01-15T14:38:08+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.23-dev"
+                    "dev-master": "1.24-dev"
                 }
             },
             "installation-source": "dist",
@@ -118,7 +118,7 @@
                 "sts"
             ],
             "support": {
-                "source": "https://github.com/async-aws/core/tree/1.23.0"
+                "source": "https://github.com/async-aws/core/tree/1.24.1"
             },
             "funding": [
                 {
@@ -134,17 +134,17 @@
         },
         {
             "name": "async-aws/s3",
-            "version": "2.6.0",
-            "version_normalized": "2.6.0.0",
+            "version": "2.7.0",
+            "version_normalized": "2.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/s3.git",
-                "reference": "6dc398db5f136bb23e736fb2b57099cd30670458"
+                "reference": "d6556d0088a2778e61e17ab71ca7336ad65d082b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/s3/zipball/6dc398db5f136bb23e736fb2b57099cd30670458",
-                "reference": "6dc398db5f136bb23e736fb2b57099cd30670458",
+                "url": "https://api.github.com/repos/async-aws/s3/zipball/d6556d0088a2778e61e17ab71ca7336ad65d082b",
+                "reference": "d6556d0088a2778e61e17ab71ca7336ad65d082b",
                 "shasum": ""
             },
             "require": {
@@ -155,11 +155,11 @@
                 "ext-simplexml": "*",
                 "php": "^7.2.5 || ^8.0"
             },
-            "time": "2024-11-26T15:43:58+00:00",
+            "time": "2025-01-15T09:28:33+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "installation-source": "dist",
@@ -181,7 +181,7 @@
                 "sdk"
             ],
             "support": {
-                "source": "https://github.com/async-aws/s3/tree/2.6.0"
+                "source": "https://github.com/async-aws/s3/tree/2.7.0"
             },
             "funding": [
                 {
@@ -874,17 +874,17 @@
         },
         {
             "name": "myclabs/php-enum",
-            "version": "1.8.4",
-            "version_normalized": "1.8.4.0",
+            "version": "1.8.5",
+            "version_normalized": "1.8.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/php-enum.git",
-                "reference": "a867478eae49c9f59ece437ae7f9506bfaa27483"
+                "reference": "e7be26966b7398204a234f8673fdad5ac6277802"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/a867478eae49c9f59ece437ae7f9506bfaa27483",
-                "reference": "a867478eae49c9f59ece437ae7f9506bfaa27483",
+                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/e7be26966b7398204a234f8673fdad5ac6277802",
+                "reference": "e7be26966b7398204a234f8673fdad5ac6277802",
                 "shasum": ""
             },
             "require": {
@@ -894,9 +894,9 @@
             "require-dev": {
                 "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "1.*",
-                "vimeo/psalm": "^4.6.2"
+                "vimeo/psalm": "^4.6.2 || ^5.2"
             },
-            "time": "2022-08-04T09:53:51+00:00",
+            "time": "2025-01-14T11:49:03+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -918,13 +918,13 @@
                 }
             ],
             "description": "PHP Enum implementation",
-            "homepage": "http://github.com/myclabs/php-enum",
+            "homepage": "https://github.com/myclabs/php-enum",
             "keywords": [
                 "enum"
             ],
             "support": {
                 "issues": "https://github.com/myclabs/php-enum/issues",
-                "source": "https://github.com/myclabs/php-enum/tree/1.8.4"
+                "source": "https://github.com/myclabs/php-enum/tree/1.8.5"
             },
             "funding": [
                 {

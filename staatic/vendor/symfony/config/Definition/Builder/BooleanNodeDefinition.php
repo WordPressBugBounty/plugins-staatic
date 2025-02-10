@@ -2,7 +2,7 @@
 
 namespace Staatic\Vendor\Symfony\Component\Config\Definition\Builder;
 
-use Staatic\Vendor\Symfony\Component\Config\Definition\VariableNode;
+use Staatic\Vendor\Symfony\Component\Config\Definition\ScalarNode;
 use Staatic\Vendor\Symfony\Component\Config\Definition\BooleanNode;
 use Staatic\Vendor\Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
 class BooleanNodeDefinition extends ScalarNodeDefinition
@@ -12,7 +12,7 @@ class BooleanNodeDefinition extends ScalarNodeDefinition
         parent::__construct($name, $parent);
         $this->nullEquivalent = \true;
     }
-    protected function instantiateNode(): VariableNode
+    protected function instantiateNode(): ScalarNode
     {
         return new BooleanNode($this->name, $this->parent, $this->pathSeparator);
     }

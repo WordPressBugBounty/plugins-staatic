@@ -343,6 +343,7 @@ class S3Client extends AbstractApi
             case 'ap-southeast-3':
             case 'ap-southeast-4':
             case 'ap-southeast-5':
+            case 'ap-southeast-7':
             case 'ca-central-1':
             case 'ca-west-1':
             case 'eu-central-1':
@@ -356,6 +357,7 @@ class S3Client extends AbstractApi
             case 'il-central-1':
             case 'me-central-1':
             case 'me-south-1':
+            case 'mx-central-1':
             case 'sa-east-1':
             case 'us-east-1':
             case 'us-east-2':
