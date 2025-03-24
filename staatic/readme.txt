@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.10.9
+Stable tag: 1.11.0
 Tested up to: 6.7.1
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -98,6 +98,18 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 
 == Changelog ==
 
+= 1.11.0 =
+
+Release date: March 24th, 2025.
+
+**Improvements**
+
+* Updates external dependencies.
+
+**Fixes**
+
+* Canonicalized URLs with empty paths to ensure consistent behaviour.
+
 = 1.10.9 =
 
 Release date: February 10th, 2025.
@@ -134,103 +146,6 @@ Release date: November 19th, 2024.
 * Adds support for “ap-southeast-5” region to AWS deployment method.
 * Improves XML sitemap handling by adding support for URLs wrapped in CDATA sections.
 * Updates external dependencies.
-
-= 1.10.6 =
-
-Release date: October 4th, 2024.
-
-**Improvements**
-
-* Adds publication type to the publication list table and detail pages.
-* Extends support for relative file paths in selective publication with examples.
-* Introduces `--merge` option for the `staatic publish` command.
-* Expands MIME type support for optimizing generated web server configurations.
-* Updates external dependencies.
-
-= 1.10.5 =
-
-Release date: September 16th, 2024.
-
-**Features**
-
-* Releases SFTP Server deployment method.
-
-**Improvements**
-
-* Enhances compatibility of the “Downgrade HTTPS to HTTP” setting with [Local](https://localwp.com/).
-* Adds warnings for publication entry URLs that result in HTTP redirect responses.
-* Clarifies actions when site health checks fail due to loopback request issues.
-* Includes `X-Staatic-Request` header in crawler requests.
-* Updates external dependencies.
-
-**Fixes**
-
-* Resolves issues with WP-CLI `staatic` command registration.
-
-= 1.10.4 =
-
-Release date: July 25th, 2024.
-
-**Improvements**
-
-* Enhances support for lazy-loaded assets.
-
-**Fixes**
-
-* Fixes a PHP scoping issue that prevented successful SFTP deployments.
-
-= 1.10.3 =
-
-Release date: July 4th, 2024.
-
-**Fixes**
-
-* Fixes PHP scoping issue which may cause fatal errors.
-
-= 1.10.2 =
-
-Release date: July 4th, 2024.
-
-**Improvements**
-
-* Enforces a publication time limit, which is set to four hours by default.
-* No longer automatically retries failed HTTP requests due to time-outs.
-* Shows sensitive publication log details only to users with settings permissions.
-* Halts publication immediately if the entry URL fails during crawling.
-* Updates external dependencies.
-
-= 1.10.1 =
-
-Release date: May 14th, 2024.
-
-**Improvements**
-
-* Improves XML sitemap recognition.
-* Updates external dependencies.
-
-**Fixes**
-
-* Restores global support for the `data-srcset` HTML attribute.
-
-= 1.10.0 =
-
-Release date: April 17th, 2024.
-
-**Improvements**
-
-* Enhances the presentation of publication logs.
-* Improves overall compatibility with [FlyingPress](https://flyingpress.com/) plugin.
-* The “Netlify” deployment method now waits for deploy to finish and provides deploy URL.
-* Expands HTTP client retry to include 502 Bad Gateway errors alongside 503 and 429 statuses.
-* Introduces `staatic_publication_tasks` filter hook to customize the publication process.
-* Various performance optimizations.
-* Updates external dependencies.
-
-**Fixes**
-
-* Tightens fallback URL extraction to ignore adjacent non-URL characters.
-* Prevents the fallback URL extractor from clearing content upon encountering invalid unicode data.
-* Properly handles unexpected Guzzle HTTP exceptions.
 
 = Earlier releases =
 

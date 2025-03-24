@@ -61,6 +61,9 @@ final class StandardUrlTransformer implements UrlTransformerInterface
         if ($this->destinationUrl->getPath() && $this->destinationUrl->getPath() !== '/') {
             $transformedUrl = $transformedUrl->withPath(rtrim($this->destinationUrl->getPath(), '/') . '/' . ltrim($transformedUrl->getPath(), '/'));
         }
+        if ($transformedUrl->getPath() === '') {
+            $transformedUrl = $transformedUrl->withPath('/');
+        }
         return new UrlTransformation($transformedUrl);
     }
 }
