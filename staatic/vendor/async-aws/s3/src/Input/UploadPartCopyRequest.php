@@ -36,9 +36,9 @@ final class UploadPartCopyRequest extends Input
         $this->bucket = $input['Bucket'] ?? null;
         $this->copySource = $input['CopySource'] ?? null;
         $this->copySourceIfMatch = $input['CopySourceIfMatch'] ?? null;
-        $this->copySourceIfModifiedSince = (!isset($input['CopySourceIfModifiedSince'])) ? null : (($input['CopySourceIfModifiedSince'] instanceof DateTimeImmutable) ? $input['CopySourceIfModifiedSince'] : new DateTimeImmutable($input['CopySourceIfModifiedSince']));
+        $this->copySourceIfModifiedSince = !isset($input['CopySourceIfModifiedSince']) ? null : ($input['CopySourceIfModifiedSince'] instanceof DateTimeImmutable ? $input['CopySourceIfModifiedSince'] : new DateTimeImmutable($input['CopySourceIfModifiedSince']));
         $this->copySourceIfNoneMatch = $input['CopySourceIfNoneMatch'] ?? null;
-        $this->copySourceIfUnmodifiedSince = (!isset($input['CopySourceIfUnmodifiedSince'])) ? null : (($input['CopySourceIfUnmodifiedSince'] instanceof DateTimeImmutable) ? $input['CopySourceIfUnmodifiedSince'] : new DateTimeImmutable($input['CopySourceIfUnmodifiedSince']));
+        $this->copySourceIfUnmodifiedSince = !isset($input['CopySourceIfUnmodifiedSince']) ? null : ($input['CopySourceIfUnmodifiedSince'] instanceof DateTimeImmutable ? $input['CopySourceIfUnmodifiedSince'] : new DateTimeImmutable($input['CopySourceIfUnmodifiedSince']));
         $this->copySourceRange = $input['CopySourceRange'] ?? null;
         $this->key = $input['Key'] ?? null;
         $this->partNumber = $input['PartNumber'] ?? null;
@@ -56,7 +56,7 @@ final class UploadPartCopyRequest extends Input
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getBucket(): ?string
     {

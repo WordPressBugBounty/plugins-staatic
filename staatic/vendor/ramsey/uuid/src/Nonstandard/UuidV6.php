@@ -16,10 +16,7 @@ use Staatic\Vendor\Ramsey\Uuid\Uuid as BaseUuid;
 class UuidV6 extends BaseUuid implements UuidInterface
 {
     use TimeTrait;
-    /**
-     * @param mixed $fields
-     */
-    public function __construct($fields, NumberConverterInterface $numberConverter, CodecInterface $codec, TimeConverterInterface $timeConverter)
+    public function __construct(Rfc4122FieldsInterface $fields, NumberConverterInterface $numberConverter, CodecInterface $codec, TimeConverterInterface $timeConverter)
     {
         if ($fields->getVersion() !== Uuid::UUID_TYPE_REORDERED_TIME) {
             throw new InvalidArgumentException('Fields used to create a UuidV6 must represent a ' . 'version 6 (reordered time) UUID');

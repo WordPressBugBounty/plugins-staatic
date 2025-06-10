@@ -55,7 +55,7 @@ abstract class PuTTY extends Progenitor
                 $private = "\x00{$private}";
             }
         }
-        $private = ($curve instanceof TwistedEdwardsCurve) ? Strings::packSSH2('s', $secret) : Strings::packSSH2('s', $private);
+        $private = $curve instanceof TwistedEdwardsCurve ? Strings::packSSH2('s', $secret) : Strings::packSSH2('s', $private);
         return self::wrapPrivateKey($public, $private, $name, $password, $options);
     }
     /**

@@ -39,7 +39,14 @@ final class AuthSetting extends AbstractSetting implements ComposedSettingInterf
      */
     private $sshKeyPassword;
 
-    public function __construct(HostSetting $host, PortSetting $port, UsernameSetting $username, PasswordSetting $password, SshKeySetting $sshKey, SshKeyPasswordSetting $sshKeyPassword)
+    public function __construct(
+        HostSetting $host,
+        PortSetting $port,
+        UsernameSetting $username,
+        PasswordSetting $password,
+        SshKeySetting $sshKey,
+        SshKeyPasswordSetting $sshKeyPassword
+    )
     {
         $this->host = $host;
         $this->port = $port;

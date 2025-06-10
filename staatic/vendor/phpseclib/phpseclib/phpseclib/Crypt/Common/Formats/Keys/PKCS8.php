@@ -89,7 +89,7 @@ abstract class PKCS8 extends PKCS
     private static function getPBES1Hash($algo)
     {
         if (preg_match('#^pbeWith(MD2|MD5|SHA1|SHA)And.*?-CBC$#', $algo, $matches)) {
-            return ($matches[1] == 'SHA') ? 'sha1' : $matches[1];
+            return $matches[1] == 'SHA' ? 'sha1' : $matches[1];
         }
         return 'sha1';
     }

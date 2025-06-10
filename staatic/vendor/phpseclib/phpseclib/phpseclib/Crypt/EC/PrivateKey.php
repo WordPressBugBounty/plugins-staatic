@@ -60,14 +60,14 @@ final class PrivateKey extends EC implements Common\PrivateKey
         if ($this->curve instanceof TwistedEdwardsCurve) {
             if ($this->curve instanceof Ed25519 && self::$engines['libsodium'] && !isset($this->context)) {
                 $result = sodium_crypto_sign_detached($message, $this->withPassword()->toString('libsodium'));
-                return ($shortFormat == 'SSH2') ? Strings::packSSH2('ss', 'ssh-' . strtolower($this->getCurve()), $result) : $result;
+                return $shortFormat == 'SSH2' ? Strings::packSSH2('ss', 'ssh-' . strtolower($this->getCurve()), $result) : $result;
             }
             $A = $this->curve->encodePoint($this->QA);
             $curve = $this->curve;
             $hash = new Hash($curve::HASH);
             $secret = substr($hash->hash($this->secret), $curve::SIZE);
             if ($curve instanceof Ed25519) {
-                $dom = (!isset($this->context)) ? '' : ('SigEd25519 no Ed25519 collisions' . "\x00" . chr(strlen($this->context)) . $this->context);
+                $dom = !isset($this->context) ? '' : 'SigEd25519 no Ed25519 collisions' . "\x00" . chr(strlen($this->context)) . $this->context;
             } else {
                 $context = isset($this->context) ? $this->context : '';
                 $dom = 'SigEd448' . "\x00" . chr(strlen($context)) . $context;
@@ -85,7 +85,7 @@ final class PrivateKey extends EC implements Common\PrivateKey
             $S = $k->multiply($dA)->add($r);
             list(, $S) = $S->divide($order);
             $S = str_pad(strrev($S->toBytes()), $curve::SIZE, "\x00");
-            return ($shortFormat == 'SSH2') ? Strings::packSSH2('ss', 'ssh-' . strtolower($this->getCurve()), $R . $S) : ($R . $S);
+            return $shortFormat == 'SSH2' ? Strings::packSSH2('ss', 'ssh-' . strtolower($this->getCurve()), $R . $S) : $R . $S;
         }
         if (self::$engines['OpenSSL'] && in_array($this->hash->getHash(), openssl_get_md_methods())) {
             $signature = '';
@@ -101,7 +101,7 @@ final class PrivateKey extends EC implements Common\PrivateKey
         $e = $this->hash->hash($message);
         $e = new BigInteger($e, 256);
         $Ln = $this->hash->getLength() - $order->getLength();
-        $z = ($Ln > 0) ? $e->bitwise_rightShift($Ln) : $e;
+        $z = $Ln > 0 ? $e->bitwise_rightShift($Ln) : $e;
         while (\true) {
             $k = BigInteger::randomRange(self::$one, $order->subtract(self::$one));
             list($x, $y) = $this->curve->multiplyPoint($this->curve->getBasePoint(), $k);

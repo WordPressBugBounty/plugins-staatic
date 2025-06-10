@@ -42,10 +42,10 @@ echo \esc_attr($setting->name());
 echo \esc_attr($setting->value());
 ?>"
             <?php 
-echo ($attributes['disableAutocomplete'] ?? \false) ? 'autocomplete="new-password"' : '';
+echo $attributes['disableAutocomplete'] ?? \false ? 'autocomplete="new-password"' : '';
 ?>
             <?php 
-echo ($attributes['disabled'] ?? \false) ? 'disabled="disabled"' : '';
+echo $attributes['disabled'] ?? \false ? 'disabled="disabled"' : '';
 ?>
         >
         <?php 

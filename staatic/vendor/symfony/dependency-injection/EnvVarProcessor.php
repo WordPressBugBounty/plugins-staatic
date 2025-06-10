@@ -91,7 +91,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
                 }
             } catch (EnvNotFoundException $exception) {
             }
-            return ('' === $default) ? null : $this->container->getParameter($default);
+            return '' === $default ? null : $this->container->getParameter($default);
         }
         if ('file' === $prefix || 'require' === $prefix) {
             if (!\is_scalar($file = $getEnv($name))) {
@@ -129,7 +129,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
                 try {
                     $i = 0;
                     $ended = \true;
-                    $count = ($loaders instanceof Countable) ? $loaders->count() : 0;
+                    $count = $loaders instanceof Countable ? $loaders->count() : 0;
                     foreach ($loaders as $loader) {
                         if (\count($this->loadedVars) > $i++) {
                             continue;
@@ -180,7 +180,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
         }
         if (\in_array($prefix, ['bool', 'not'], \true)) {
             $env = (bool) ((filter_var($env, \FILTER_VALIDATE_BOOL) ?: filter_var($env, \FILTER_VALIDATE_INT)) ?: filter_var($env, \FILTER_VALIDATE_FLOAT));
-            return ('not' === $prefix) ? !$env : $env;
+            return 'not' === $prefix ? !$env : $env;
         }
         if ('int' === $prefix) {
             if (null !== $env && \false === $env = filter_var($env, \FILTER_VALIDATE_INT) ?: filter_var($env, \FILTER_VALIDATE_FLOAT)) {
@@ -222,7 +222,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
                 throw new RuntimeException(sprintf('Invalid URL env var "%s": schema and host expected, "%s" given.', $name, $env));
             }
             $parsedEnv += ['port' => null, 'user' => null, 'pass' => null, 'path' => null, 'query' => null, 'fragment' => null];
-            $parsedEnv['path'] = ('/' === ($parsedEnv['path'] ?? '/')) ? '' : substr($parsedEnv['path'], 1);
+            $parsedEnv['path'] = '/' === ($parsedEnv['path'] ?? '/') ? '' : substr($parsedEnv['path'], 1);
             return $parsedEnv;
         }
         if ('query_string' === $prefix) {

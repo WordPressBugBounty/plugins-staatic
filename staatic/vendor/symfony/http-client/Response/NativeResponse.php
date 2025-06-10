@@ -57,7 +57,7 @@ final class NativeResponse implements ResponseInterface, StreamableInterface
         };
         $pauseExpiry =& $this->pauseExpiry;
         $info['pause_handler'] = static function (float $duration) use (&$pauseExpiry) {
-            $pauseExpiry = (0 < $duration) ? microtime(\true) + $duration : 0;
+            $pauseExpiry = 0 < $duration ? microtime(\true) + $duration : 0;
         };
         $this->canary = new Canary(static function () use ($multi, $id) {
             if (null !== ($host = $multi->openHandles[$id][6] ?? null) && 0 >= --$multi->hosts[$host]) {
@@ -80,7 +80,7 @@ final class NativeResponse implements ResponseInterface, StreamableInterface
                 $this->finalInfo = $info;
             }
         }
-        return (null !== $type) ? $info[$type] ?? null : $info;
+        return null !== $type ? $info[$type] ?? null : $info;
     }
     public function __destruct()
     {
@@ -174,7 +174,7 @@ final class NativeResponse implements ResponseInterface, StreamableInterface
         $runningResponses[$i][1][$response->id] = $response;
         if (null === $response->buffer) {
             $response->multi->handlesActivity[$response->id][] = null;
-            $response->multi->handlesActivity[$response->id][] = (null !== $response->info['error']) ? new TransportException($response->info['error']) : null;
+            $response->multi->handlesActivity[$response->id][] = null !== $response->info['error'] ? new TransportException($response->info['error']) : null;
         }
     }
     private static function perform(ClientState $multi, array &$responses = null): void
@@ -191,7 +191,7 @@ final class NativeResponse implements ResponseInterface, StreamableInterface
             $info =& $multi->openHandles[$i][5];
             $e = null;
             try {
-                if ($remaining && '' !== $data = (string) fread($h, (0 > $remaining) ? 16372 : $remaining)) {
+                if ($remaining && '' !== $data = (string) fread($h, 0 > $remaining ? 16372 : $remaining)) {
                     fwrite($buffer, $data);
                     $hasActivity = \true;
                     $multi->sleep = \false;

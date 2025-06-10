@@ -41,13 +41,13 @@ class BCMath extends Engine
                 }
                 break;
             case 16:
-                $x = (strlen($this->value) & 1) ? '0' . $this->value : $this->value;
+                $x = strlen($this->value) & 1 ? '0' . $this->value : $this->value;
                 $temp = new self(Strings::hex2bin($x), 256);
                 $this->value = $this->is_negative ? '-' . $temp->value : $temp->value;
                 $this->is_negative = \false;
                 break;
             case 10:
-                $this->value = ($this->value === '-') ? '0' : (string) $this->value;
+                $this->value = $this->value === '-' ? '0' : (string) $this->value;
         }
     }
     public function toString()
@@ -72,7 +72,7 @@ class BCMath extends Engine
             $value = chr($temp >> 16) . chr($temp >> 8) . chr($temp) . $value;
             $current = bcdiv($current, '16777216', 0);
         }
-        return ($this->precision > 0) ? substr(str_pad($value, $this->precision >> 3, chr(0), \STR_PAD_LEFT), -($this->precision >> 3)) : ltrim($value, chr(0));
+        return $this->precision > 0 ? substr(str_pad($value, $this->precision >> 3, chr(0), \STR_PAD_LEFT), -($this->precision >> 3)) : ltrim($value, chr(0));
     }
     /**
      * @param \Staatic\Vendor\phpseclib3\Math\BigInteger\Engines\BCMath $y
@@ -111,7 +111,7 @@ class BCMath extends Engine
         $quotient->value = bcdiv($this->value, $y->value, 0);
         $remainder->value = bcmod($this->value, $y->value);
         if ($remainder->value[0] == '-') {
-            $remainder->value = bcadd($remainder->value, ($y->value[0] == '-') ? substr($y->value, 1) : $y->value, 0);
+            $remainder->value = bcadd($remainder->value, $y->value[0] == '-' ? substr($y->value, 1) : $y->value, 0);
         }
         return [$this->normalize($quotient), $this->normalize($remainder)];
     }
@@ -158,7 +158,7 @@ class BCMath extends Engine
     public function abs()
     {
         $temp = new static();
-        $temp->value = (strlen($this->value) && $this->value[0] == '-') ? substr($this->value, 1) : $this->value;
+        $temp->value = strlen($this->value) && $this->value[0] == '-' ? substr($this->value, 1) : $this->value;
         return $temp;
     }
     /**
@@ -358,7 +358,7 @@ class BCMath extends Engine
         if (!strlen($temp->value)) {
             return $temp;
         }
-        $temp->value = ($temp->value[0] == '-') ? substr($this->value, 1) : ('-' . $this->value);
+        $temp->value = $temp->value[0] == '-' ? substr($this->value, 1) : '-' . $this->value;
         return $temp;
     }
 }

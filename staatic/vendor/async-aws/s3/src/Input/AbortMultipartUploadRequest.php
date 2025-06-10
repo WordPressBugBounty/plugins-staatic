@@ -25,12 +25,12 @@ final class AbortMultipartUploadRequest extends Input
         $this->uploadId = $input['UploadId'] ?? null;
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
-        $this->ifMatchInitiatedTime = (!isset($input['IfMatchInitiatedTime'])) ? null : (($input['IfMatchInitiatedTime'] instanceof DateTimeImmutable) ? $input['IfMatchInitiatedTime'] : new DateTimeImmutable($input['IfMatchInitiatedTime']));
+        $this->ifMatchInitiatedTime = !isset($input['IfMatchInitiatedTime']) ? null : ($input['IfMatchInitiatedTime'] instanceof DateTimeImmutable ? $input['IfMatchInitiatedTime'] : new DateTimeImmutable($input['IfMatchInitiatedTime']));
         parent::__construct($input);
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getBucket(): ?string
     {

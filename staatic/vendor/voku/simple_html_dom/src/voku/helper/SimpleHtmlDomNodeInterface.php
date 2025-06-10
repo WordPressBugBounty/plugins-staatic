@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\voku\helper;
 
 use IteratorAggregate;
+
 interface SimpleHtmlDomNodeInterface extends IteratorAggregate
 {
     public function __get($name);

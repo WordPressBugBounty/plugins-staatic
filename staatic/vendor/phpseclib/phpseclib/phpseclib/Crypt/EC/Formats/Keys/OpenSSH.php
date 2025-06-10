@@ -48,10 +48,7 @@ abstract class OpenSSH extends Progenitor
         }
         return ['curve' => $curve, 'QA' => $qa, 'comment' => $parsed['comment']];
     }
-    /**
-     * @param mixed $curve
-     */
-    private static function getAlias($curve)
+    private static function getAlias(BaseCurve $curve)
     {
         self::initialize_static_variables();
         $reflect = new ReflectionClass($curve);

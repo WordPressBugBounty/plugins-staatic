@@ -121,7 +121,7 @@ class XmlReferenceDumper
                 }
                 if ($child instanceof BaseNode && $child->isDeprecated()) {
                     $deprecation = $child->getDeprecation($child->getName(), $node->getPath());
-                    $comments[] = sprintf('Deprecated (%s)', (($deprecation['package'] || $deprecation['version']) ? "Since {$deprecation['package']} {$deprecation['version']}: " : '') . $deprecation['message']);
+                    $comments[] = sprintf('Deprecated (%s)', ($deprecation['package'] || $deprecation['version'] ? "Since {$deprecation['package']} {$deprecation['version']}: " : '') . $deprecation['message']);
                 }
                 if ($child instanceof EnumNode) {
                     $comments[] = 'One of ' . $child->getPermissibleValues('; ');

@@ -127,7 +127,7 @@ class StreamHandler
     }
     private function drain(StreamInterface $source, StreamInterface $sink, string $contentLength): StreamInterface
     {
-        Psr7\Utils::copyToStream($source, $sink, (\strlen($contentLength) > 0 && (int) $contentLength > 0) ? (int) $contentLength : -1);
+        Psr7\Utils::copyToStream($source, $sink, \strlen($contentLength) > 0 && (int) $contentLength > 0 ? (int) $contentLength : -1);
         $sink->seek(0);
         $source->close();
         return $sink;

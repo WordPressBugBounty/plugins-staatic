@@ -9,6 +9,7 @@ use ReflectionUnionType;
 use ReflectionIntersectionType;
 use ReflectionNamedType;
 use ReflectionMethod;
+
 trigger_deprecation('symfony/dependency-injection', '6.2', 'The "%s" class is deprecated, use "%s" instead.', ProxyHelper::class, \Staatic\Vendor\Symfony\Component\VarExporter\ProxyHelper::class);
 class ProxyHelper
 {

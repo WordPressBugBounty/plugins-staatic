@@ -95,7 +95,7 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
         }
         $reflectionParameters = $reflectionFunction->getParameters();
         $checksCount = min($reflectionFunction->getNumberOfParameters(), \count($values));
-        $envPlaceholderUniquePrefix = ($this->container->getParameterBag() instanceof EnvPlaceholderParameterBag) ? $this->container->getParameterBag()->getEnvPlaceholderUniquePrefix() : null;
+        $envPlaceholderUniquePrefix = $this->container->getParameterBag() instanceof EnvPlaceholderParameterBag ? $this->container->getParameterBag()->getEnvPlaceholderUniquePrefix() : null;
         for ($i = 0; $i < $checksCount; ++$i) {
             if (!$reflectionParameters[$i]->hasType() || $reflectionParameters[$i]->isVariadic()) {
                 continue;

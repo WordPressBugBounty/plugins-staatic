@@ -153,30 +153,30 @@ class ListPartsOutput extends Result implements IteratorAggregate
         $this->abortRuleId = $headers['x-amz-abort-rule-id'][0] ?? null;
         $this->requestCharged = $headers['x-amz-request-charged'][0] ?? null;
         $data = new SimpleXMLElement($response->getContent());
-        $this->bucket = (null !== $v = $data->Bucket[0]) ? (string) $v : null;
-        $this->key = (null !== $v = $data->Key[0]) ? (string) $v : null;
-        $this->uploadId = (null !== $v = $data->UploadId[0]) ? (string) $v : null;
-        $this->partNumberMarker = (null !== $v = $data->PartNumberMarker[0]) ? (int) (string) $v : null;
-        $this->nextPartNumberMarker = (null !== $v = $data->NextPartNumberMarker[0]) ? (int) (string) $v : null;
-        $this->maxParts = (null !== $v = $data->MaxParts[0]) ? (int) (string) $v : null;
-        $this->isTruncated = (null !== $v = $data->IsTruncated[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null;
-        $this->parts = (0 === ($v = $data->Part)->count()) ? [] : $this->populateResultParts($v);
-        $this->initiator = (0 === $data->Initiator->count()) ? null : $this->populateResultInitiator($data->Initiator);
-        $this->owner = (0 === $data->Owner->count()) ? null : $this->populateResultOwner($data->Owner);
-        $this->storageClass = (null !== $v = $data->StorageClass[0]) ? (string) $v : null;
-        $this->checksumAlgorithm = (null !== $v = $data->ChecksumAlgorithm[0]) ? (string) $v : null;
+        $this->bucket = null !== ($v = $data->Bucket[0]) ? (string) $v : null;
+        $this->key = null !== ($v = $data->Key[0]) ? (string) $v : null;
+        $this->uploadId = null !== ($v = $data->UploadId[0]) ? (string) $v : null;
+        $this->partNumberMarker = null !== ($v = $data->PartNumberMarker[0]) ? (int) (string) $v : null;
+        $this->nextPartNumberMarker = null !== ($v = $data->NextPartNumberMarker[0]) ? (int) (string) $v : null;
+        $this->maxParts = null !== ($v = $data->MaxParts[0]) ? (int) (string) $v : null;
+        $this->isTruncated = null !== ($v = $data->IsTruncated[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null;
+        $this->parts = 0 === ($v = $data->Part)->count() ? [] : $this->populateResultParts($v);
+        $this->initiator = 0 === $data->Initiator->count() ? null : $this->populateResultInitiator($data->Initiator);
+        $this->owner = 0 === $data->Owner->count() ? null : $this->populateResultOwner($data->Owner);
+        $this->storageClass = null !== ($v = $data->StorageClass[0]) ? (string) $v : null;
+        $this->checksumAlgorithm = null !== ($v = $data->ChecksumAlgorithm[0]) ? (string) $v : null;
     }
     private function populateResultInitiator(SimpleXMLElement $xml): Initiator
     {
-        return new Initiator(['ID' => (null !== $v = $xml->ID[0]) ? (string) $v : null, 'DisplayName' => (null !== $v = $xml->DisplayName[0]) ? (string) $v : null]);
+        return new Initiator(['ID' => null !== ($v = $xml->ID[0]) ? (string) $v : null, 'DisplayName' => null !== ($v = $xml->DisplayName[0]) ? (string) $v : null]);
     }
     private function populateResultOwner(SimpleXMLElement $xml): Owner
     {
-        return new Owner(['DisplayName' => (null !== $v = $xml->DisplayName[0]) ? (string) $v : null, 'ID' => (null !== $v = $xml->ID[0]) ? (string) $v : null]);
+        return new Owner(['DisplayName' => null !== ($v = $xml->DisplayName[0]) ? (string) $v : null, 'ID' => null !== ($v = $xml->ID[0]) ? (string) $v : null]);
     }
     private function populateResultPart(SimpleXMLElement $xml): Part
     {
-        return new Part(['PartNumber' => (null !== $v = $xml->PartNumber[0]) ? (int) (string) $v : null, 'LastModified' => (null !== $v = $xml->LastModified[0]) ? new DateTimeImmutable((string) $v) : null, 'ETag' => (null !== $v = $xml->ETag[0]) ? (string) $v : null, 'Size' => (null !== $v = $xml->Size[0]) ? (int) (string) $v : null, 'ChecksumCRC32' => (null !== $v = $xml->ChecksumCRC32[0]) ? (string) $v : null, 'ChecksumCRC32C' => (null !== $v = $xml->ChecksumCRC32C[0]) ? (string) $v : null, 'ChecksumSHA1' => (null !== $v = $xml->ChecksumSHA1[0]) ? (string) $v : null, 'ChecksumSHA256' => (null !== $v = $xml->ChecksumSHA256[0]) ? (string) $v : null]);
+        return new Part(['PartNumber' => null !== ($v = $xml->PartNumber[0]) ? (int) (string) $v : null, 'LastModified' => null !== ($v = $xml->LastModified[0]) ? new DateTimeImmutable((string) $v) : null, 'ETag' => null !== ($v = $xml->ETag[0]) ? (string) $v : null, 'Size' => null !== ($v = $xml->Size[0]) ? (int) (string) $v : null, 'ChecksumCRC32' => null !== ($v = $xml->ChecksumCRC32[0]) ? (string) $v : null, 'ChecksumCRC32C' => null !== ($v = $xml->ChecksumCRC32C[0]) ? (string) $v : null, 'ChecksumSHA1' => null !== ($v = $xml->ChecksumSHA1[0]) ? (string) $v : null, 'ChecksumSHA256' => null !== ($v = $xml->ChecksumSHA256[0]) ? (string) $v : null]);
     }
     private function populateResultParts(SimpleXMLElement $xml): array
     {

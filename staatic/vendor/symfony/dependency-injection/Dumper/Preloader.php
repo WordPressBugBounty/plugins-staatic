@@ -13,6 +13,7 @@ use ReflectionType;
 use ReflectionUnionType;
 use ReflectionIntersectionType;
 use ReflectionNamedType;
+
 final class Preloader
 {
     public static function append(string $file, array $list): void
@@ -96,9 +97,9 @@ final class Preloader
         if (!$t) {
             return;
         }
-        foreach (($t instanceof ReflectionUnionType || $t instanceof ReflectionIntersectionType) ? $t->getTypes() : [$t] as $t) {
+        foreach ($t instanceof ReflectionUnionType || $t instanceof ReflectionIntersectionType ? $t->getTypes() : [$t] as $t) {
             if (!$t->isBuiltin()) {
-                self::doPreload(($t instanceof ReflectionNamedType) ? $t->getName() : $t, $preloaded);
+                self::doPreload($t instanceof ReflectionNamedType ? $t->getName() : $t, $preloaded);
             }
         }
     }

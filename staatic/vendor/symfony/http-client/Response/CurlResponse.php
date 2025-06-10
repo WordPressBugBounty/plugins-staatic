@@ -55,7 +55,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
         $headers =& $this->headers;
         $debugBuffer = $this->debugBuffer;
         if (!$info['response_headers']) {
-            curl_setopt($ch, \CURLOPT_PRIVATE, (\in_array($method, ['GET', 'HEAD', 'OPTIONS', 'TRACE'], \true) && 1.0 < (float) ($options['http_version'] ?? 1.1)) ? 'H2' : 'H0');
+            curl_setopt($ch, \CURLOPT_PRIVATE, \in_array($method, ['GET', 'HEAD', 'OPTIONS', 'TRACE'], \true) && 1.0 < (float) ($options['http_version'] ?? 1.1) ? 'H2' : 'H0');
         }
         curl_setopt($ch, \CURLOPT_HEADERFUNCTION, static function ($ch, string $data) use (&$info, &$headers, $options, $multi, $id, &$location, $resolveRedirect, $logger): int {
             return self::parseHeaderLine($ch, $data, $info, $headers, $options, $multi, $id, $location, $resolveRedirect, $logger);
@@ -72,7 +72,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
         $this->info['pause_handler'] = static function (float $duration) use ($ch, $multi, $execCounter) {
             if (0 < $duration) {
                 if ($execCounter === $multi->execCounter) {
-                    $multi->execCounter = (!\is_float($execCounter)) ? 1 + $execCounter : \PHP_INT_MIN;
+                    $multi->execCounter = !\is_float($execCounter) ? 1 + $execCounter : \PHP_INT_MIN;
                     curl_multi_remove_handle($multi->handle, $ch);
                 }
                 $lastExpiry = end($multi->pauseExpiries);
@@ -163,7 +163,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
                 $this->finalInfo = $info;
             }
         }
-        return (null !== $type) ? $info[$type] ?? null : $info;
+        return null !== $type ? $info[$type] ?? null : $info;
     }
     /**
      * @param bool $throw
@@ -200,7 +200,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
         }
         if ('_0' === curl_getinfo($ch = $response->handle, \CURLINFO_PRIVATE)) {
             $response->multi->handlesActivity[$response->id][] = null;
-            $response->multi->handlesActivity[$response->id][] = (null !== $response->info['error']) ? new TransportException($response->info['error']) : null;
+            $response->multi->handlesActivity[$response->id][] = null !== $response->info['error'] ? new TransportException($response->info['error']) : null;
         }
     }
     private static function perform($multi, &$responses = null): void
@@ -228,7 +228,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
                 }
                 $result = $info['result'];
                 $id = (int) $ch = $info['handle'];
-                $waitFor = (@curl_getinfo($ch, \CURLINFO_PRIVATE)) ?: '_0';
+                $waitFor = @curl_getinfo($ch, \CURLINFO_PRIVATE) ?: '_0';
                 if (\in_array($result, [\CURLE_SEND_ERROR, \CURLE_RECV_ERROR, 16, 92], \true) && $waitFor[1] && 'C' !== $waitFor[0]) {
                     curl_multi_remove_handle($multi->handle, $ch);
                     $waitFor[1] = (string) ((int) $waitFor[1] - 1);
@@ -242,7 +242,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
                     $multi->handlesActivity[$id][] = new FirstChunk();
                 }
                 $multi->handlesActivity[$id][] = null;
-                $multi->handlesActivity[$id][] = (\in_array($result, [\CURLE_OK, \CURLE_TOO_MANY_REDIRECTS], \true) || '_0' === $waitFor || curl_getinfo($ch, \CURLINFO_SIZE_DOWNLOAD) === curl_getinfo($ch, \CURLINFO_CONTENT_LENGTH_DOWNLOAD)) ? null : new TransportException(ucfirst(curl_error($ch) ?: curl_strerror($result)) . sprintf(' for "%s".', curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL)));
+                $multi->handlesActivity[$id][] = \in_array($result, [\CURLE_OK, \CURLE_TOO_MANY_REDIRECTS], \true) || '_0' === $waitFor || curl_getinfo($ch, \CURLINFO_SIZE_DOWNLOAD) === curl_getinfo($ch, \CURLINFO_CONTENT_LENGTH_DOWNLOAD) ? null : new TransportException(ucfirst(curl_error($ch) ?: curl_strerror($result)) . sprintf(' for "%s".', curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL)));
             }
         } finally {
             $multi->performing = \false;
@@ -275,7 +275,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
         if (substr_compare($data, "\r\n", -strlen("\r\n")) !== 0) {
             return 0;
         }
-        $waitFor = (@curl_getinfo($ch, \CURLINFO_PRIVATE)) ?: '_0';
+        $waitFor = @curl_getinfo($ch, \CURLINFO_PRIVATE) ?: '_0';
         if ('H' !== $waitFor[0]) {
             return \strlen($data);
         }
@@ -311,7 +311,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
         $info['redirect_url'] = null;
         if (300 <= $statusCode && $statusCode < 400 && null !== $location) {
             if ($noContent = 303 === $statusCode || 'POST' === $info['http_method'] && \in_array($statusCode, [301, 302], \true)) {
-                $info['http_method'] = ('HEAD' === $info['http_method']) ? 'HEAD' : 'GET';
+                $info['http_method'] = 'HEAD' === $info['http_method'] ? 'HEAD' : 'GET';
                 curl_setopt($ch, \CURLOPT_CUSTOMREQUEST, $info['http_method']);
             }
             if (null === $info['redirect_url'] = $resolveRedirect($ch, $location, $noContent)) {
@@ -321,7 +321,7 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
             } else {
                 $url = parse_url($location ?? ':');
                 if (isset($url['host']) && null !== $ip = $multi->dnsCache->hostnames[$url['host'] = strtolower($url['host'])] ?? null) {
-                    $port = $url['port'] ?? (('http' === ($url['scheme'] ?? parse_url(curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL), \PHP_URL_SCHEME))) ? 80 : 443);
+                    $port = $url['port'] ?? ('http' === ($url['scheme'] ?? parse_url(curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL), \PHP_URL_SCHEME)) ? 80 : 443);
                     curl_setopt($ch, \CURLOPT_RESOLVE, ["{$url['host']}:{$port}:{$ip}"]);
                     $multi->dnsCache->removals["-{$url['host']}:{$port}"] = "-{$url['host']}:{$port}";
                 }

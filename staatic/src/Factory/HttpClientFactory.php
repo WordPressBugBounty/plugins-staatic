@@ -74,7 +74,17 @@ final class HttpClientFactory
      */
     private $siteUrlProvider;
 
-    public function __construct(HttpConcurrencySetting $httpConcurrency, HttpTimeoutSetting $httpTimeout, HttpDelaySetting $httpDelay, SslVerifyBehaviorSetting $sslVerifyBehavior, SslVerifyPathSetting $sslVerifyPath, HttpAuthenticationUsernameSetting $httpAuthUsername, HttpAuthenticationPasswordSetting $httpAuthPassword, HttpToHttpsSetting $httpToHttps, SiteUrlProvider $siteUrlProvider)
+    public function __construct(
+        HttpConcurrencySetting $httpConcurrency,
+        HttpTimeoutSetting $httpTimeout,
+        HttpDelaySetting $httpDelay,
+        SslVerifyBehaviorSetting $sslVerifyBehavior,
+        SslVerifyPathSetting $sslVerifyPath,
+        HttpAuthenticationUsernameSetting $httpAuthUsername,
+        HttpAuthenticationPasswordSetting $httpAuthPassword,
+        HttpToHttpsSetting $httpToHttps,
+        SiteUrlProvider $siteUrlProvider
+    )
     {
         $this->httpConcurrency = $httpConcurrency;
         $this->httpTimeout = $httpTimeout;

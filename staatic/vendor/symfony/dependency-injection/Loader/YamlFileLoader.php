@@ -260,8 +260,8 @@ class YamlFileLoader extends FileLoader
             }
             $service = ['parent' => '', 'arguments' => $stack, 'tags' => ['container.stack'], 'public' => $service['public'] ?? null, 'deprecated' => $service['deprecated'] ?? null];
         }
-        $definition = (isset($service[0]) && $service[0] instanceof Definition) ? array_shift($service) : null;
-        $return = (null === $definition) ? $return : \true;
+        $definition = isset($service[0]) && $service[0] instanceof Definition ? array_shift($service) : null;
+        $return = null === $definition ? $return : \true;
         $this->checkDefinition($id, $service, $file);
         if (isset($service['alias'])) {
             $alias = new Alias($service['alias']);
@@ -360,7 +360,7 @@ class YamlFileLoader extends FileLoader
             }
             foreach ($service['calls'] as $k => $call) {
                 if (!\is_array($call) && (!\is_string($k) || !$call instanceof TaggedValue)) {
-                    throw new InvalidArgumentException(sprintf('Invalid method call for service "%s": expected map or array, "%s" given in "%s".', $id, ($call instanceof TaggedValue) ? '!' . $call->getTag() : get_debug_type($call), $file));
+                    throw new InvalidArgumentException(sprintf('Invalid method call for service "%s": expected map or array, "%s" given in "%s".', $id, $call instanceof TaggedValue ? '!' . $call->getTag() : get_debug_type($call), $file));
                 }
                 if (\is_string($k)) {
                     throw new InvalidArgumentException(sprintf('Invalid method call for service "%s", did you forgot a leading dash before "%s: ..." in "%s"?', $id, $k, $file));

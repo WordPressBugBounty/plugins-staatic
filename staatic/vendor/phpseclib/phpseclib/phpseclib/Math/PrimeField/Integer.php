@@ -211,7 +211,7 @@ class Integer extends Base
             } else {
                 $d_i[$i] = 0;
             }
-            $shift = (!$d->equals(static::$zero[static::class]) && $d->bitwise_and($mask)->equals(static::$zero[static::class])) ? $w : 1;
+            $shift = !$d->equals(static::$zero[static::class]) && $d->bitwise_and($mask)->equals(static::$zero[static::class]) ? $w : 1;
             $d = $d->bitwise_rightShift($shift);
             while (--$shift > 0) {
                 $d_i[++$i] = 0;

@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\phpseclib3\File;
 
 use stdClass;
+
 class ANSI
 {
     private $max_x;

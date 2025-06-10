@@ -34,7 +34,11 @@ final class PublicationStatusEndpoint implements ModuleInterface
 
     public const ENDPOINT = '/publication-status';
 
-    public function __construct(PublicationRepository $publicationRepository, PublicationTaskProvider $publicationTaskProvider, Formatter $formatter)
+    public function __construct(
+        PublicationRepository $publicationRepository,
+        PublicationTaskProvider $publicationTaskProvider,
+        Formatter $formatter
+    )
     {
         $this->publicationRepository = $publicationRepository;
         $this->publicationTaskProvider = $publicationTaskProvider;

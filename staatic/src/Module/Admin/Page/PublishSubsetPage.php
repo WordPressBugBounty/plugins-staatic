@@ -34,7 +34,11 @@ final class PublishSubsetPage implements ModuleInterface
 
     use TriggersPublications;
 
-    public function __construct(AdminNavigation $navigation, PartialRenderer $renderer, PublicationManager $publicationManager)
+    public function __construct(
+        AdminNavigation $navigation,
+        PartialRenderer $renderer,
+        PublicationManager $publicationManager
+    )
     {
         $this->navigation = $navigation;
         $this->renderer = $renderer;

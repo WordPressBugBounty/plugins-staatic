@@ -6,6 +6,7 @@ namespace Staatic\Vendor\GuzzleHttp\Promise;
 use InvalidArgumentException;
 use Throwable;
 use LogicException;
+
 class FulfilledPromise implements PromiseInterface
 {
     private $value;

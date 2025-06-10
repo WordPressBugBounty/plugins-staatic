@@ -108,7 +108,7 @@ final class Request
             if (null === $this->parsed) {
                 throw new LogicException('Request::$endpoint must be set before using it.');
             }
-            $this->endpoint = $this->parsed['scheme'] . '://' . $this->hostPrefix . $this->parsed['host'] . (isset($this->parsed['port']) ? ':' . $this->parsed['port'] : '') . $this->uri . ($this->query ? ((\false === strpos($this->uri, '?')) ? '?' : '&') . $this->getQueryString() : '');
+            $this->endpoint = $this->parsed['scheme'] . '://' . $this->hostPrefix . $this->parsed['host'] . (isset($this->parsed['port']) ? ':' . $this->parsed['port'] : '') . $this->uri . ($this->query ? (\false === strpos($this->uri, '?') ? '?' : '&') . $this->getQueryString() : '');
         }
         return $this->endpoint;
     }

@@ -77,7 +77,7 @@ class MockResponse implements ResponseInterface, StreamableInterface
      */
     public function getInfo($type = null)
     {
-        return (null !== $type) ? $this->info[$type] ?? null : $this->info;
+        return null !== $type ? $this->info[$type] ?? null : $this->info;
     }
     public function cancel(): void
     {
@@ -89,7 +89,7 @@ class MockResponse implements ResponseInterface, StreamableInterface
         }
         $onProgress = $this->requestOptions['on_progress'] ?? static function () {
         };
-        $dlSize = (isset($this->headers['content-encoding']) || 'HEAD' === ($this->info['http_method'] ?? null) || \in_array($this->info['http_code'], [204, 304], \true)) ? 0 : (int) ($this->headers['content-length'][0] ?? 0);
+        $dlSize = isset($this->headers['content-encoding']) || 'HEAD' === ($this->info['http_method'] ?? null) || \in_array($this->info['http_code'], [204, 304], \true) ? 0 : (int) ($this->headers['content-length'][0] ?? 0);
         $onProgress($this->offset, $dlSize, $this->info);
     }
     protected function close(): void
@@ -157,7 +157,7 @@ class MockResponse implements ResponseInterface, StreamableInterface
                 $response->body = [];
             } elseif ([] === $response->body) {
                 $multi->handlesActivity[$id][] = null;
-                $multi->handlesActivity[$id][] = (null !== $response->info['error']) ? new TransportException($response->info['error']) : null;
+                $multi->handlesActivity[$id][] = null !== $response->info['error'] ? new TransportException($response->info['error']) : null;
             } elseif (null === $chunk = array_shift($response->body)) {
                 $multi->handlesActivity[$id][] = null;
                 $multi->handlesActivity[$id][] = array_shift($response->body);
@@ -226,9 +226,9 @@ class MockResponse implements ResponseInterface, StreamableInterface
         $onProgress = $options['on_progress'] ?? static function () {
         };
         $info = $mock->getInfo() ?: [];
-        $response->info['http_code'] = (($info['http_code'] ?? 0) ?: $mock->getStatusCode()) ?: 200;
+        $response->info['http_code'] = ($info['http_code'] ?? 0 ?: $mock->getStatusCode()) ?: 200;
         $response->addResponseHeaders($info['response_headers'] ?? [], $response->info, $response->headers);
-        $dlSize = (isset($response->headers['content-encoding']) || 'HEAD' === $response->info['http_method'] || \in_array($response->info['http_code'], [204, 304], \true)) ? 0 : (int) ($response->headers['content-length'][0] ?? 0);
+        $dlSize = isset($response->headers['content-encoding']) || 'HEAD' === $response->info['http_method'] || \in_array($response->info['http_code'], [204, 304], \true) ? 0 : (int) ($response->headers['content-length'][0] ?? 0);
         $response->info = ['start_time' => $response->info['start_time'], 'user_data' => $response->info['user_data'], 'max_duration' => $response->info['max_duration'], 'http_code' => $response->info['http_code']] + $info + $response->info;
         if (null !== $response->info['error']) {
             throw new TransportException($response->info['error']);
@@ -237,7 +237,7 @@ class MockResponse implements ResponseInterface, StreamableInterface
             $response->info['total_time'] = microtime(\true) - $response->info['start_time'];
         }
         $onProgress(0, $dlSize, $response->info);
-        $body = ($mock instanceof self) ? $mock->body : $mock->getContent(\false);
+        $body = $mock instanceof self ? $mock->body : $mock->getContent(\false);
         if (!\is_string($body)) {
             try {
                 foreach ($body as $chunk) {

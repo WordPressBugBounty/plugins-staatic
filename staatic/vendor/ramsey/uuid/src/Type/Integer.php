@@ -25,7 +25,7 @@ final class Integer implements NumberInterface
      */
     public function __construct($value)
     {
-        $this->value = ($value instanceof self) ? (string) $value : $this->prepareValue($value);
+        $this->value = $value instanceof self ? (string) $value : $this->prepareValue($value);
     }
     public function isNegative(): bool
     {

@@ -22,7 +22,7 @@ final class LambdaFunctionConfiguration
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getEvents(): array
     {

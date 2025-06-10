@@ -67,10 +67,7 @@ abstract class JWK extends Progenitor
         $curve->rangeCheck($dA);
         return compact('curve', 'dA', 'QA');
     }
-    /**
-     * @param mixed $curve
-     */
-    private static function getAlias($curve)
+    private static function getAlias(BaseCurve $curve)
     {
         switch (\true) {
             case $curve instanceof secp256r1:
@@ -86,13 +83,10 @@ abstract class JWK extends Progenitor
         $curveName = $reflect->isFinal() ? $reflect->getParentClass()->getShortName() : $reflect->getShortName();
         throw new UnsupportedCurveException("{$curveName} is not a supported curve");
     }
-    /**
-     * @param mixed $curve
-     */
-    private static function savePublicKeyHelper($curve, array $publicKey)
+    private static function savePublicKeyHelper(BaseCurve $curve, array $publicKey)
     {
         if ($curve instanceof TwistedEdwardsCurve) {
-            return ['kty' => 'OKP', 'crv' => ($curve instanceof Ed25519) ? 'Ed25519' : 'Ed448', 'x' => Strings::base64url_encode($curve->encodePoint($publicKey))];
+            return ['kty' => 'OKP', 'crv' => $curve instanceof Ed25519 ? 'Ed25519' : 'Ed448', 'x' => Strings::base64url_encode($curve->encodePoint($publicKey))];
         }
         return ['kty' => 'EC', 'crv' => self::getAlias($curve), 'x' => Strings::base64url_encode($publicKey[0]->toBytes()), 'y' => Strings::base64url_encode($publicKey[1]->toBytes())];
     }
@@ -115,7 +109,7 @@ abstract class JWK extends Progenitor
     public static function savePrivateKey($privateKey, $curve, $publicKey, $secret = null, $password = '', $options = [])
     {
         $key = self::savePublicKeyHelper($curve, $publicKey);
-        $key['d'] = ($curve instanceof TwistedEdwardsCurve) ? $secret : $privateKey->toBytes();
+        $key['d'] = $curve instanceof TwistedEdwardsCurve ? $secret : $privateKey->toBytes();
         $key['d'] = Strings::base64url_encode($key['d']);
         return self::wrapKey($key, $options);
     }

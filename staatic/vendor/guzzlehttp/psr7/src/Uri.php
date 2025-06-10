@@ -158,7 +158,7 @@ class Uri implements UriInterface, JsonSerializable
     {
         $result = self::getFilteredQueryString($uri, array_keys($keyValueArray));
         foreach ($keyValueArray as $key => $value) {
-            $result[] = self::generateQueryString((string) $key, ($value !== null) ? (string) $value : null);
+            $result[] = self::generateQueryString((string) $key, $value !== null ? (string) $value : null);
         }
         return $uri->withQuery(implode('&', $result));
     }

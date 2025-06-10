@@ -155,7 +155,7 @@ class Uuid implements UuidInterface
     {
         return new Hexadecimal(str_replace('-', '', $this->toString()));
     }
-    public function getInteger()
+    public function getInteger(): IntegerObject
     {
         return new IntegerObject($this->numberConverter->fromHex($this->getHex()->toString()));
     }

@@ -39,7 +39,12 @@ final class PublishPage implements ModuleInterface
     /** @var string */
     public const PAGE_SLUG = 'staatic-publish';
 
-    public function __construct(AdminNavigation $navigation, PartialRenderer $renderer, PublicationRepository $publicationRepository, PublicationManager $publicationManager)
+    public function __construct(
+        AdminNavigation $navigation,
+        PartialRenderer $renderer,
+        PublicationRepository $publicationRepository,
+        PublicationManager $publicationManager
+    )
     {
         $this->navigation = $navigation;
         $this->renderer = $renderer;

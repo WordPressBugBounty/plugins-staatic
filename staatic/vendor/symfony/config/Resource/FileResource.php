@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\Config\Resource;
 
 use InvalidArgumentException;
+
 class FileResource implements SelfCheckingResourceInterface
 {
     /**

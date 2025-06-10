@@ -22,7 +22,7 @@ final class ResponseUtil
     }
     public static function parseContentTypeHeader(string $header): array
     {
-        return [(preg_match('~^([^;]+)~', $header, $matches) === 1) ? $matches[1] : null, (preg_match('~charset="?(.+?)"?;?$~i', $header, $matches) === 1) ? $matches[1] : null];
+        return [preg_match('~^([^;]+)~', $header, $matches) === 1 ? $matches[1] : null, preg_match('~charset="?(.+?)"?;?$~i', $header, $matches) === 1 ? $matches[1] : null];
     }
     public static function getMimeType(ResponseInterface $response): string
     {

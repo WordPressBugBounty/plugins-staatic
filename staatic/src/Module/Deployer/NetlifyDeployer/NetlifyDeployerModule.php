@@ -50,7 +50,14 @@ final class NetlifyDeployerModule implements ModuleInterface
 
     public const DEPLOYMENT_METHOD_NAME = 'netlify';
 
-    public function __construct(Settings $settings, ServiceLocator $settingLocator, NetlifyDeployStrategyFactory $deployStrategyFactory, ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository, UrlTransformerFactory $urlTransformerFactory)
+    public function __construct(
+        Settings $settings,
+        ServiceLocator $settingLocator,
+        NetlifyDeployStrategyFactory $deployStrategyFactory,
+        ResultRepositoryInterface $resultRepository,
+        ResourceRepositoryInterface $resourceRepository,
+        UrlTransformerFactory $urlTransformerFactory
+    )
     {
         $this->settings = $settings;
         $this->settingLocator = $settingLocator;

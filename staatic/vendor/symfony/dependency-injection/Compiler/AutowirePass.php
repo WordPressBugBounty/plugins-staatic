@@ -200,7 +200,7 @@ class AutowirePass extends AbstractRecursivePass
         switch (\true) {
             case $attribute instanceof Autowire:
                 $value = $this->container->getParameterBag()->resolveValue($attribute->value);
-                return ($value instanceof Reference && $isOptional) ? new Reference($value, ContainerInterface::NULL_ON_INVALID_REFERENCE) : $value;
+                return $value instanceof Reference && $isOptional ? new Reference($value, ContainerInterface::NULL_ON_INVALID_REFERENCE) : $value;
             case $attribute instanceof TaggedIterator:
                 return new TaggedIteratorArgument($attribute->tag, $attribute->indexAttribute, $attribute->defaultIndexMethod, \false, $attribute->defaultPriorityMethod, (array) $attribute->exclude);
             case $attribute instanceof TaggedLocator:
@@ -265,7 +265,7 @@ class AutowirePass extends AbstractRecursivePass
     }
     private function autowireMethod(ReflectionFunctionAbstract $reflectionMethod, array $arguments, bool $checkAttributes, int $methodIndex): array
     {
-        $class = ($reflectionMethod instanceof ReflectionMethod) ? $reflectionMethod->class : $this->currentId;
+        $class = $reflectionMethod instanceof ReflectionMethod ? $reflectionMethod->class : $this->currentId;
         $method = $reflectionMethod->name;
         $parameters = $reflectionMethod->getParameters();
         if ($reflectionMethod->isVariadic()) {
@@ -308,14 +308,14 @@ class AutowirePass extends AbstractRecursivePass
                     }
                     $type = ProxyHelper::exportType($parameter);
                     $type = $type ? sprintf('is type-hinted "%s"', preg_replace('/(^|[(|&])\\\\|^\?\\\\?/', '\1', $type)) : 'has no type-hint';
-                    throw new AutowiringFailedException($this->currentId, sprintf('Cannot autowire service "%s": argument "$%s" of method "%s()" %s, you should configure its value explicitly.', $this->currentId, $parameter->name, ($class !== $this->currentId) ? $class . '::' . $method : $method, $type));
+                    throw new AutowiringFailedException($this->currentId, sprintf('Cannot autowire service "%s": argument "$%s" of method "%s()" %s, you should configure its value explicitly.', $this->currentId, $parameter->name, $class !== $this->currentId ? $class . '::' . $method : $method, $type));
                 }
                 $arguments[$index] = $this->defaultArgument->withValue($parameter);
                 continue;
             }
             $getValue = function () use ($type, $parameter, $class, $method) {
                 if (!$value = $this->getAutowiredReference($ref = new TypedReference($type, $type, ContainerBuilder::EXCEPTION_ON_INVALID_REFERENCE, Target::parseName($parameter)), \false)) {
-                    $failureMessage = $this->createTypeNotFoundMessageCallback($ref, sprintf('argument "$%s" of method "%s()"', $parameter->name, ($class !== $this->currentId) ? $class . '::' . $method : $method));
+                    $failureMessage = $this->createTypeNotFoundMessageCallback($ref, sprintf('argument "$%s" of method "%s()"', $parameter->name, $class !== $this->currentId ? $class . '::' . $method : $method));
                     if ($parameter->isDefaultValueAvailable()) {
                         $value = $this->defaultArgument->withValue($parameter);
                     } elseif (!$parameter->allowsNull()) {

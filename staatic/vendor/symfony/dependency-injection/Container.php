@@ -140,7 +140,7 @@ class Container implements ContainerInterface, ResetInterface
      */
     public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
     {
-        return $this->services[$id] ?? $this->services[$id = $this->aliases[$id] ?? $id] ?? (('service_container' === $id) ? $this : ($this->factories[$id] ?? Closure::fromCallable([$this, 'make']))($id, $invalidBehavior));
+        return $this->services[$id] ?? $this->services[$id = $this->aliases[$id] ?? $id] ?? ('service_container' === $id ? $this : ($this->factories[$id] ?? Closure::fromCallable([$this, 'make']))($id, $invalidBehavior));
     }
     private function make(string $id, int $invalidBehavior)
     {
@@ -150,9 +150,9 @@ class Container implements ContainerInterface, ResetInterface
         $this->loading[$id] = \true;
         try {
             if (isset($this->fileMap[$id])) {
-                return (4 === $invalidBehavior) ? null : $this->load($this->fileMap[$id]);
+                return 4 === $invalidBehavior ? null : $this->load($this->fileMap[$id]);
             } elseif (isset($this->methodMap[$id])) {
-                return (4 === $invalidBehavior) ? null : $this->{$this->methodMap[$id]}();
+                return 4 === $invalidBehavior ? null : $this->{$this->methodMap[$id]}();
             }
         } catch (Exception $e) {
             unset($this->services[$id]);
@@ -295,7 +295,7 @@ class Container implements ContainerInterface, ResetInterface
             throw new RuntimeException($load);
         }
         if (null === $method) {
-            return (\false !== $registry) ? $this->{$registry}[$id] ?? null : null;
+            return \false !== $registry ? $this->{$registry}[$id] ?? null : null;
         }
         if (\false !== $registry) {
             return $this->{$registry}[$id] = $this->{$registry}[$id] ?? ($load ? $this->load($method) : $this->{$method}());

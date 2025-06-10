@@ -4,6 +4,7 @@ namespace Staatic\Vendor\voku\helper;
 
 use IteratorAggregate;
 use DOMNode;
+
 interface SimpleXmlDomInterface extends IteratorAggregate
 {
     public function __call($name, $arguments);

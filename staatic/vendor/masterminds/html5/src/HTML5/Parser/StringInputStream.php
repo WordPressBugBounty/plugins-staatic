@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Masterminds\HTML5\Parser;
 
 use ReturnTypeWillChange;
+
 class StringInputStream implements InputStream
 {
     private $data;

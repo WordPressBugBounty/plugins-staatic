@@ -83,7 +83,7 @@ final class SsoTokenProvider
             return null;
         }
         try {
-            return json_decode($content, \true, 512, \JSON_BIGINT_AS_STRING | ((\PHP_VERSION_ID >= 70300) ? 0 : 0));
+            return json_decode($content, \true, 512, \JSON_BIGINT_AS_STRING | (\PHP_VERSION_ID >= 70300 ? 0 : 0));
         } catch (JsonException $e) {
             $this->logger->warning('The sso cache file {path} contains invalide JSON.', ['path' => $filepath, 'ecxeption' => $e]);
             return null;
@@ -96,6 +96,6 @@ final class SsoTokenProvider
         }
         $homeDrive = EnvVar::get('HOMEDRIVE');
         $homePath = EnvVar::get('HOMEPATH');
-        return ($homeDrive && $homePath) ? $homeDrive . $homePath : '/';
+        return $homeDrive && $homePath ? $homeDrive . $homePath : '/';
     }
 }

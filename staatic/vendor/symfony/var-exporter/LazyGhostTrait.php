@@ -26,7 +26,7 @@ trait LazyGhostTrait
         if (\is_array($initializer)) {
             trigger_deprecation('symfony/var-exporter', '6.4', 'Per-property lazy-initializers are deprecated and won\'t be supported anymore in 7.0, use an object initializer instead.');
         }
-        $onlyProperties = (null === $skippedProperties && \is_array($initializer)) ? $initializer : null;
+        $onlyProperties = null === $skippedProperties && \is_array($initializer) ? $initializer : null;
         if (self::class !== $class = $instance ? get_class($instance) : static::class) {
             $skippedProperties["\x00" . self::class . "\x00lazyObjectState"] = \true;
         } elseif (\defined($class . '::LAZY_OBJECT_PROPERTY_SCOPES')) {
@@ -86,7 +86,7 @@ trait LazyGhostTrait
             if (\array_key_exists($key, $properties) || ![$scope, $name, $readonlyScope] = $propertyScopes[$key] ?? null) {
                 continue;
             }
-            $scope = $readonlyScope ?? (('*' !== $scope) ? $scope : $class);
+            $scope = $readonlyScope ?? ('*' !== $scope ? $scope : $class);
             if (null === $values) {
                 if (!\is_array($values = $state->initializer["\x00"]($this, Registry::$defaultProperties[$class]))) {
                     throw new TypeError(sprintf('The lazy-initializer defined for instance of "%s" must return an array, got "%s".', $class, get_debug_type($values)));
@@ -127,7 +127,7 @@ trait LazyGhostTrait
             $state = $this->lazyObjectState ?? null;
             if ($state && (null === $scope || isset($propertyScopes["\x00{$scope}\x00{$name}"]))) {
                 if (LazyObjectState::STATUS_INITIALIZED_FULL === $state->status) {
-                    $property = (null === $scope) ? $name : "\x00{$scope}\x00{$name}";
+                    $property = null === $scope ? $name : "\x00{$scope}\x00{$name}";
                     $property = $propertyScopes[$property][3] ?? Hydrator::$propertyScopes[get_class($this)][$property][3] = new ReflectionProperty($scope ?? $class, $name);
                 } else {
                     $property = null;

@@ -37,7 +37,7 @@ final class NativeHttpClient implements HttpClientInterface, LoggerAwareInterfac
             [, $this->defaultOptions] = self::prepareRequest(null, null, $defaultOptions, $this->defaultOptions);
         }
         $this->multi = new NativeClientState();
-        $this->multi->maxHostConnections = (0 < $maxHostConnections) ? $maxHostConnections : \PHP_INT_MAX;
+        $this->multi->maxHostConnections = 0 < $maxHostConnections ? $maxHostConnections : \PHP_INT_MAX;
     }
     /**
      * @param string $method
@@ -81,10 +81,10 @@ final class NativeHttpClient implements HttpClientInterface, LoggerAwareInterfac
             }
             unset($options['peer_fingerprint']['pin-sha256']);
         }
-        $info = ['response_headers' => [], 'url' => $url, 'error' => null, 'canceled' => \false, 'http_method' => $method, 'http_code' => 0, 'redirect_count' => 0, 'start_time' => 0.0, 'connect_time' => 0.0, 'redirect_time' => 0.0, 'pretransfer_time' => 0.0, 'starttransfer_time' => 0.0, 'total_time' => 0.0, 'namelookup_time' => 0.0, 'size_upload' => 0, 'size_download' => 0, 'size_body' => \strlen($options['body']), 'primary_ip' => '', 'primary_port' => ('http:' === $url['scheme']) ? 80 : 443, 'debug' => \extension_loaded('curl') ? '' : "* Enable the curl extension for better performance\n"];
+        $info = ['response_headers' => [], 'url' => $url, 'error' => null, 'canceled' => \false, 'http_method' => $method, 'http_code' => 0, 'redirect_count' => 0, 'start_time' => 0.0, 'connect_time' => 0.0, 'redirect_time' => 0.0, 'pretransfer_time' => 0.0, 'starttransfer_time' => 0.0, 'total_time' => 0.0, 'namelookup_time' => 0.0, 'size_upload' => 0, 'size_download' => 0, 'size_body' => \strlen($options['body']), 'primary_ip' => '', 'primary_port' => 'http:' === $url['scheme'] ? 80 : 443, 'debug' => \extension_loaded('curl') ? '' : "* Enable the curl extension for better performance\n"];
         if ($onProgress = $options['on_progress']) {
             $lastProgress = [0, 0];
-            $maxDuration = (0 < $options['max_duration']) ? $options['max_duration'] : \INF;
+            $maxDuration = 0 < $options['max_duration'] ? $options['max_duration'] : \INF;
             $onProgress = static function (...$progress) use ($onProgress, &$lastProgress, &$info, $maxDuration) {
                 if ($info['total_time'] >= $maxDuration) {
                     throw new TransportException(sprintf('Max duration was reached for "%s".', implode('', $info['url'])));
@@ -190,7 +190,7 @@ final class NativeHttpClient implements HttpClientInterface, LoggerAwareInterfac
             $info['primary_port'] = $port;
             $port = ':' . $port;
         } else {
-            $info['primary_port'] = ('http:' === $url['scheme']) ? 80 : 443;
+            $info['primary_port'] = 'http:' === $url['scheme'] ? 80 : 443;
         }
         return [parse_url($url['authority'], \PHP_URL_HOST), $port];
     }
@@ -250,7 +250,7 @@ final class NativeHttpClient implements HttpClientInterface, LoggerAwareInterfac
             if (\in_array($info['http_code'], [301, 302, 303], \true)) {
                 $options = stream_context_get_options($context)['http'];
                 if ('POST' === $options['method'] || 303 === $info['http_code']) {
-                    $info['http_method'] = $options['method'] = ('HEAD' === $options['method']) ? 'HEAD' : 'GET';
+                    $info['http_method'] = $options['method'] = 'HEAD' === $options['method'] ? 'HEAD' : 'GET';
                     $options['content'] = '';
                     $filterContentHeaders = static function ($h) {
                         return 0 !== stripos($h, 'Content-Length:') && 0 !== stripos($h, 'Content-Type:') && 0 !== stripos($h, 'Transfer-Encoding:');
@@ -263,7 +263,7 @@ final class NativeHttpClient implements HttpClientInterface, LoggerAwareInterfac
             }
             [$host, $port] = self::parseHostPort($url, $info);
             if (\false !== (parse_url($location, \PHP_URL_HOST) ?? \false)) {
-                $requestHeaders = ($redirectHeaders['host'] === $host && $redirectHeaders['port'] === $port) ? $redirectHeaders['with_auth'] : $redirectHeaders['no_auth'];
+                $requestHeaders = $redirectHeaders['host'] === $host && $redirectHeaders['port'] === $port ? $redirectHeaders['with_auth'] : $redirectHeaders['no_auth'];
                 $requestHeaders[] = 'Host: ' . $host . $port;
                 $dnsResolve = !self::configureHeadersAndProxy($context, $host, $requestHeaders, $proxy, 'https:' === $url['scheme']);
             } else {

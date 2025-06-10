@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\ZipStream;
 
 use Staatic\Vendor\ZipStream\Option\File;
+
 class DeflateStream extends Stream
 {
     public function __construct($stream)

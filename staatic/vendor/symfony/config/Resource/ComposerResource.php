@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\Config\Resource;
 
 use ReflectionClass;
+
 class ComposerResource implements SelfCheckingResourceInterface
 {
     /**

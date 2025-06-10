@@ -504,7 +504,7 @@ final class BigInteger extends BigNumber
     }
     public function getSign(): int
     {
-        return ($this->value === '0') ? 0 : (($this->value[0] === '-') ? -1 : 1);
+        return $this->value === '0' ? 0 : ($this->value[0] === '-' ? -1 : 1);
     }
     public function toBigInteger(): BigInteger
     {

@@ -6,6 +6,7 @@ namespace Staatic\Vendor\GuzzleHttp\Promise;
 use Throwable;
 use Iterator;
 use ArrayIterator;
+
 final class Create
 {
     public static function promiseFor($value): PromiseInterface

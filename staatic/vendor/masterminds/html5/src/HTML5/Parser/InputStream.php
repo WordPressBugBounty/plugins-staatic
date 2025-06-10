@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Masterminds\HTML5\Parser;
 
 use Iterator;
+
 interface InputStream extends Iterator
 {
     public function currentLine();

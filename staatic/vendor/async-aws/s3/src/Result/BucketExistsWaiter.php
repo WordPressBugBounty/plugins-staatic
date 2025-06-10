@@ -30,7 +30,7 @@ class BucketExistsWaiter extends Waiter
         if (404 === $response->getStatusCode()) {
             return self::STATE_PENDING;
         }
-        return (null === $exception) ? self::STATE_PENDING : self::STATE_FAILURE;
+        return null === $exception ? self::STATE_PENDING : self::STATE_FAILURE;
     }
     protected function refreshState(): Waiter
     {

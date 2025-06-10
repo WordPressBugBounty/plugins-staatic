@@ -68,7 +68,7 @@ class DOMTreeBuilder implements EventHandler
             $impl = new DOMImplementation();
             $dt = $impl->createDocumentType('html');
             $this->doc = $impl->createDocument(null, '', $dt);
-            $this->doc->encoding = (!empty($options['encoding'])) ? $options['encoding'] : 'UTF-8';
+            $this->doc->encoding = !empty($options['encoding']) ? $options['encoding'] : 'UTF-8';
         }
         $this->errors = array();
         $this->current = $this->doc;
@@ -187,7 +187,7 @@ class DOMTreeBuilder implements EventHandler
         try {
             $prefix = ($pos = strpos($lname, ':')) ? substr($lname, 0, $pos) : '';
             if (\false !== $needsWorkaround) {
-                $xml = "<{$lname} xmlns=\"{$needsWorkaround}\" " . ((strlen($prefix) && isset($this->nsStack[0][$prefix])) ? "xmlns:{$prefix}=\"" . $this->nsStack[0][$prefix] . '"' : '') . '/>';
+                $xml = "<{$lname} xmlns=\"{$needsWorkaround}\" " . (strlen($prefix) && isset($this->nsStack[0][$prefix]) ? "xmlns:{$prefix}=\"" . $this->nsStack[0][$prefix] . '"' : '') . '/>';
                 $frag = new DOMDocument('1.0', 'UTF-8');
                 $frag->loadXML($xml);
                 $ele = $this->doc->importNode($frag->documentElement, \true);

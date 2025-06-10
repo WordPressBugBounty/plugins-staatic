@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\GuzzleHttp\Promise;
 
 use Throwable;
+
 final class Utils
 {
     public static function queue(?TaskQueueInterface $assign = null): TaskQueueInterface

@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\DependencyInjection\Exception;
 
 use Throwable;
+
 class ParameterCircularReferenceException extends RuntimeException
 {
     /**

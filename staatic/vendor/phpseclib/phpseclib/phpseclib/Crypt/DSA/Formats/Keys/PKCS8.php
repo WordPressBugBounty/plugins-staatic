@@ -31,7 +31,7 @@ abstract class PKCS8 extends Progenitor
         if (empty($decoded)) {
             throw new RuntimeException('Unable to decode BER');
         }
-        $var = ($type == 'privateKey') ? 'x' : 'y';
+        $var = $type == 'privateKey' ? 'x' : 'y';
         $components[$var] = ASN1::asn1map($decoded[0], DSAPublicKey::MAP);
         if (!$components[$var] instanceof BigInteger) {
             throw new RuntimeException('Unable to perform ASN1 mapping');

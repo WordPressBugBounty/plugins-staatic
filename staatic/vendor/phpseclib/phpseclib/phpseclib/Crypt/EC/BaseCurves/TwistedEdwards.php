@@ -50,7 +50,7 @@ class TwistedEdwards extends Base
         if (!isset($this->factory)) {
             throw new RuntimeException('setModulo needs to be called before this method');
         }
-        $this->p = [($x instanceof BigInteger) ? $this->factory->newInteger($x) : $x, ($y instanceof BigInteger) ? $this->factory->newInteger($y) : $y];
+        $this->p = [$x instanceof BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof BigInteger ? $this->factory->newInteger($y) : $y];
     }
     public function getA()
     {

@@ -60,7 +60,7 @@ final class LazyServiceDumper implements DumperInterface
     {
         $instantiation = 'return';
         if ($definition->isShared()) {
-            $instantiation .= sprintf(' $this->%s[%s] =', ($definition->isPublic() && !$definition->isPrivate()) ? 'services' : 'privates', var_export($id, \true));
+            $instantiation .= sprintf(' $this->%s[%s] =', $definition->isPublic() && !$definition->isPrivate() ? 'services' : 'privates', var_export($id, \true));
         }
         $asGhostObject = strpos($factoryCode, '$proxy') !== false;
         $proxyClass = $this->getProxyClass($definition, $asGhostObject);
@@ -117,13 +117,13 @@ EOF;
                 }
                 $interfaces[] = new ReflectionClass($tag['interface']);
             }
-            $class = (1 === \count($interfaces) && !$interfaces[0]->isInterface()) ? array_pop($interfaces) : null;
+            $class = 1 === \count($interfaces) && !$interfaces[0]->isInterface() ? array_pop($interfaces) : null;
         } elseif ($class->isInterface()) {
             $interfaces = [$class];
             $class = null;
         }
         try {
-            return ((\PHP_VERSION_ID >= 80200 && (($nullsafeVariable1 = $class) ? $nullsafeVariable1->isReadOnly() : null)) ? 'readonly ' : '') . 'class ' . $proxyClass . ProxyHelper::generateLazyProxy($class, $interfaces);
+            return (\PHP_VERSION_ID >= 80200 && (($nullsafeVariable1 = $class) ? $nullsafeVariable1->isReadOnly() : null) ? 'readonly ' : '') . 'class ' . $proxyClass . ProxyHelper::generateLazyProxy($class, $interfaces);
         } catch (LogicException $e) {
             throw new InvalidArgumentException(sprintf('Cannot generate lazy proxy for service "%s".', $id ?? $definition->getClass()), 0, $e);
         }

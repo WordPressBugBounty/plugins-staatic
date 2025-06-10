@@ -74,7 +74,7 @@ class ResolveDecoratorStackPass implements CompilerPassInterface
             }
             $p = $prefix . $k;
             foreach ($this->resolveStack($stacks, $path) as $k => $v) {
-                $definitions[$decoratedId = $p . $k] = ($definition instanceof ChildDefinition) ? $definition->setParent($k) : new ChildDefinition($k);
+                $definitions[$decoratedId = $p . $k] = $definition instanceof ChildDefinition ? $definition->setParent($k) : new ChildDefinition($k);
                 $definition = null;
             }
             array_pop($path);

@@ -3,6 +3,7 @@
 namespace Symfony\Polyfill\Mbstring;
 
 use ValueError;
+
 final class Mbstring
 {
     public const MB_CASE_FOLD = \PHP_INT_MAX;
@@ -146,14 +147,14 @@ final class Mbstring
         $len = \strlen($s);
         $result = '';
         while ($i < $len) {
-            $ulen = ($s[$i] < "\x80") ? 1 : $ulenMask[$s[$i] & "\xf0"];
+            $ulen = $s[$i] < "\x80" ? 1 : $ulenMask[$s[$i] & "\xf0"];
             $uchr = substr($s, $i, $ulen);
             $i += $ulen;
             $c = self::mb_ord($uchr);
             for ($j = 0; $j < $cnt; $j += 4) {
                 if ($c >= $convmap[$j] && $c <= $convmap[$j + 1]) {
                     $cOffset = $c + $convmap[$j + 2] & $convmap[$j + 3];
-                    $result .= $is_hex ? sprintf('&#x%X;', $cOffset) : ('&#' . $cOffset . ';');
+                    $result .= $is_hex ? sprintf('&#x%X;', $cOffset) : '&#' . $cOffset . ';';
                     continue 2;
                 }
             }
@@ -210,7 +211,7 @@ final class Mbstring
             $i = 0;
             $len = \strlen($s);
             while ($i < $len) {
-                $ulen = ($s[$i] < "\x80") ? 1 : $ulenMask[$s[$i] & "\xf0"];
+                $ulen = $s[$i] < "\x80" ? 1 : $ulenMask[$s[$i] & "\xf0"];
                 $uchr = substr($s, $i, $ulen);
                 $i += $ulen;
                 if (isset($map[$uchr])) {
@@ -395,8 +396,8 @@ final class Mbstring
                 $haystack = self::mb_substr($haystack, $offset, 2147483647, $encoding);
             }
         }
-        $pos = ('' !== $needle || 80000 > \PHP_VERSION_ID) ? iconv_strrpos($haystack, $needle, $encoding) : self::mb_strlen($haystack, $encoding);
-        return (\false !== $pos) ? $offset + $pos : \false;
+        $pos = '' !== $needle || 80000 > \PHP_VERSION_ID ? iconv_strrpos($haystack, $needle, $encoding) : self::mb_strlen($haystack, $encoding);
+        return \false !== $pos ? $offset + $pos : \false;
     }
     public static function mb_str_split($string, $split_length = 1, $encoding = null)
     {
@@ -458,7 +459,7 @@ final class Mbstring
     {
         $encoding = self::getEncoding($encoding);
         if ('CP850' === $encoding || 'ASCII' === $encoding) {
-            return (string) substr($s, $start, (null === $length) ? 2147483647 : $length);
+            return (string) substr($s, $start, null === $length ? 2147483647 : $length);
         }
         if ($start < 0) {
             $start = iconv_strlen($s, $encoding) + $start;
@@ -539,7 +540,7 @@ final class Mbstring
     }
     public static function mb_http_output($encoding = null)
     {
-        return (null !== $encoding) ? 'pass' === $encoding : 'pass';
+        return null !== $encoding ? 'pass' === $encoding : 'pass';
     }
     public static function mb_strwidth($s, $encoding = null)
     {
@@ -713,7 +714,7 @@ final class Mbstring
     }
     public static function mb_rtrim(string $string, ?string $characters = null, ?string $encoding = null): string
     {
-        return self::mb_internal_trim('{[%s]+$}D', $string, $characters, $encoding, __FUNCTION__);
+        return self::mb_internal_trim('{[%s]+$}Du', $string, $characters, $encoding, __FUNCTION__);
     }
     private static function mb_internal_trim(string $regex, string $string, ?string $characters, ?string $encoding, string $function): string
     {
@@ -723,7 +724,7 @@ final class Mbstring
             self::assertEncoding($encoding, $function . '(): Argument #3 ($encoding) must be a valid encoding, "%s" given');
         }
         if ('' === $characters) {
-            return (null === $encoding) ? $string : self::mb_convert_encoding($string, $encoding);
+            return null === $encoding ? $string : self::mb_convert_encoding($string, $encoding);
         }
         if ('UTF-8' === $encoding) {
             $encoding = null;

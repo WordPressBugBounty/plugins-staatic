@@ -195,7 +195,7 @@ final class HealthChecks
             'status' => 'recommended',
             'badge' => [
                 'label' => __('Staatic', 'staatic'),
-                'color' => ($args['status'] === 'good') ? 'blue' : 'red'
+                'color' => $args['status'] === 'good' ? 'blue' : 'red'
             ]
         ], $args);
         if (!empty($args['actions'])) {

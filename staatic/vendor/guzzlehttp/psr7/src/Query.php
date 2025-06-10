@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\GuzzleHttp\Psr7;
 
 use InvalidArgumentException;
+
 final class Query
 {
     public static function parse(string $str, $urlEncoding = \true): array

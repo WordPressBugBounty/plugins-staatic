@@ -44,7 +44,7 @@ trait StreamDecoratorTrait
     {
         $callable = [$this->stream, $method];
         $result = $callable(...$args);
-        return ($result === $this->stream) ? $this : $result;
+        return $result === $this->stream ? $this : $result;
     }
     public function close(): void
     {

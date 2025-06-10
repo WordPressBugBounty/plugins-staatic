@@ -63,10 +63,10 @@ final class LogEntryRepository
             return sprintf("UNHEX(REPLACE('%s', '-', ''))", esc_sql($publicationId));
         }, $excludePublicationIds);
         $this->wpdb->query(
-            $this->wpdb->prepare("\n                DELETE FROM {$this->tableName}\n                WHERE log_date < (NOW() - INTERVAL %d DAY)" . (empty($excludePublicationIds) ? '' : ("\n                    AND publication_uuid NOT IN (" . implode(
+            $this->wpdb->prepare("\n                DELETE FROM {$this->tableName}\n                WHERE log_date < (NOW() - INTERVAL %d DAY)" . (empty($excludePublicationIds) ? '' : "\n                    AND publication_uuid NOT IN (" . implode(
                 ', ',
                 $excludePublicationIds
-            ) . ")")), $numDays)
+            ) . ")"), $numDays)
         );
     }
 
@@ -127,7 +127,7 @@ final class LogEntryRepository
         $logEntries = $this->wpdb->get_results(
             "\n            SELECT *\n            FROM {$this->tableName}\n            WHERE publication_uuid = UNHEX(REPLACE('" . esc_sql(
                 $publicationId
-            ) . "', '-', ''))" . ((!empty($levels)) ? "\n            AND log_level IN ('" . implode(
+            ) . "', '-', ''))" . (!empty($levels) ? "\n            AND log_level IN ('" . implode(
                 "', '",
                 esc_sql($levels)
             ) . "')" : "") . ($query ? "\n                AND message LIKE '%" . esc_sql(

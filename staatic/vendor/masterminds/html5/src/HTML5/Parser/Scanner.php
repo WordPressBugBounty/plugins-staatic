@@ -28,7 +28,7 @@ class Scanner
     public function sequenceMatches($sequence, $caseSensitive = \true)
     {
         $portion = substr($this->data, $this->char, strlen($sequence));
-        return $caseSensitive ? $portion === $sequence : (0 === strcasecmp($portion, $sequence));
+        return $caseSensitive ? $portion === $sequence : 0 === strcasecmp($portion, $sequence);
     }
     public function position()
     {

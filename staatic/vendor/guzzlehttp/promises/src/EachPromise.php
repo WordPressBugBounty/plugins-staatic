@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\GuzzleHttp\Promise;
 
 use Throwable;
+
 class EachPromise implements PromisorInterface
 {
     private $pending = [];

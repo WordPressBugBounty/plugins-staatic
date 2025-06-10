@@ -59,7 +59,7 @@ trait PriorityTaggedServiceTrait
             }
         }
         uasort($services, static function ($a, $b) {
-            return ($b[0] <=> $a[0]) ?: ($a[1] <=> $b[1]);
+            return $b[0] <=> $a[0] ?: $a[1] <=> $b[1];
         });
         $refs = [];
         foreach ($services as [, , $index, $serviceId, $class]) {
@@ -98,12 +98,12 @@ class PriorityTaggedServiceUtil
         }
         if ($checkTaggedItem && !$r->hasMethod($defaultMethod)) {
             foreach (method_exists($r, 'getAttributes') ? $r->getAttributes(AsTaggedItem::class) : [] as $attribute) {
-                return ('priority' === $indexAttribute) ? $attribute->newInstance()->priority : $attribute->newInstance()->index;
+                return 'priority' === $indexAttribute ? $attribute->newInstance()->priority : $attribute->newInstance()->index;
             }
             return null;
         }
         if (null !== $indexAttribute) {
-            $service = ($class !== $serviceId) ? sprintf('service "%s"', $serviceId) : 'on the corresponding service';
+            $service = $class !== $serviceId ? sprintf('service "%s"', $serviceId) : 'on the corresponding service';
             $message = [sprintf('Either method "%s::%s()" should ', $class, $defaultMethod), sprintf(' or tag "%s" on %s is missing attribute "%s".', $tagName, $service, $indexAttribute)];
         } else {
             $message = [sprintf('Method "%s::%s()" should ', $class, $defaultMethod), '.'];

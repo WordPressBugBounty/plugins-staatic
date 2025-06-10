@@ -30,7 +30,11 @@ final class PublicationDownloadPage implements ModuleInterface
     /** @var string */
     public const PAGE_SLUG = 'staatic-publication-download';
 
-    public function __construct(AdminNavigation $navigation, PublicationRepository $publicationRepository, PublicationArchiver $publicationArchiver)
+    public function __construct(
+        AdminNavigation $navigation,
+        PublicationRepository $publicationRepository,
+        PublicationArchiver $publicationArchiver
+    )
     {
         $this->navigation = $navigation;
         $this->publicationRepository = $publicationRepository;

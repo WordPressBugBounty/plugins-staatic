@@ -191,6 +191,6 @@ final class HttpClientDataCollector extends DataCollector implements LateDataCol
     }
     private function argMaxLengthIsSafe(string $payload): bool
     {
-        return \strlen($payload) < (('\\' === \DIRECTORY_SEPARATOR) ? 8100 : 256000);
+        return \strlen($payload) < ('\\' === \DIRECTORY_SEPARATOR ? 8100 : 256000);
     }
 }

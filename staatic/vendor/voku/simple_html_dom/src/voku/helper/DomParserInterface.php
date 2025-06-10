@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\voku\helper;
 
 use DOMDocument;
+
 interface DomParserInterface
 {
     /**

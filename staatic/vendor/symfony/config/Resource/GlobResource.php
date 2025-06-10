@@ -115,7 +115,7 @@ class GlobResource implements IteratorAggregate, SelfCheckingResourceInterface
                     if (\false !== $i = strpos($p, '/**/')) {
                         $p = substr_replace($p, '/*', $i);
                     }
-                    $paths += array_fill_keys(glob($this->prefix . $p, \GLOB_NOSORT), (\false !== $i) ? $regex : null);
+                    $paths += array_fill_keys(glob($this->prefix . $p, \GLOB_NOSORT), \false !== $i ? $regex : null);
                 }
             }
         }

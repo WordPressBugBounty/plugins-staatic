@@ -87,7 +87,7 @@ class Registry
                 $proto = $reflector->newInstanceWithoutConstructor();
                 $instantiableWithoutConstructor = \true;
             } catch (ReflectionException $exception) {
-                $proto = ($reflector->implementsInterface('Serializable') && !method_exists($class, '__unserialize')) ? 'C:' : 'O:';
+                $proto = $reflector->implementsInterface('Serializable') && !method_exists($class, '__unserialize') ? 'C:' : 'O:';
                 if ('C:' === $proto && !$reflector->getMethod('unserialize')->isInternal()) {
                     $proto = null;
                 } else {

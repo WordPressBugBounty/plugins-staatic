@@ -9,6 +9,7 @@ use BadMethodCallException;
 use DOMElement;
 use RuntimeException;
 use DOMText;
+
 class SimpleHtmlDom extends AbstractSimpleHtmlDom implements IteratorAggregate, SimpleHtmlDomInterface
 {
     public function __construct(DOMNode $node)

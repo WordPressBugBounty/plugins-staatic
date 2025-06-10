@@ -65,13 +65,13 @@ final class CurlHttpClient implements HttpClientInterface, LoggerAwareInterface,
         $scheme = $url['scheme'];
         $authority = $url['authority'];
         $host = parse_url($authority, \PHP_URL_HOST);
-        $port = parse_url($authority, \PHP_URL_PORT) ?: (('http:' === $scheme) ? 80 : 443);
+        $port = parse_url($authority, \PHP_URL_PORT) ?: ('http:' === $scheme ? 80 : 443);
         $proxy = self::getProxyUrl($options['proxy'], $url);
         $url = implode('', $url);
         if (!isset($options['normalized_headers']['user-agent'])) {
             $options['headers'][] = 'User-Agent: Symfony HttpClient/Curl';
         }
-        $curlopts = [\CURLOPT_URL => $url, \CURLOPT_TCP_NODELAY => \true, \CURLOPT_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS, \CURLOPT_REDIR_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS, \CURLOPT_FOLLOWLOCATION => \true, \CURLOPT_MAXREDIRS => (0 < $options['max_redirects']) ? $options['max_redirects'] : 0, \CURLOPT_COOKIEFILE => '', \CURLOPT_TIMEOUT => 0, \CURLOPT_PROXY => $proxy, \CURLOPT_NOPROXY => $options['no_proxy'] ?? $_SERVER['no_proxy'] ?? $_SERVER['NO_PROXY'] ?? '', \CURLOPT_SSL_VERIFYPEER => $options['verify_peer'], \CURLOPT_SSL_VERIFYHOST => $options['verify_host'] ? 2 : 0, \CURLOPT_CAINFO => $options['cafile'], \CURLOPT_CAPATH => $options['capath'], \CURLOPT_SSL_CIPHER_LIST => $options['ciphers'], \CURLOPT_SSLCERT => $options['local_cert'], \CURLOPT_SSLKEY => $options['local_pk'], \CURLOPT_KEYPASSWD => $options['passphrase'], \CURLOPT_CERTINFO => $options['capture_peer_cert_chain']];
+        $curlopts = [\CURLOPT_URL => $url, \CURLOPT_TCP_NODELAY => \true, \CURLOPT_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS, \CURLOPT_REDIR_PROTOCOLS => \CURLPROTO_HTTP | \CURLPROTO_HTTPS, \CURLOPT_FOLLOWLOCATION => \true, \CURLOPT_MAXREDIRS => 0 < $options['max_redirects'] ? $options['max_redirects'] : 0, \CURLOPT_COOKIEFILE => '', \CURLOPT_TIMEOUT => 0, \CURLOPT_PROXY => $proxy, \CURLOPT_NOPROXY => $options['no_proxy'] ?? $_SERVER['no_proxy'] ?? $_SERVER['NO_PROXY'] ?? '', \CURLOPT_SSL_VERIFYPEER => $options['verify_peer'], \CURLOPT_SSL_VERIFYHOST => $options['verify_host'] ? 2 : 0, \CURLOPT_CAINFO => $options['cafile'], \CURLOPT_CAPATH => $options['capath'], \CURLOPT_SSL_CIPHER_LIST => $options['ciphers'], \CURLOPT_SSLCERT => $options['local_cert'], \CURLOPT_SSLKEY => $options['local_pk'], \CURLOPT_KEYPASSWD => $options['passphrase'], \CURLOPT_CERTINFO => $options['capture_peer_cert_chain']];
         if (1.0 === (float) $options['http_version']) {
             $curlopts[\CURLOPT_HTTP_VERSION] = \CURL_HTTP_VERSION_1_0;
         } elseif (1.1 === (float) $options['http_version']) {
@@ -110,7 +110,7 @@ final class CurlHttpClient implements HttpClientInterface, LoggerAwareInterface,
                 $this->multi->reset();
             }
             foreach ($options['resolve'] as $host => $ip) {
-                $resolve[] = (null === $ip) ? "-{$host}:{$port}" : "{$host}:{$port}:{$ip}";
+                $resolve[] = null === $ip ? "-{$host}:{$port}" : "{$host}:{$port}:{$ip}";
                 $this->multi->dnsCache->hostnames[$host] = $ip;
                 $this->multi->dnsCache->removals["-{$host}:{$port}"] = "-{$host}:{$port}";
             }
@@ -302,8 +302,8 @@ final class CurlHttpClient implements HttpClientInterface, LoggerAwareInterface,
                 $redirectHeaders['with_auth'] = array_filter($redirectHeaders['with_auth'], $filterContentHeaders);
             }
             if ($redirectHeaders && $host = parse_url('http:' . $location['authority'], \PHP_URL_HOST)) {
-                $port = parse_url('http:' . $location['authority'], \PHP_URL_PORT) ?: (('http:' === $location['scheme']) ? 80 : 443);
-                $requestHeaders = ($redirectHeaders['host'] === $host && $redirectHeaders['port'] === $port) ? $redirectHeaders['with_auth'] : $redirectHeaders['no_auth'];
+                $port = parse_url('http:' . $location['authority'], \PHP_URL_PORT) ?: ('http:' === $location['scheme'] ? 80 : 443);
+                $requestHeaders = $redirectHeaders['host'] === $host && $redirectHeaders['port'] === $port ? $redirectHeaders['with_auth'] : $redirectHeaders['no_auth'];
                 curl_setopt($ch, \CURLOPT_HTTPHEADER, $requestHeaders);
             } elseif ($noContent && $redirectHeaders) {
                 curl_setopt($ch, \CURLOPT_HTTPHEADER, $redirectHeaders['with_auth']);

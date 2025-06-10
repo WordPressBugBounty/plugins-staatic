@@ -155,7 +155,7 @@ final class LazyUuidFromString implements UuidInterface
     {
         return ($this->unwrapped ?? $this->unwrap())->getHex();
     }
-    public function getInteger()
+    public function getInteger(): IntegerObject
     {
         return ($this->unwrapped ?? $this->unwrap())->getInteger();
     }

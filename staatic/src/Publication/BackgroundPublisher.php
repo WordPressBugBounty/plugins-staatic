@@ -63,7 +63,11 @@ final class BackgroundPublisher extends WP_Background_Process
      */
     protected $task;
 
-    public function __construct(LoggerInterface $logger, PublicationRepository $publicationRepository, PublicationTaskProvider $publicationTaskProvider)
+    public function __construct(
+        LoggerInterface $logger,
+        PublicationRepository $publicationRepository,
+        PublicationTaskProvider $publicationTaskProvider
+    )
     {
         $this->logger = $logger;
         $this->publicationRepository = $publicationRepository;
@@ -160,7 +164,7 @@ final class BackgroundPublisher extends WP_Background_Process
     public function processTimeLimit($timeLimit)
     {
         if ($this->setTimeLimitSuccess) {
-            return ($this->timeout === 0) ? self::DEFAULT_PROCESS_TIME_LIMIT : (int) ($this->timeout / 3);
+            return $this->timeout === 0 ? self::DEFAULT_PROCESS_TIME_LIMIT : (int) ($this->timeout / 3);
         }
 
         return $timeLimit;

@@ -27,7 +27,13 @@ final class RowAction implements RowActionInterface
      */
     private $arguments;
 
-    public function __construct(string $name, string $label, $href, ?callable $visibleCallback = null, array $arguments = [])
+    public function __construct(
+        string $name,
+        string $label,
+        $href,
+        ?callable $visibleCallback = null,
+        array $arguments = []
+    )
     {
         $this->name = $name;
         $this->label = $label;

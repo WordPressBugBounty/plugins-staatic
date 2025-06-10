@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use DOMXPath;
 use RuntimeException;
 use Exception;
+
 class XmlDomParser extends AbstractDomParser
 {
     private $callbackXPathBeforeQuery;

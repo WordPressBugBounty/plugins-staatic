@@ -51,6 +51,6 @@ class CreateInvalidationResult extends Result
     }
     private function populateResultPaths(SimpleXMLElement $xml): Paths
     {
-        return new Paths(['Quantity' => (int) (string) $xml->Quantity, 'Items' => (0 === ($v = $xml->Items)->count()) ? null : $this->populateResultPathList($v)]);
+        return new Paths(['Quantity' => (int) (string) $xml->Quantity, 'Items' => 0 === ($v = $xml->Items)->count() ? null : $this->populateResultPathList($v)]);
     }
 }

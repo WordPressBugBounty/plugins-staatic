@@ -63,7 +63,7 @@ final class CrawlProfileFactory
             throw new RuntimeException('No URL evaluators configured.');
         }
 
-        return (count($evaluators) > 1) ? new ChainUrlEvaluator($evaluators) : $evaluators[0];
+        return count($evaluators) > 1 ? new ChainUrlEvaluator($evaluators) : $evaluators[0];
     }
 
     private function addBaseExcludeUrls(array $excludeUrls): array
@@ -71,7 +71,13 @@ final class CrawlProfileFactory
         $wordpressPrefix = rtrim(WordpressEnv::getWordpressUrlPath(), '/');
         $patterns = array_map(function ($pattern) use ($wordpressPrefix) {
             return sprintf($pattern, preg_quote($wordpressPrefix, '~'));
-        }, ['~^%s/(xmlrpc|wp-comments-post|wp-login)\.php~', '~%s/wp-admin/?$~', '~/\?p=\d+~', '~\.htaccess$~']);
+        }, [
+            '~^%s/(xmlrpc|wp-comments-post|wp-login)\.php~',
+            '~%s/wp-admin/?$~',
+            '~/\?(p|page_id|attachment_id|cat|author|m)=\d+~',
+            '~/\?(s|tag|feed)=.+~',
+            '~\.htaccess$~'
+        ]);
 
         return array_merge($excludeUrls, $patterns);
     }

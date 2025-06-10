@@ -153,7 +153,7 @@ final class Path
             return $path;
         }
         if (empty($actualExtension)) {
-            return $path . (('.' === substr($path, -1)) ? '' : '.') . $extension;
+            return $path . ('.' === substr($path, -1) ? '' : '.') . $extension;
         }
         return substr($path, 0, -\strlen($actualExtension)) . $extension;
     }
@@ -324,14 +324,14 @@ final class Path
         $length = \strlen($path);
         if (strncmp($path, '/', strlen('/')) === 0) {
             $root .= '/';
-            $path = ($length > 1) ? substr($path, 1) : '';
+            $path = $length > 1 ? substr($path, 1) : '';
         } elseif ($length > 1 && ctype_alpha($path[0]) && ':' === $path[1]) {
             if (2 === $length) {
                 $root .= $path . '/';
                 $path = '';
             } elseif ('/' === $path[2]) {
                 $root .= substr($path, 0, 3);
-                $path = ($length > 3) ? substr($path, 3) : '';
+                $path = $length > 3 ? substr($path, 3) : '';
             }
         }
         return [$root, $path];

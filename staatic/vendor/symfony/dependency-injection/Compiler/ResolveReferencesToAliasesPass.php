@@ -32,7 +32,7 @@ class ResolveReferencesToAliasesPass extends AbstractRecursivePass
             return parent::processValue($value, $isRoot);
         }
         $defId = $this->getDefinitionId($id = (string) $value, $this->container);
-        return ($defId !== $id) ? new Reference($defId, $value->getInvalidBehavior()) : $value;
+        return $defId !== $id ? new Reference($defId, $value->getInvalidBehavior()) : $value;
     }
     private function getDefinitionId(string $id, ContainerBuilder $container): string
     {

@@ -66,7 +66,7 @@ abstract class EC extends AsymmetricKey
         $curveName = $reflect->isFinal() ? $reflect->getParentClass()->getShortName() : $reflect->getShortName();
         $curve = new $curve();
         if ($curve instanceof TwistedEdwardsCurve) {
-            $arr = $curve->extractSecret(Random::string(($curve instanceof Ed448) ? 57 : 32));
+            $arr = $curve->extractSecret(Random::string($curve instanceof Ed448 ? 57 : 32));
             $privatekey->dA = $dA = $arr['dA'];
             $privatekey->secret = $arr['secret'];
         } else {
@@ -122,11 +122,11 @@ abstract class EC extends AsymmetricKey
             return $this->curveName;
         }
         if ($this->curve instanceof MontgomeryCurve) {
-            $this->curveName = ($this->curve instanceof Curve25519) ? 'Curve25519' : 'Curve448';
+            $this->curveName = $this->curve instanceof Curve25519 ? 'Curve25519' : 'Curve448';
             return $this->curveName;
         }
         if ($this->curve instanceof TwistedEdwardsCurve) {
-            $this->curveName = ($this->curve instanceof Ed25519) ? 'Ed25519' : 'Ed448';
+            $this->curveName = $this->curve instanceof Ed25519 ? 'Ed25519' : 'Ed448';
             return $this->curveName;
         }
         $params = $this->getParameters()->toString('PKCS8', ['namedCurve' => \true]);
@@ -152,9 +152,9 @@ abstract class EC extends AsymmetricKey
             self::useBestEngine();
         }
         if ($this->curve instanceof TwistedEdwardsCurve) {
-            return ($this->curve instanceof Ed25519 && self::$engines['libsodium'] && !isset($this->context)) ? 'libsodium' : 'PHP';
+            return $this->curve instanceof Ed25519 && self::$engines['libsodium'] && !isset($this->context) ? 'libsodium' : 'PHP';
         }
-        return (self::$engines['OpenSSL'] && in_array($this->hash->getHash(), openssl_get_md_methods())) ? 'OpenSSL' : 'PHP';
+        return self::$engines['OpenSSL'] && in_array($this->hash->getHash(), openssl_get_md_methods()) ? 'OpenSSL' : 'PHP';
     }
     public function getEncodedCoordinates()
     {

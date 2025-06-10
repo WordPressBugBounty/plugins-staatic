@@ -14,7 +14,12 @@ use Staatic\Crawler\UrlTransformer\UrlTransformation;
 
 final class CrawlProfile extends AbstractCrawlProfile
 {
-    public function __construct(UriInterface $baseUrl, UriInterface $destinationUrl, bool $lowercaseUrls, UrlEvaluatorInterface $urlEvaluator)
+    public function __construct(
+        UriInterface $baseUrl,
+        UriInterface $destinationUrl,
+        bool $lowercaseUrls,
+        UrlEvaluatorInterface $urlEvaluator
+    )
     {
         $this->baseUrl = $baseUrl;
         $this->destinationUrl = $destinationUrl;

@@ -205,10 +205,10 @@ EOPHP;
         $args = '';
         $param = null;
         $parameters = [];
-        $namespace = ($function instanceof ReflectionMethod) ? $function->class : ($function->getNamespaceName() . '\\');
+        $namespace = $function instanceof ReflectionMethod ? $function->class : $function->getNamespaceName() . '\\';
         $namespace = substr($namespace, 0, strrpos($namespace, '\\') ?: 0);
         foreach ($function->getParameters() as $param) {
-            $parameters[] = ((method_exists($param, 'getAttributes') ? $param->getAttributes(SensitiveParameter::class) : []) ? '#[\SensitiveParameter] ' : '') . (($withParameterTypes && $param->hasType()) ? self::exportType($param) . ' ' : '') . ($param->isPassedByReference() ? '&' : '') . ($param->isVariadic() ? '...' : '') . '$' . $param->name . (($param->isOptional() && !$param->isVariadic()) ? ' = ' . self::exportDefault($param, $namespace) : '');
+            $parameters[] = ((method_exists($param, 'getAttributes') ? $param->getAttributes(SensitiveParameter::class) : []) ? '#[\SensitiveParameter] ' : '') . ($withParameterTypes && $param->hasType() ? self::exportType($param) . ' ' : '') . ($param->isPassedByReference() ? '&' : '') . ($param->isVariadic() ? '...' : '') . '$' . $param->name . ($param->isOptional() && !$param->isVariadic() ? ' = ' . self::exportDefault($param, $namespace) : '');
             if ($param->isPassedByReference()) {
                 $byRefIndex = 1 + $param->getPosition();
             }
@@ -237,7 +237,7 @@ EOPHP;
                 return '#[\ReturnTypeWillChange] ' . $signature;
             }
             try {
-                $function = ($function instanceof ReflectionMethod && $function->isAbstract()) ? \false : $getPrototype($function);
+                $function = $function instanceof ReflectionMethod && $function->isAbstract() ? \false : $getPrototype($function);
             } catch (ReflectionException $exception) {
                 break;
             }
@@ -249,7 +249,7 @@ EOPHP;
      */
     public static function exportType($owner, bool $noBuiltin = \false, ?ReflectionType $type = null): ?string
     {
-        if (!($type = $type ?? (($owner instanceof ReflectionFunctionAbstract) ? $owner->getReturnType() : $owner->getType()))) {
+        if (!($type = $type ?? ($owner instanceof ReflectionFunctionAbstract ? $owner->getReturnType() : $owner->getType()))) {
             return null;
         }
         $class = null;
@@ -276,15 +276,15 @@ EOPHP;
                 continue;
             }
             if (\in_array($name, ['parent', 'self'], \true) && ($class = $class ?? $owner->getDeclaringClass())) {
-                $name = ('parent' === $name) ? (($nullsafeVariable6 = $class->getParentClass() ?: null) ? $nullsafeVariable6->name : null) ?? 'parent' : $class->name;
+                $name = 'parent' === $name ? (($nullsafeVariable6 = $class->getParentClass() ?: null) ? $nullsafeVariable6->name : null) ?? 'parent' : $class->name;
             }
-            $types[] = (($noBuiltin || $type->isBuiltin() || 'static' === $name) ? '' : '\\') . $name;
+            $types[] = ($noBuiltin || $type->isBuiltin() || 'static' === $name ? '' : '\\') . $name;
         }
         if (!$types) {
             return '';
         }
         if (null === $glue) {
-            return ((!$noBuiltin && $type->allowsNull() && !\in_array($name, ['mixed', 'null'], \true)) ? '?' : '') . $types[0];
+            return (!$noBuiltin && $type->allowsNull() && !\in_array($name, ['mixed', 'null'], \true) ? '?' : '') . $types[0];
         }
         sort($types);
         return implode($glue, $types);
@@ -340,7 +340,7 @@ EOPHP;
                 case '"':
                     return $part;
                 case "'":
-                    return (\false !== strpbrk($part, "\\\x00\r\n")) ? '"' . substr(str_replace(['$', "\x00", "\r", "\n"], ['\$', '\0', '\r', '\n'], $part), 1, -1) . '"' : $part;
+                    return \false !== strpbrk($part, "\\\x00\r\n") ? '"' . substr(str_replace(['$', "\x00", "\r", "\n"], ['\$', '\0', '\r', '\n'], $part), 1, -1) . '"' : $part;
                 default:
                     return preg_replace_callback($regexp, $callback, $part);
             }

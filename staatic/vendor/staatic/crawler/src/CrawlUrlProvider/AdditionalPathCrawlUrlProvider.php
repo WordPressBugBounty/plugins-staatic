@@ -54,8 +54,8 @@ final class AdditionalPathCrawlUrlProvider implements CrawlUrlProviderInterface
     }
     private function convertPathToCrawlUrl(AdditionalPath $spec, string $path): CrawlUrl
     {
-        $path = (\DIRECTORY_SEPARATOR === '/') ? $path : str_replace(\DIRECTORY_SEPARATOR, '/', $path);
-        $relativePath = ($spec->path() === $path) ? basename($path) : str_replace("{$spec->path()}/", '', $path);
+        $path = \DIRECTORY_SEPARATOR === '/' ? $path : str_replace(\DIRECTORY_SEPARATOR, '/', $path);
+        $relativePath = $spec->path() === $path ? basename($path) : str_replace("{$spec->path()}/", '', $path);
         $url = new Uri("{$spec->uriBasePath()}/{$relativePath}");
         $url = $this->baseUrl ? UriResolver::resolve($this->baseUrl, $url) : $url;
         return $spec->createCrawlUrl($url);

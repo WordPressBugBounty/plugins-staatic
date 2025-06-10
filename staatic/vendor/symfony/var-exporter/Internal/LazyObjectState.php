@@ -62,7 +62,7 @@ class LazyObjectState
                 $properties = (array) $instance;
                 foreach ($values as $key => $value) {
                     if (!\array_key_exists($key, $properties) && [$scope, $name, $readonlyScope] = $propertyScopes[$key] ?? null) {
-                        $scope = $readonlyScope ?? (('*' !== $scope) ? $scope : $class);
+                        $scope = $readonlyScope ?? ('*' !== $scope ? $scope : $class);
                         $accessor = LazyObjectRegistry::$classAccessors[$scope] = LazyObjectRegistry::$classAccessors[$scope] ?? LazyObjectRegistry::getClassAccessors($scope);
                         $accessor['set']($instance, $name, $value);
                         if ($k === $key) {
@@ -105,6 +105,6 @@ class LazyObjectState
         foreach (LazyObjectRegistry::$classResetters[$class] as $reset) {
             $reset($instance, $skippedProperties, $onlyProperties);
         }
-        $this->status = (self::STATUS_INITIALIZED_FULL === $this->status) ? self::STATUS_UNINITIALIZED_FULL : self::STATUS_UNINITIALIZED_PARTIAL;
+        $this->status = self::STATUS_INITIALIZED_FULL === $this->status ? self::STATUS_UNINITIALIZED_FULL : self::STATUS_UNINITIALIZED_PARTIAL;
     }
 }

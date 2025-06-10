@@ -98,6 +98,6 @@ class CopyObjectOutput extends Result
     }
     private function populateResultCopyObjectResult(SimpleXMLElement $xml): CopyObjectResult
     {
-        return new CopyObjectResult(['ETag' => (null !== $v = $xml->ETag[0]) ? (string) $v : null, 'LastModified' => (null !== $v = $xml->LastModified[0]) ? new DateTimeImmutable((string) $v) : null, 'ChecksumCRC32' => (null !== $v = $xml->ChecksumCRC32[0]) ? (string) $v : null, 'ChecksumCRC32C' => (null !== $v = $xml->ChecksumCRC32C[0]) ? (string) $v : null, 'ChecksumSHA1' => (null !== $v = $xml->ChecksumSHA1[0]) ? (string) $v : null, 'ChecksumSHA256' => (null !== $v = $xml->ChecksumSHA256[0]) ? (string) $v : null]);
+        return new CopyObjectResult(['ETag' => null !== ($v = $xml->ETag[0]) ? (string) $v : null, 'LastModified' => null !== ($v = $xml->LastModified[0]) ? new DateTimeImmutable((string) $v) : null, 'ChecksumCRC32' => null !== ($v = $xml->ChecksumCRC32[0]) ? (string) $v : null, 'ChecksumCRC32C' => null !== ($v = $xml->ChecksumCRC32C[0]) ? (string) $v : null, 'ChecksumSHA1' => null !== ($v = $xml->ChecksumSHA1[0]) ? (string) $v : null, 'ChecksumSHA256' => null !== ($v = $xml->ChecksumSHA256[0]) ? (string) $v : null]);
     }
 }

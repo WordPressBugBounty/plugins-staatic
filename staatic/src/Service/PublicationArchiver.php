@@ -33,7 +33,11 @@ final class PublicationArchiver
      */
     private $resourceRepository;
 
-    public function __construct(PublicationRepository $publicationRepository, ResultRepository $resultRepository, ResourceRepositoryInterface $resourceRepository)
+    public function __construct(
+        PublicationRepository $publicationRepository,
+        ResultRepository $resultRepository,
+        ResourceRepositoryInterface $resourceRepository
+    )
     {
         $this->publicationRepository = $publicationRepository;
         $this->resultRepository = $resultRepository;

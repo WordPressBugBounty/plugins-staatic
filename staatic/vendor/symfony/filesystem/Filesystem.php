@@ -332,7 +332,7 @@ class Filesystem
             $startPath = str_replace('\\', '/', $startPath);
         }
         $splitDriveLetter = function ($path) {
-            return (\strlen($path) > 2 && ':' === $path[1] && '/' === $path[2] && ctype_alpha($path[0])) ? [substr($path, 2), strtoupper($path[0])] : [$path, null];
+            return \strlen($path) > 2 && ':' === $path[1] && '/' === $path[2] && ctype_alpha($path[0]) ? [substr($path, 2), strtoupper($path[0])] : [$path, null];
         };
         $splitPath = function ($path) {
             $result = [];
@@ -363,8 +363,8 @@ class Filesystem
         }
         $traverser = str_repeat('../', $depth);
         $endPathRemainder = implode('/', \array_slice($endPathArr, $index));
-        $relativePath = $traverser . (('' !== $endPathRemainder) ? $endPathRemainder . '/' : '');
-        return ('' === $relativePath) ? './' : $relativePath;
+        $relativePath = $traverser . ('' !== $endPathRemainder ? $endPathRemainder . '/' : '');
+        return '' === $relativePath ? './' : $relativePath;
     }
     /**
      * @param string $originDir
@@ -473,7 +473,7 @@ class Filesystem
             if (\false === self::box('file_put_contents', $tmpFile, $content)) {
                 throw new IOException(sprintf('Failed to write file "%s": ', $filename) . self::$lastError, 0, null, $filename);
             }
-            self::box('chmod', $tmpFile, self::box('fileperms', $filename) ?: (0666 & ~umask()));
+            self::box('chmod', $tmpFile, self::box('fileperms', $filename) ?: 0666 & ~umask());
             $this->rename($tmpFile, $filename, \true);
         } finally {
             if (file_exists($tmpFile)) {
@@ -511,7 +511,7 @@ class Filesystem
     private function getSchemeAndHierarchy(string $filename): array
     {
         $components = explode('://', $filename, 2);
-        return (2 === \count($components)) ? [$components[0], $components[1]] : [null, $components[0]];
+        return 2 === \count($components) ? [$components[0], $components[1]] : [null, $components[0]];
     }
     private static function assertFunctionExists(string $func): void
     {

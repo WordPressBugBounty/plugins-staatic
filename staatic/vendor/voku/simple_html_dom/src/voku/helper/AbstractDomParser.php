@@ -5,6 +5,7 @@ namespace Staatic\Vendor\voku\helper;
 
 use BadMethodCallException;
 use DOMDocument;
+
 abstract class AbstractDomParser implements DomParserInterface
 {
     protected static $domHtmlWrapperHelper = '____simple_html_dom__voku__html_wrapper____';

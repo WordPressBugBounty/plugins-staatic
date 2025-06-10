@@ -6,6 +6,7 @@ use ReflectionClass;
 use Closure;
 use ReflectionMethod;
 use ReflectionProperty;
+
 class LazyObjectRegistry
 {
     /**
@@ -81,7 +82,7 @@ class LazyObjectRegistry
             }, 'unset' => static function ($instance, $name) {
                 unset($instance->{$name});
             }];
-        }, null, (Closure::class === $class) ? null : $class)();
+        }, null, Closure::class === $class ? null : $class)();
     }
     public static function getParentMethods($class)
     {

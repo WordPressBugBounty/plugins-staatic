@@ -113,6 +113,6 @@ class AdditionalPaths
      */
     public static function convertLegacyFormat($value): ?string
     {
-        return ($value === null) ? null : preg_replace('~^(\s*#\s*)?(\S+)\s+([FSTR]+)\s*$~m', '$1$2  $3', $value);
+        return $value === null ? null : preg_replace('~^(\s*#\s*)?(\S+)\s+([FSTR]+)\s*$~m', '$1$2  $3', $value);
     }
 }

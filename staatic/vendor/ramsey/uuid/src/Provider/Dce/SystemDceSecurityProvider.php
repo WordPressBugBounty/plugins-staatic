@@ -17,7 +17,7 @@ use function trim;
 use const PREG_SPLIT_NO_EMPTY;
 class SystemDceSecurityProvider implements DceSecurityProviderInterface
 {
-    public function getUid()
+    public function getUid(): IntegerObject
     {
         static $uid = null;
         if ($uid instanceof IntegerObject) {
@@ -32,7 +32,7 @@ class SystemDceSecurityProvider implements DceSecurityProviderInterface
         $uid = new IntegerObject($uid);
         return $uid;
     }
-    public function getGid()
+    public function getGid(): IntegerObject
     {
         static $gid = null;
         if ($gid instanceof IntegerObject) {

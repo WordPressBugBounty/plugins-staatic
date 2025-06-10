@@ -95,7 +95,7 @@ final class Polyfill
         $offset = (float) get_option('gmt_offset');
         $hours = (int) $offset;
         $minutes = $offset - $hours;
-        $sign = ($offset < 0) ? '-' : '+';
+        $sign = $offset < 0 ? '-' : '+';
         $absHour = abs($hours);
         $absMins = abs($minutes * 60);
         $tzOffset = sprintf('%s%02d:%02d', $sign, $absHour, $absMins);

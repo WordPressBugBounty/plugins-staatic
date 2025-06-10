@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\Config\Definition\Builder;
 
 use Closure;
+
 class NormalizationBuilder
 {
     protected $node;
@@ -20,7 +21,7 @@ class NormalizationBuilder
      */
     public function remap($key, $plural = null)
     {
-        $this->remappings[] = [$key, (null === $plural) ? $key . 's' : $plural];
+        $this->remappings[] = [$key, null === $plural ? $key . 's' : $plural];
         return $this;
     }
     /**

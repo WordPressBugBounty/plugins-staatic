@@ -27,7 +27,11 @@ final class LoggerFactory
      */
     private $consoleLogger;
 
-    public function __construct(LoggingLevelSetting $loggingLevel, LoggerInterface $databaseLogger, LoggerInterface $consoleLogger)
+    public function __construct(
+        LoggingLevelSetting $loggingLevel,
+        LoggerInterface $databaseLogger,
+        LoggerInterface $consoleLogger
+    )
     {
         $this->loggingLevel = $loggingLevel;
         $this->databaseLogger = $databaseLogger;

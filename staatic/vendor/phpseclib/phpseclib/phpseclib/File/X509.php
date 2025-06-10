@@ -197,13 +197,13 @@ class X509
                 $value =& $extensions[$i]['extnValue'];
                 $map = $this->getMapping($id);
                 if (!is_bool($map)) {
-                    $decoder = ($id == 'id-ce-nameConstraints') ? [static::class, 'decodeNameConstraintIP'] : [static::class, 'decodeIP'];
+                    $decoder = $id == 'id-ce-nameConstraints' ? [static::class, 'decodeNameConstraintIP'] : [static::class, 'decodeIP'];
                     $decoded = ASN1::decodeBER($value);
                     if (!$decoded) {
                         continue;
                     }
                     $mapped = ASN1::asn1map($decoded[0], $map, ['iPAddress' => $decoder]);
-                    $value = ($mapped === \false) ? $decoded[0] : $mapped;
+                    $value = $mapped === \false ? $decoded[0] : $mapped;
                     if ($id == 'id-ce-certificatePolicies') {
                         for ($j = 0; $j < count($value); $j++) {
                             if (!isset($value[$j]['policyQualifiers'])) {
@@ -219,7 +219,7 @@ class X509
                                         continue;
                                     }
                                     $mapped = ASN1::asn1map($decoded[0], $map);
-                                    $subvalue = ($mapped === \false) ? $decoded[0] : $mapped;
+                                    $subvalue = $mapped === \false ? $decoded[0] : $mapped;
                                 }
                             }
                         }
@@ -788,7 +788,7 @@ class X509
     }
     public static function encodeIP($ip)
     {
-        return is_string($ip) ? inet_pton($ip) : (inet_pton($ip[0]) . inet_pton($ip[1]));
+        return is_string($ip) ? inet_pton($ip) : inet_pton($ip[0]) . inet_pton($ip[1]);
     }
     private function translateDNProp($propName)
     {
@@ -1121,7 +1121,7 @@ class X509
             $result[$desc] = isset($result[$desc]) ? array_merge((array) $result[$desc], [$value]) : $value;
             $start = \false;
         }
-        return ($format == self::DN_OPENSSL) ? $result : $output;
+        return $format == self::DN_OPENSSL ? $result : $output;
     }
     public function getIssuerDN($format = self::DN_ARRAY)
     {
@@ -1544,10 +1544,10 @@ class X509
                 return \false;
             }
             $startDate = new DateTimeImmutable('now', new DateTimeZone(@date_default_timezone_get()));
-            $startDate = (!empty($this->startDate)) ? $this->startDate : $startDate->format('D, d M Y H:i:s O');
+            $startDate = !empty($this->startDate) ? $this->startDate : $startDate->format('D, d M Y H:i:s O');
             $endDate = new DateTimeImmutable('+1 year', new DateTimeZone(@date_default_timezone_get()));
-            $endDate = (!empty($this->endDate)) ? $this->endDate : $endDate->format('D, d M Y H:i:s O');
-            $serialNumber = (!empty($this->serialNumber)) ? $this->serialNumber : new BigInteger(Random::string(20) & "" . str_repeat("\xff", 19), 256);
+            $endDate = !empty($this->endDate) ? $this->endDate : $endDate->format('D, d M Y H:i:s O');
+            $serialNumber = !empty($this->serialNumber) ? $this->serialNumber : new BigInteger(Random::string(20) & "" . str_repeat("\xff", 19), 256);
             $this->currentCert = ['tbsCertificate' => ['version' => 'v3', 'serialNumber' => $serialNumber, 'signature' => $signatureAlgorithm, 'issuer' => \false, 'validity' => ['notBefore' => $this->timeField($startDate), 'notAfter' => $this->timeField($endDate)], 'subject' => $subject->dn, 'subjectPublicKeyInfo' => $subjectPublicKey], 'signatureAlgorithm' => $signatureAlgorithm, 'signature' => \false];
             $csrexts = $subject->getAttribute('pkcs-9-at-extensionRequest', 0);
             if (!empty($csrexts)) {
@@ -1653,7 +1653,7 @@ class X509
                 $this->currentCert['publicKeyAndChallenge']['challenge'] = $this->challenge & str_repeat("", strlen($this->challenge));
             }
         } else {
-            $this->currentCert = ['publicKeyAndChallenge' => ['spki' => $publicKey, 'challenge' => (!empty($this->challenge)) ? $this->challenge : ''], 'signatureAlgorithm' => $signatureAlgorithm, 'signature' => \false];
+            $this->currentCert = ['publicKeyAndChallenge' => ['spki' => $publicKey, 'challenge' => !empty($this->challenge) ? $this->challenge : ''], 'signatureAlgorithm' => $signatureAlgorithm, 'signature' => \false];
         }
         $publicKeyAndChallenge = $this->currentCert['publicKeyAndChallenge'];
         $this->loadSPKAC($this->saveSPKAC($this->currentCert));
@@ -1677,7 +1677,7 @@ class X509
         $signatureSubject = isset($this->signatureSubject) ? $this->signatureSubject : null;
         $signatureAlgorithm = self::identifySignatureAlgorithm($issuer->privateKey);
         $thisUpdate = new DateTimeImmutable('now', new DateTimeZone(@date_default_timezone_get()));
-        $thisUpdate = (!empty($this->startDate)) ? $this->startDate : $thisUpdate->format('D, d M Y H:i:s O');
+        $thisUpdate = !empty($this->startDate) ? $this->startDate : $thisUpdate->format('D, d M Y H:i:s O');
         if (isset($crl->currentCert) && is_array($crl->currentCert) && isset($crl->currentCert['tbsCertList'])) {
             $this->currentCert = $crl->currentCert;
             $this->currentCert['tbsCertList']['signature'] = $signatureAlgorithm;
@@ -1697,7 +1697,7 @@ class X509
             $crlNumber = $this->serialNumber;
         } else {
             $crlNumber = $this->getExtension('id-ce-cRLNumber');
-            $crlNumber = ($crlNumber !== \false) ? $crlNumber->add(new BigInteger(1)) : null;
+            $crlNumber = $crlNumber !== \false ? $crlNumber->add(new BigInteger(1)) : null;
         }
         $this->removeExtension('id-ce-authorityKeyIdentifier');
         $this->removeExtension('id-ce-issuerAltName');
@@ -2108,7 +2108,7 @@ class X509
                 $attributes[$last]['value'][] = $value;
                 break;
             default:
-                $attributes[] = ['type' => $id, 'value' => ($disposition == self::ATTR_ALL) ? $value : [$value]];
+                $attributes[] = ['type' => $id, 'value' => $disposition == self::ATTR_ALL ? $value : [$value]];
                 break;
         }
         return \true;
@@ -2176,7 +2176,7 @@ class X509
     }
     private function formatSubjectPublicKey()
     {
-        $format = ($this->publicKey instanceof RSA && $this->publicKey->getPadding() & RSA::SIGNATURE_PSS) ? 'PSS' : 'PKCS8';
+        $format = $this->publicKey instanceof RSA && $this->publicKey->getPadding() & RSA::SIGNATURE_PSS ? 'PSS' : 'PKCS8';
         $publicKey = base64_decode(preg_replace('#-.+-|[\r\n]#', '', $this->publicKey->toString($format)));
         $decoded = ASN1::decodeBER($publicKey);
         if (!$decoded) {

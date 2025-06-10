@@ -63,7 +63,7 @@ final class IniFileLoader
         }
         $homeDrive = EnvVar::get('HOMEDRIVE');
         $homePath = EnvVar::get('HOMEPATH');
-        return ($homeDrive && $homePath) ? $homeDrive . $homePath : '/';
+        return $homeDrive && $homePath ? $homeDrive . $homePath : '/';
     }
     private function parseIniFile(string $filepath): array
     {

@@ -38,7 +38,12 @@ final class RegisterAdminBar implements ModuleInterface
      */
     private $destinationUrl;
 
-    public function __construct(Formatter $formatter, PublicationRepository $publicationRepository, UrlTransformerFactory $urlTransformerFactory, DestinationUrlSetting $destinationUrl)
+    public function __construct(
+        Formatter $formatter,
+        PublicationRepository $publicationRepository,
+        UrlTransformerFactory $urlTransformerFactory,
+        DestinationUrlSetting $destinationUrl
+    )
     {
         $this->formatter = $formatter;
         $this->publicationRepository = $publicationRepository;

@@ -21,7 +21,13 @@ final class PublicationStatusColumn extends AbstractColumn
      */
     private $taskProvider;
 
-    public function __construct(Formatter $formatter, PublicationTaskProvider $taskProvider, string $name, string $label, array $arguments = [])
+    public function __construct(
+        Formatter $formatter,
+        PublicationTaskProvider $taskProvider,
+        string $name,
+        string $label,
+        array $arguments = []
+    )
     {
         $this->formatter = $formatter;
         $this->taskProvider = $taskProvider;

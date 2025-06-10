@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\GuzzleHttp\Psr7;
 
 use TypeError;
+
 final class Header
 {
     public static function parse($header): array

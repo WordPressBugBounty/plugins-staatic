@@ -58,7 +58,7 @@ class Prime extends Base
         if (!isset($this->factory)) {
             throw new RuntimeException('setModulo needs to be called before this method');
         }
-        $this->p = [($x instanceof BigInteger) ? $this->factory->newInteger($x) : $x, ($y instanceof BigInteger) ? $this->factory->newInteger($y) : $y];
+        $this->p = [$x instanceof BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof BigInteger ? $this->factory->newInteger($y) : $y];
     }
     public function getBasePoint()
     {
@@ -287,7 +287,7 @@ class Prime extends Base
             throw new RuntimeException('Unable to derive Y coordinate');
         }
         $bn = $b->isOdd();
-        $yp = ($ypn == $bn) ? $b : $b->negate();
+        $yp = $ypn == $bn ? $b : $b->negate();
         return [$xp, $yp];
     }
     /**
@@ -395,7 +395,7 @@ class Prime extends Base
                 if ($z == 0) {
                     continue;
                 }
-                $p = ($z > 0) ? $wnd[$j][$z - 1 >> 1] : $this->negatePoint($wnd[$j][-$z - 1 >> 1]);
+                $p = $z > 0 ? $wnd[$j][$z - 1 >> 1] : $this->negatePoint($wnd[$j][-$z - 1 >> 1]);
                 $acc = $this->addPoint($acc, $p);
             }
         }
@@ -408,18 +408,14 @@ class Prime extends Base
         }
         $res = [$point];
         $max = (1 << $wnd) - 1;
-        $dbl = ($max == 1) ? null : $this->doublePoint($point);
+        $dbl = $max == 1 ? null : $this->doublePoint($point);
         for ($i = 1; $i < $max; $i++) {
             $res[] = $this->addPoint($res[$i - 1], $dbl);
         }
         $point['naf'] = $res;
         return $res;
     }
-    /**
-     * @param mixed $k1
-     * @param mixed $k2
-     */
-    private static function getJSFPoints($k1, $k2)
+    private static function getJSFPoints(Integer $k1, Integer $k2)
     {
         static $three;
         if (!isset($three)) {
@@ -448,7 +444,7 @@ class Prime extends Base
                 $m8 = $k1->testBit(0) + 2 * $k1->testBit(1) + 4 * $k1->testBit(2);
                 $m8 += $d1;
                 $m8 &= 7;
-                $u1 = (($m8 == 3 || $m8 == 5) && $m24 == 2) ? -$m14 : $m14;
+                $u1 = ($m8 == 3 || $m8 == 5) && $m24 == 2 ? -$m14 : $m14;
             }
             $jsf[0][] = $u1;
             $u2 = 0;
@@ -456,7 +452,7 @@ class Prime extends Base
                 $m8 = $k2->testBit(0) + 2 * $k2->testBit(1) + 4 * $k2->testBit(2);
                 $m8 += $d2;
                 $m8 &= 7;
-                $u2 = (($m8 == 3 || $m8 == 5) && $m14 == 2) ? -$m24 : $m24;
+                $u2 = ($m8 == 3 || $m8 == 5) && $m14 == 2 ? -$m24 : $m24;
             }
             $jsf[1][] = $u2;
             if (2 * $d1 == $u1 + 1) {

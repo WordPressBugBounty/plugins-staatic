@@ -43,10 +43,13 @@ class RedeployCommand
 
     use PublishesFromCli;
 
-    /**
-     * @param mixed $logger
-     */
-    public function __construct($logger, Formatter $formatter, PublicationRepository $publicationRepository, PublicationManagerInterface $publicationManager, PublicationTaskProvider $taskProvider)
+    public function __construct(
+        PsrLoggerInterface $logger,
+        Formatter $formatter,
+        PublicationRepository $publicationRepository,
+        PublicationManagerInterface $publicationManager,
+        PublicationTaskProvider $taskProvider
+    )
     {
         $this->logger = $logger;
         $this->formatter = $formatter;

@@ -99,9 +99,9 @@ abstract class AbstractApi
         if (($requestBody = $request->getBody()) instanceof StringStream) {
             $requestBody = $requestBody->stringify();
         }
-        $response = $this->httpClient->request($request->getMethod(), $request->getEndpoint(), ['headers' => $request->getHeaders()] + ((0 === $length) ? [] : ['body' => $requestBody]));
+        $response = $this->httpClient->request($request->getMethod(), $request->getEndpoint(), ['headers' => $request->getHeaders()] + (0 === $length ? [] : ['body' => $requestBody]));
         if ($debug = filter_var($this->configuration->get('debug'), \FILTER_VALIDATE_BOOLEAN)) {
-            $this->logger->debug('AsyncAws HTTP request sent: {method} {endpoint}', ['method' => $request->getMethod(), 'endpoint' => $request->getEndpoint(), 'headers' => json_encode($request->getHeaders()), 'body' => (0 === $length) ? null : $requestBody]);
+            $this->logger->debug('AsyncAws HTTP request sent: {method} {endpoint}', ['method' => $request->getMethod(), 'endpoint' => $request->getEndpoint(), 'headers' => json_encode($request->getHeaders()), 'body' => 0 === $length ? null : $requestBody]);
         }
         return new Response($response, $this->httpClient, $this->logger, $this->awsErrorFactory, $this->endpointCache, $request, $debug, $context ? $context->getExceptionMapping() : []);
     }
@@ -147,7 +147,7 @@ abstract class AbstractApi
         if ([] === $query) {
             return $endpoint;
         }
-        return $endpoint . ((\false === strpos($endpoint, '?')) ? '?' : '&') . http_build_query($query, '', '&', \PHP_QUERY_RFC3986);
+        return $endpoint . (\false === strpos($endpoint, '?') ? '?' : '&') . http_build_query($query, '', '&', \PHP_QUERY_RFC3986);
     }
     /**
      * @param string|null $region
@@ -184,7 +184,7 @@ abstract class AbstractApi
         if (empty($query)) {
             return $endpoint;
         }
-        return $endpoint . ((\false === strpos($endpoint, '?')) ? '?' : '&') . http_build_query($query);
+        return $endpoint . (\false === strpos($endpoint, '?') ? '?' : '&') . http_build_query($query);
     }
     private function getSigner(?string $region): Signer
     {

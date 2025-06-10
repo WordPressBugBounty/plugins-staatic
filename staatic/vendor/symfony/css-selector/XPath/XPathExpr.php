@@ -80,7 +80,7 @@ class XPathExpr
     public function __toString(): string
     {
         $path = $this->path . $this->element;
-        $condition = (null === $this->condition || '' === $this->condition) ? '' : ('[' . $this->condition . ']');
+        $condition = null === $this->condition || '' === $this->condition ? '' : '[' . $this->condition . ']';
         return $path . $condition;
     }
 }

@@ -36,7 +36,7 @@ class YamlReferenceDumper
             if (!$node instanceof ArrayNode) {
                 throw new UnexpectedValueException(sprintf('Unable to find node at path "%s.%s".', $rootNode->getName(), $path));
             }
-            $children = ($node instanceof PrototypedArrayNode) ? $this->getPrototypeChildren($node) : $node->getChildren();
+            $children = $node instanceof PrototypedArrayNode ? $this->getPrototypeChildren($node) : $node->getChildren();
             foreach ($children as $child) {
                 if ($child->getName() === $step) {
                     $node = $child;
@@ -99,14 +99,14 @@ class YamlReferenceDumper
         }
         if ($node instanceof BaseNode && $node->isDeprecated()) {
             $deprecation = $node->getDeprecation($node->getName(), $parentNode ? $parentNode->getPath() : $node->getPath());
-            $comments[] = sprintf('Deprecated (%s)', (($deprecation['package'] || $deprecation['version']) ? "Since {$deprecation['package']} {$deprecation['version']}: " : '') . $deprecation['message']);
+            $comments[] = sprintf('Deprecated (%s)', ($deprecation['package'] || $deprecation['version'] ? "Since {$deprecation['package']} {$deprecation['version']}: " : '') . $deprecation['message']);
         }
         if ($example && !\is_array($example)) {
             $comments[] = 'Example: ' . Inline::dump($example);
         }
-        $default = ('' != (string) $default) ? ' ' . $default : '';
+        $default = '' != (string) $default ? ' ' . $default : '';
         $comments = \count($comments) ? '# ' . implode(', ', $comments) : '';
-        $key = $prototypedArray ? '-' : ($node->getName() . ':');
+        $key = $prototypedArray ? '-' : $node->getName() . ':';
         $text = rtrim(sprintf('%-21s%s %s', $key, $default, $comments), ' ');
         if ($node instanceof BaseNode && $info = $node->getInfo()) {
             $this->writeLine('');
@@ -116,13 +116,13 @@ class YamlReferenceDumper
         $this->writeLine($text, $depth * 4);
         if ($defaultArray) {
             $this->writeLine('');
-            $message = (\count($defaultArray) > 1) ? 'Defaults' : 'Default';
+            $message = \count($defaultArray) > 1 ? 'Defaults' : 'Default';
             $this->writeLine('# ' . $message . ':', $depth * 4 + 4);
             $this->writeArray($defaultArray, $depth + 1);
         }
         if (\is_array($example)) {
             $this->writeLine('');
-            $message = (\count($example) > 1) ? 'Examples' : 'Example';
+            $message = \count($example) > 1 ? 'Examples' : 'Example';
             $this->writeLine('# ' . $message . ':', $depth * 4 + 4);
             $this->writeArray(array_map(Closure::fromCallable([Inline::class, 'dump']), $example), $depth + 1, \true);
         }

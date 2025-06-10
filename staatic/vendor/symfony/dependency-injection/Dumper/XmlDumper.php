@@ -97,7 +97,7 @@ class XmlDumper extends Dumper
             $service->setAttribute('decorates', $decorated);
             $decorationOnInvalid = $decoratedService[3] ?? ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE;
             if (\in_array($decorationOnInvalid, [ContainerInterface::IGNORE_ON_INVALID_REFERENCE, ContainerInterface::NULL_ON_INVALID_REFERENCE], \true)) {
-                $invalidBehavior = (ContainerInterface::NULL_ON_INVALID_REFERENCE === $decorationOnInvalid) ? 'null' : 'ignore';
+                $invalidBehavior = ContainerInterface::NULL_ON_INVALID_REFERENCE === $decorationOnInvalid ? 'null' : 'ignore';
                 $service->setAttribute('decoration-on-invalid', $invalidBehavior);
             }
             if (null !== $renamedId) {
@@ -144,7 +144,7 @@ class XmlDumper extends Dumper
                 $factory->setAttribute('method', $callable[1]);
             } elseif (\is_array($callable)) {
                 if (null !== $callable[0]) {
-                    $factory->setAttribute(($callable[0] instanceof Reference) ? 'service' : 'class', $callable[0]);
+                    $factory->setAttribute($callable[0] instanceof Reference ? 'service' : 'class', $callable[0]);
                 }
                 $factory->setAttribute('method', $callable[1]);
             } else {
@@ -175,7 +175,7 @@ class XmlDumper extends Dumper
                 $this->addService($callable[0], null, $configurator);
                 $configurator->setAttribute('method', $callable[1]);
             } elseif (\is_array($callable)) {
-                $configurator->setAttribute(($callable[0] instanceof Reference) ? 'service' : 'class', $callable[0]);
+                $configurator->setAttribute($callable[0] instanceof Reference ? 'service' : 'class', $callable[0]);
                 $configurator->setAttribute('method', $callable[1]);
             } else {
                 $configurator->setAttribute('function', $callable);
@@ -262,7 +262,7 @@ class XmlDumper extends Dumper
                 $element->setAttribute('type', 'collection');
                 $this->convertParameters($value, $type, $element, 'key');
             } elseif ($value instanceof TaggedIteratorArgument || $value instanceof ServiceLocatorArgument && $tag = $value->getTaggedIteratorArgument()) {
-                $element->setAttribute('type', ($value instanceof TaggedIteratorArgument) ? 'tagged_iterator' : 'tagged_locator');
+                $element->setAttribute('type', $value instanceof TaggedIteratorArgument ? 'tagged_iterator' : 'tagged_locator');
                 $element->setAttribute('tag', $tag->getTag());
                 if (null !== $tag->getIndexAttribute()) {
                     $element->setAttribute('index-by', $tag->getIndexAttribute());

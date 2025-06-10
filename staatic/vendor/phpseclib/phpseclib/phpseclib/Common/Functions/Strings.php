@@ -67,7 +67,7 @@ abstract class Strings
                 case 'Q':
                     extract(unpack('Nupper/Nlower', self::shift($data, 8)));
                     $temp = $upper ? 4294967296 * $upper : 0;
-                    $temp += ($lower < 0) ? ($lower & 0x7ffffffff) + 0x80000000 : $lower;
+                    $temp += $lower < 0 ? ($lower & 0x7ffffffff) + 0x80000000 : $lower;
                     $result[] = $temp;
                     continue 2;
             }
@@ -182,9 +182,9 @@ abstract class Strings
         $parts = str_split($x, $block_size);
         $str = '';
         foreach ($parts as $part) {
-            $xor = ($part[0] == '1') ? \PHP_INT_MIN : 0;
+            $xor = $part[0] == '1' ? \PHP_INT_MIN : 0;
             $part[0] = '0';
-            $str .= pack((\PHP_INT_SIZE == 4) ? 'N' : 'J', $xor ^ eval('return 0b' . $part . ';'));
+            $str .= pack(\PHP_INT_SIZE == 4 ? 'N' : 'J', $xor ^ eval('return 0b' . $part . ';'));
         }
         return ltrim($str, "\x00");
     }

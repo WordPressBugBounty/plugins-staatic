@@ -27,7 +27,7 @@ class VariableNode extends BaseNode implements PrototypeNodeInterface
     public function getDefaultValue()
     {
         $v = $this->defaultValue;
-        return ($v instanceof Closure) ? $v() : $v;
+        return $v instanceof Closure ? $v() : $v;
     }
     /**
      * @param bool $boolean

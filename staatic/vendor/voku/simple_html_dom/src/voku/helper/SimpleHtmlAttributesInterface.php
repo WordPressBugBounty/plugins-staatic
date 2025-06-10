@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\voku\helper;
 
 use ArrayIterator;
+
 interface SimpleHtmlAttributesInterface
 {
     /**

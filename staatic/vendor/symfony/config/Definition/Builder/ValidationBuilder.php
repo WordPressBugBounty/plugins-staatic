@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\Config\Definition\Builder;
 
 use Closure;
+
 class ValidationBuilder
 {
     protected $node;

@@ -16,7 +16,7 @@ trait BindTrait
     {
         $valueOrRef = static::processValue($valueOrRef, \true);
         $bindings = $this->definition->getBindings();
-        $type = ($this instanceof DefaultsConfigurator) ? BoundArgument::DEFAULTS_BINDING : (($this instanceof InstanceofConfigurator) ? BoundArgument::INSTANCEOF_BINDING : BoundArgument::SERVICE_BINDING);
+        $type = $this instanceof DefaultsConfigurator ? BoundArgument::DEFAULTS_BINDING : ($this instanceof InstanceofConfigurator ? BoundArgument::INSTANCEOF_BINDING : BoundArgument::SERVICE_BINDING);
         $bindings[$nameOrFqcn] = new BoundArgument($valueOrRef, \true, $type, $this->path ?? null);
         $this->definition->setBindings($bindings);
         return $this;

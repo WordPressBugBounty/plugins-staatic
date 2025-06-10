@@ -5,6 +5,7 @@ namespace Staatic\Vendor\GuzzleHttp\Promise;
 
 use Throwable;
 use LogicException;
+
 class Promise implements PromiseInterface
 {
     private $state = self::PENDING;
@@ -98,7 +99,7 @@ class Promise implements PromiseInterface
             if ($state === $this->state && $value === $this->result) {
                 return;
             }
-            throw ($this->state === $state) ? new LogicException("The promise is already {$state}.") : new LogicException("Cannot change a {$this->state} promise to {$state}");
+            throw $this->state === $state ? new LogicException("The promise is already {$state}.") : new LogicException("Cannot change a {$this->state} promise to {$state}");
         }
         if ($value === $this) {
             throw new LogicException('Cannot fulfill or reject a promise with itself');
@@ -113,7 +114,7 @@ class Promise implements PromiseInterface
             return;
         }
         if (!is_object($value) || !method_exists($value, 'then')) {
-            $id = ($state === self::FULFILLED) ? 1 : 2;
+            $id = $state === self::FULFILLED ? 1 : 2;
             Utils::queue()->add(static function () use ($id, $value, $handlers): void {
                 foreach ($handlers as $handler) {
                     self::callHandler($id, $value, $handler);

@@ -6,6 +6,7 @@ use ReflectionException;
 use Exception;
 use Throwable;
 use ReflectionProperty;
+
 class ClassExistenceResource implements SelfCheckingResourceInterface
 {
     /**

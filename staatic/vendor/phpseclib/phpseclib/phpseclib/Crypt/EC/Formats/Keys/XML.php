@@ -91,10 +91,7 @@ abstract class XML
     {
         return Strings::base64_decode(str_replace(["\r", "\n", ' ', "\t"], '', $value));
     }
-    /**
-     * @param mixed $curve
-     */
-    private static function extractPointRFC4050(DOMXPath $xpath, $curve)
+    private static function extractPointRFC4050(DOMXPath $xpath, BaseCurve $curve)
     {
         $x = self::query($xpath, 'publickey/x');
         $y = self::query($xpath, 'publickey/y');
@@ -238,10 +235,7 @@ abstract class XML
         $publicKey = "\x04" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
         return '<' . $pre . 'ECDSAKeyValue xmlns' . $post . '="http://www.w3.org/2009/xmldsig11#">' . "\r\n" . self::encodeXMLParameters($curve, $pre, $options) . "\r\n" . '<' . $pre . 'PublicKey>' . Strings::base64_encode($publicKey) . '</' . $pre . 'PublicKey>' . "\r\n" . '</' . $pre . 'ECDSAKeyValue>';
     }
-    /**
-     * @param mixed $curve
-     */
-    private static function encodeXMLParameters($curve, $pre, array $options = [])
+    private static function encodeXMLParameters(BaseCurve $curve, $pre, array $options = [])
     {
         $result = self::encodeParameters($curve, \true, $options);
         if (isset($result['namedCurve'])) {

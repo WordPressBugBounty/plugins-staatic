@@ -29,7 +29,11 @@ final class S3DeployerModule implements ModuleInterface
 
     public const DEPLOYMENT_METHOD_NAME = 'aws';
 
-    public function __construct(Settings $settings, ServiceLocator $settingLocator, AwsDeployStrategyFactory $deployStrategyFactory)
+    public function __construct(
+        Settings $settings,
+        ServiceLocator $settingLocator,
+        AwsDeployStrategyFactory $deployStrategyFactory
+    )
     {
         $this->settings = $settings;
         $this->settingLocator = $settingLocator;

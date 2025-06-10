@@ -67,7 +67,7 @@ final class InstanceProvider implements CredentialProvider
             throw new TransportException('Response body is empty.');
         }
         try {
-            $content = json_decode($content, \true, 512, \JSON_BIGINT_AS_STRING | ((\PHP_VERSION_ID >= 70300) ? 0 : 0));
+            $content = json_decode($content, \true, 512, \JSON_BIGINT_AS_STRING | (\PHP_VERSION_ID >= 70300 ? 0 : 0));
         } catch (\JsonException $e) {
             throw new JsonException(\sprintf('%s for "%s".', $e->getMessage(), $response->getInfo('url')), $e->getCode());
         }

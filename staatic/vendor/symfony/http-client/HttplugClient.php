@@ -69,7 +69,7 @@ final class HttplugClient implements HttplugInterface, HttpAsyncClient, RequestF
     public function __construct(HttpClientInterface $client = null, ResponseFactoryInterface $responseFactory = null, StreamFactoryInterface $streamFactory = null)
     {
         $this->client = $client ?? HttpClient::create();
-        $streamFactory = $streamFactory ?? (($responseFactory instanceof StreamFactoryInterface) ? $responseFactory : null);
+        $streamFactory = $streamFactory ?? ($responseFactory instanceof StreamFactoryInterface ? $responseFactory : null);
         $this->promisePool = class_exists(Utils::class) ? new SplObjectStorage() : null;
         if (null === $responseFactory || null === $streamFactory) {
             if (!class_exists(Psr17Factory::class) && !class_exists(Psr17FactoryDiscovery::class)) {
@@ -100,7 +100,7 @@ final class HttplugClient implements HttplugInterface, HttpAsyncClient, RequestF
     /**
      * @param RequestInterface $request
      */
-    public function sendRequest($request)
+    public function sendRequest($request): Psr7ResponseInterface
     {
         try {
             return $this->waitLoop->createPsr7Response($this->sendPsr7Request($request));

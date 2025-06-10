@@ -48,6 +48,6 @@ final class SsoCacheFileLoader
         }
         $homeDrive = EnvVar::get('HOMEDRIVE');
         $homePath = EnvVar::get('HOMEPATH');
-        return ($homeDrive && $homePath) ? $homeDrive . $homePath : '/';
+        return $homeDrive && $homePath ? $homeDrive . $homePath : '/';
     }
 }

@@ -18,7 +18,7 @@ final class PublicKey extends DSA implements Common\PublicKey
         }
         extract($params);
         if (self::$engines['OpenSSL'] && in_array($this->hash->getHash(), openssl_get_md_methods())) {
-            $sig = ($format != 'ASN1') ? ASN1Signature::save($r, $s) : $signature;
+            $sig = $format != 'ASN1' ? ASN1Signature::save($r, $s) : $signature;
             $result = openssl_verify($message, $sig, $this->toString('PKCS8'), $this->hash->getHash());
             if ($result != -1) {
                 return (bool) $result;

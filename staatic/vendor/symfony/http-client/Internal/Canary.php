@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\HttpClient\Internal;
 
 use Closure;
+
 final class Canary
 {
     /**

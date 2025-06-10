@@ -256,8 +256,8 @@ abstract class SymmetricKey
                     }
                     $dkLen = $func_args[3];
                 } else {
-                    $key_length = ($this->explicit_key_length !== \false) ? $this->explicit_key_length : $this->key_length;
-                    $dkLen = ($method == 'pbkdf1') ? 2 * $key_length : $key_length;
+                    $key_length = $this->explicit_key_length !== \false ? $this->explicit_key_length : $this->key_length;
+                    $dkLen = $method == 'pbkdf1' ? 2 * $key_length : $key_length;
                 }
                 switch (\true) {
                     case $method == 'pkcs12':
@@ -1017,7 +1017,7 @@ abstract class SymmetricKey
         if ($length < 4 || $length > 16) {
             throw new LengthException('The authentication tag must be between 4 and 16 bytes long');
         }
-        return ($length == 16) ? $this->newtag : substr($this->newtag, 0, $length);
+        return $length == 16 ? $this->newtag : substr($this->newtag, 0, $length);
     }
     public function setTag($tag)
     {
@@ -1035,7 +1035,7 @@ abstract class SymmetricKey
     }
     protected function getIV($iv)
     {
-        return ($this->mode == self::MODE_ECB) ? str_repeat("\x00", $this->block_size) : $iv;
+        return $this->mode == self::MODE_ECB ? str_repeat("\x00", $this->block_size) : $iv;
     }
     private function openssl_ctr_process($plaintext, &$encryptIV, &$buffer)
     {
@@ -1789,14 +1789,14 @@ abstract class SymmetricKey
             return $x;
         }
         if (self::$use_reg_intval) {
-            return (\PHP_INT_SIZE == 4 && \PHP_VERSION_ID >= 80100) ? intval($x) : $x;
+            return \PHP_INT_SIZE == 4 && \PHP_VERSION_ID >= 80100 ? intval($x) : $x;
         }
         return fmod($x, 0x80000000) & 0x7fffffff | (fmod(floor($x / 0x80000000), 2) & 1) << 31;
     }
     protected static function safe_intval_inline()
     {
         if (self::$use_reg_intval) {
-            return (\PHP_INT_SIZE == 4 && \PHP_VERSION_ID >= 80100) ? 'intval(%s)' : '%s';
+            return \PHP_INT_SIZE == 4 && \PHP_VERSION_ID >= 80100 ? 'intval(%s)' : '%s';
         }
         $safeint = '(is_int($temp = %s) ? $temp : (fmod($temp, 0x80000000) & 0x7FFFFFFF) | ';
         return $safeint . '((fmod(floor($temp / 0x80000000), 2) & 1) << 31))';

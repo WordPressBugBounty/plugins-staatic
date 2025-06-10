@@ -34,7 +34,7 @@ abstract class Montgomery extends Progenitor
         $result = [self::VALUE => $x];
         for ($i = 0; $i < $k; ++$i) {
             $temp = $result[self::VALUE][$i] * $cache[self::DATA][$key];
-            $temp = $temp - $class::BASE_FULL * (($class::BASE === 26) ? intval($temp / 0x4000000) : ($temp >> 31));
+            $temp = $temp - $class::BASE_FULL * ($class::BASE === 26 ? intval($temp / 0x4000000) : $temp >> 31);
             $temp = $class::regularMultiply([$temp], $n);
             $temp = array_merge(self::array_repeat(0, $i), $temp);
             $result = $class::addHelper($result[self::VALUE], \false, $temp, \false);
@@ -55,7 +55,7 @@ abstract class Montgomery extends Progenitor
         $result = $result * (2 - $x * $result) & 0xf;
         $result = $result * (2 - ($x & 0xff) * $result) & 0xff;
         $result = $result * (2 - ($x & 0xffff) * $result & 0xffff) & 0xffff;
-        $result = ($class::BASE == 26) ? fmod($result * (2 - fmod($x * $result, $class::BASE_FULL)), $class::BASE_FULL) : ($result * (2 - $x * $result % $class::BASE_FULL) % $class::BASE_FULL);
+        $result = $class::BASE == 26 ? fmod($result * (2 - fmod($x * $result, $class::BASE_FULL)), $class::BASE_FULL) : $result * (2 - $x * $result % $class::BASE_FULL) % $class::BASE_FULL;
         return $result & $class::MAX_DIGIT;
     }
 }

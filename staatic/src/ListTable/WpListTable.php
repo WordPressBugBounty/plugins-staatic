@@ -114,7 +114,7 @@ final class WpListTable extends WP_List_Table
             $defaultSortDefinition = $this->listTable->defaultSortDefinition();
             if (is_array($defaultSortDefinition)) {
                 $orderBy = $defaultSortDefinition[0];
-                $direction = ($direction === null) ? $defaultSortDefinition[1] : $direction;
+                $direction = $direction === null ? $defaultSortDefinition[1] : $direction;
             }
         }
 
@@ -198,7 +198,7 @@ final class WpListTable extends WP_List_Table
             $result['staatic-' . $this->listTable->name() . '-view-' . $name] = sprintf(
                 '<a href="%s"%s>%s</a>',
                 esc_url(add_query_arg('curview', $name, $baseUrl)),
-                ($curview == $name) ? ' class="current" aria-current="page"' : '',
+                $curview == $name ? ' class="current" aria-current="page"' : '',
                 $viewLabel
             );
         }

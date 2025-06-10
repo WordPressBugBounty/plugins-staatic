@@ -19,7 +19,10 @@ final class HttpAuthHeaders implements ModuleInterface
      */
     private $httpAuthPassword;
 
-    public function __construct(HttpAuthenticationUsernameSetting $httpAuthUsername, HttpAuthenticationPasswordSetting $httpAuthPassword)
+    public function __construct(
+        HttpAuthenticationUsernameSetting $httpAuthUsername,
+        HttpAuthenticationPasswordSetting $httpAuthPassword
+    )
     {
         $this->httpAuthUsername = $httpAuthUsername;
         $this->httpAuthPassword = $httpAuthPassword;

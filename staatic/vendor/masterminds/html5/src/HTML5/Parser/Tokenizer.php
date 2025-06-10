@@ -188,7 +188,7 @@ class Tokenizer
             return $this->bogusComment('</');
         }
         $name = $this->scanner->charsUntil("\n\f \t>");
-        $name = (self::CONFORMANT_XML === $this->mode) ? $name : strtolower($name);
+        $name = self::CONFORMANT_XML === $this->mode ? $name : strtolower($name);
         $this->scanner->whitespace();
         $tok = $this->scanner->current();
         if ('>' != $tok) {
@@ -202,7 +202,7 @@ class Tokenizer
     protected function tagName()
     {
         $name = $this->scanner->charsWhile(':_-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
-        $name = (self::CONFORMANT_XML === $this->mode) ? $name : strtolower($name);
+        $name = self::CONFORMANT_XML === $this->mode ? $name : strtolower($name);
         $attributes = array();
         $selfClose = \false;
         try {
@@ -463,7 +463,7 @@ class Tokenizer
         $pub = strtoupper($this->scanner->getAsciiAlpha());
         $white = $this->scanner->whitespace();
         if (('PUBLIC' == $pub || 'SYSTEM' == $pub) && $white > 0) {
-            $type = ('PUBLIC' == $pub) ? EventHandler::DOCTYPE_PUBLIC : EventHandler::DOCTYPE_SYSTEM;
+            $type = 'PUBLIC' == $pub ? EventHandler::DOCTYPE_PUBLIC : EventHandler::DOCTYPE_SYSTEM;
             $id = $this->quotedString("\x00>");
             if (\false === $id) {
                 $this->events->doctype($doctypeName, $type, $pub, \false);

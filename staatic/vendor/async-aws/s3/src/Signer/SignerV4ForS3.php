@@ -92,7 +92,7 @@ class SignerV4ForS3 extends SignerV4
         $request->setHeader('x-amz-decoded-content-length', (string) $contentLength);
         $request->setHeader('x-amz-content-sha256', 'STREAMING-' . self::ALGORITHM_CHUNK);
         $chunkCount = (int) ceil($contentLength / self::CHUNK_SIZE);
-        $fullChunkCount = ($chunkCount * self::CHUNK_SIZE === $contentLength) ? $chunkCount : ($chunkCount - 1);
+        $fullChunkCount = $chunkCount * self::CHUNK_SIZE === $contentLength ? $chunkCount : $chunkCount - 1;
         $metaLength = \strlen(";chunk-signature=\r\n\r\n") + 64;
         $request->setHeader('content-length', (string) ($contentLength + $fullChunkCount * ($metaLength + \strlen(dechex(self::CHUNK_SIZE))) + ($chunkCount - $fullChunkCount) * ($metaLength + \strlen(dechex($contentLength % self::CHUNK_SIZE))) + $metaLength + 1));
         $body = RewindableStream::create(IterableStream::create((function (RequestStream $body) use ($context): iterable {

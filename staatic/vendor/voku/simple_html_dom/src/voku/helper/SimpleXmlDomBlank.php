@@ -6,6 +6,7 @@ namespace Staatic\Vendor\voku\helper;
 use IteratorAggregate;
 use BadMethodCallException;
 use DOMNode;
+
 class SimpleXmlDomBlank extends AbstractSimpleXmlDom implements IteratorAggregate, SimpleXmlDomInterface
 {
     public function __call($name, $arguments)

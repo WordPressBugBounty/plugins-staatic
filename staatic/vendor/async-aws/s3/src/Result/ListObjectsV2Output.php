@@ -194,18 +194,18 @@ class ListObjectsV2Output extends Result implements IteratorAggregate
         $headers = $response->getHeaders();
         $this->requestCharged = $headers['x-amz-request-charged'][0] ?? null;
         $data = new SimpleXMLElement($response->getContent());
-        $this->isTruncated = (null !== $v = $data->IsTruncated[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null;
-        $this->contents = (0 === ($v = $data->Contents)->count()) ? [] : $this->populateResultObjectList($v);
-        $this->name = (null !== $v = $data->Name[0]) ? (string) $v : null;
-        $this->prefix = (null !== $v = $data->Prefix[0]) ? (string) $v : null;
-        $this->delimiter = (null !== $v = $data->Delimiter[0]) ? (string) $v : null;
-        $this->maxKeys = (null !== $v = $data->MaxKeys[0]) ? (int) (string) $v : null;
-        $this->commonPrefixes = (0 === ($v = $data->CommonPrefixes)->count()) ? [] : $this->populateResultCommonPrefixList($v);
-        $this->encodingType = (null !== $v = $data->EncodingType[0]) ? (string) $v : null;
-        $this->keyCount = (null !== $v = $data->KeyCount[0]) ? (int) (string) $v : null;
-        $this->continuationToken = (null !== $v = $data->ContinuationToken[0]) ? (string) $v : null;
-        $this->nextContinuationToken = (null !== $v = $data->NextContinuationToken[0]) ? (string) $v : null;
-        $this->startAfter = (null !== $v = $data->StartAfter[0]) ? (string) $v : null;
+        $this->isTruncated = null !== ($v = $data->IsTruncated[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null;
+        $this->contents = 0 === ($v = $data->Contents)->count() ? [] : $this->populateResultObjectList($v);
+        $this->name = null !== ($v = $data->Name[0]) ? (string) $v : null;
+        $this->prefix = null !== ($v = $data->Prefix[0]) ? (string) $v : null;
+        $this->delimiter = null !== ($v = $data->Delimiter[0]) ? (string) $v : null;
+        $this->maxKeys = null !== ($v = $data->MaxKeys[0]) ? (int) (string) $v : null;
+        $this->commonPrefixes = 0 === ($v = $data->CommonPrefixes)->count() ? [] : $this->populateResultCommonPrefixList($v);
+        $this->encodingType = null !== ($v = $data->EncodingType[0]) ? (string) $v : null;
+        $this->keyCount = null !== ($v = $data->KeyCount[0]) ? (int) (string) $v : null;
+        $this->continuationToken = null !== ($v = $data->ContinuationToken[0]) ? (string) $v : null;
+        $this->nextContinuationToken = null !== ($v = $data->NextContinuationToken[0]) ? (string) $v : null;
+        $this->startAfter = null !== ($v = $data->StartAfter[0]) ? (string) $v : null;
     }
     private function populateResultChecksumAlgorithmList(SimpleXMLElement $xml): array
     {
@@ -217,7 +217,7 @@ class ListObjectsV2Output extends Result implements IteratorAggregate
     }
     private function populateResultCommonPrefix(SimpleXMLElement $xml): CommonPrefix
     {
-        return new CommonPrefix(['Prefix' => (null !== $v = $xml->Prefix[0]) ? (string) $v : null]);
+        return new CommonPrefix(['Prefix' => null !== ($v = $xml->Prefix[0]) ? (string) $v : null]);
     }
     private function populateResultCommonPrefixList(SimpleXMLElement $xml): array
     {
@@ -229,7 +229,7 @@ class ListObjectsV2Output extends Result implements IteratorAggregate
     }
     private function populateResultObject(SimpleXMLElement $xml): AwsObject
     {
-        return new AwsObject(['Key' => (null !== $v = $xml->Key[0]) ? (string) $v : null, 'LastModified' => (null !== $v = $xml->LastModified[0]) ? new DateTimeImmutable((string) $v) : null, 'ETag' => (null !== $v = $xml->ETag[0]) ? (string) $v : null, 'ChecksumAlgorithm' => (0 === ($v = $xml->ChecksumAlgorithm)->count()) ? null : $this->populateResultChecksumAlgorithmList($v), 'Size' => (null !== $v = $xml->Size[0]) ? (int) (string) $v : null, 'StorageClass' => (null !== $v = $xml->StorageClass[0]) ? (string) $v : null, 'Owner' => (0 === $xml->Owner->count()) ? null : $this->populateResultOwner($xml->Owner), 'RestoreStatus' => (0 === $xml->RestoreStatus->count()) ? null : $this->populateResultRestoreStatus($xml->RestoreStatus)]);
+        return new AwsObject(['Key' => null !== ($v = $xml->Key[0]) ? (string) $v : null, 'LastModified' => null !== ($v = $xml->LastModified[0]) ? new DateTimeImmutable((string) $v) : null, 'ETag' => null !== ($v = $xml->ETag[0]) ? (string) $v : null, 'ChecksumAlgorithm' => 0 === ($v = $xml->ChecksumAlgorithm)->count() ? null : $this->populateResultChecksumAlgorithmList($v), 'Size' => null !== ($v = $xml->Size[0]) ? (int) (string) $v : null, 'StorageClass' => null !== ($v = $xml->StorageClass[0]) ? (string) $v : null, 'Owner' => 0 === $xml->Owner->count() ? null : $this->populateResultOwner($xml->Owner), 'RestoreStatus' => 0 === $xml->RestoreStatus->count() ? null : $this->populateResultRestoreStatus($xml->RestoreStatus)]);
     }
     private function populateResultObjectList(SimpleXMLElement $xml): array
     {
@@ -241,10 +241,10 @@ class ListObjectsV2Output extends Result implements IteratorAggregate
     }
     private function populateResultOwner(SimpleXMLElement $xml): Owner
     {
-        return new Owner(['DisplayName' => (null !== $v = $xml->DisplayName[0]) ? (string) $v : null, 'ID' => (null !== $v = $xml->ID[0]) ? (string) $v : null]);
+        return new Owner(['DisplayName' => null !== ($v = $xml->DisplayName[0]) ? (string) $v : null, 'ID' => null !== ($v = $xml->ID[0]) ? (string) $v : null]);
     }
     private function populateResultRestoreStatus(SimpleXMLElement $xml): RestoreStatus
     {
-        return new RestoreStatus(['IsRestoreInProgress' => (null !== $v = $xml->IsRestoreInProgress[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null, 'RestoreExpiryDate' => (null !== $v = $xml->RestoreExpiryDate[0]) ? new DateTimeImmutable((string) $v) : null]);
+        return new RestoreStatus(['IsRestoreInProgress' => null !== ($v = $xml->IsRestoreInProgress[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null, 'RestoreExpiryDate' => null !== ($v = $xml->RestoreExpiryDate[0]) ? new DateTimeImmutable((string) $v) : null]);
     }
 }

@@ -64,7 +64,7 @@ class ResolveBindingsPass extends AbstractRecursivePass
                 }
                 $message = sprintf('A binding is configured for an argument %s, but no corresponding argument has been found. It may be unused and should be removed, or it may have a typo.', $message);
                 if ($this->errorMessages) {
-                    $message .= sprintf("\nCould be related to%s:", (1 < \count($this->errorMessages)) ? ' one of' : '');
+                    $message .= sprintf("\nCould be related to%s:", 1 < \count($this->errorMessages) ? ' one of' : '');
                 }
                 foreach ($this->errorMessages as $m) {
                     $message .= "\n - " . $m;

@@ -75,7 +75,7 @@ final class PutObjectRequest extends Input
         $this->checksumCrc32C = $input['ChecksumCRC32C'] ?? null;
         $this->checksumSha1 = $input['ChecksumSHA1'] ?? null;
         $this->checksumSha256 = $input['ChecksumSHA256'] ?? null;
-        $this->expires = (!isset($input['Expires'])) ? null : (($input['Expires'] instanceof DateTimeImmutable) ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
+        $this->expires = !isset($input['Expires']) ? null : ($input['Expires'] instanceof DateTimeImmutable ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
         $this->ifMatch = $input['IfMatch'] ?? null;
         $this->ifNoneMatch = $input['IfNoneMatch'] ?? null;
         $this->grantFullControl = $input['GrantFullControl'] ?? null;
@@ -97,14 +97,14 @@ final class PutObjectRequest extends Input
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->tagging = $input['Tagging'] ?? null;
         $this->objectLockMode = $input['ObjectLockMode'] ?? null;
-        $this->objectLockRetainUntilDate = (!isset($input['ObjectLockRetainUntilDate'])) ? null : (($input['ObjectLockRetainUntilDate'] instanceof DateTimeImmutable) ? $input['ObjectLockRetainUntilDate'] : new DateTimeImmutable($input['ObjectLockRetainUntilDate']));
+        $this->objectLockRetainUntilDate = !isset($input['ObjectLockRetainUntilDate']) ? null : ($input['ObjectLockRetainUntilDate'] instanceof DateTimeImmutable ? $input['ObjectLockRetainUntilDate'] : new DateTimeImmutable($input['ObjectLockRetainUntilDate']));
         $this->objectLockLegalHoldStatus = $input['ObjectLockLegalHoldStatus'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
         parent::__construct($input);
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getAcl(): ?string
     {

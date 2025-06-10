@@ -145,10 +145,7 @@ trait Common
         }
         throw new UnexpectedValueException('The string representation of the points is not of an appropriate length');
     }
-    /**
-     * @param mixed $curve
-     */
-    private static function encodeParameters($curve, $returnArray = \false, array $options = [])
+    private static function encodeParameters(BaseCurve $curve, $returnArray = \false, array $options = [])
     {
         $useNamedCurves = isset($options['namedCurve']) ? $options['namedCurve'] : self::$useNamedCurves;
         $reflect = new ReflectionClass($curve);

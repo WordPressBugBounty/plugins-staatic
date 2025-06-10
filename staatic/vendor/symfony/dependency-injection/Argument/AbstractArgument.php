@@ -18,7 +18,7 @@ final class AbstractArgument
     }
     public function setContext(string $context): void
     {
-        $this->context = $context . ' is abstract' . (('' === $this->text) ? '' : ': ');
+        $this->context = $context . ' is abstract' . ('' === $this->text ? '' : ': ');
     }
     public function getText(): string
     {

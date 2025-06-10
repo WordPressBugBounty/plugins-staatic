@@ -65,7 +65,18 @@ final class Publication
      */
     private $status;
 
-    public function __construct(string $id, DateTimeInterface $dateCreated, Build $build, Deployment $deployment, bool $isPreview = \false, ?int $userId = null, array $metadata = [], PublicationStatus $status = null, ?DateTimeInterface $dateFinished = null, ?string $currentTask = null)
+    public function __construct(
+        string $id,
+        DateTimeInterface $dateCreated,
+        Build $build,
+        Deployment $deployment,
+        bool $isPreview = \false,
+        ?int $userId = null,
+        array $metadata = [],
+        PublicationStatus $status = null,
+        ?DateTimeInterface $dateFinished = null,
+        ?string $currentTask = null
+    )
     {
         $this->id = $id;
         $this->dateCreated = $dateCreated;

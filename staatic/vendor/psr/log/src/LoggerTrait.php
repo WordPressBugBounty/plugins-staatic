@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Psr\Log;
 
 use Stringable;
+
 trait LoggerTrait
 {
     /**

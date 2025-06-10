@@ -46,7 +46,7 @@ class PHP64 extends PHP
                 $digit >>= $shift;
                 $shift = 32 - $shift;
                 $digit &= (1 << $shift) - 1;
-                $temp = ($i > 0) ? ord($val[$i - 1]) : 0;
+                $temp = $i > 0 ? ord($val[$i - 1]) : 0;
                 $digit |= $temp << $shift & 0x7f000000;
             }
             $vals[] = $digit;

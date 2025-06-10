@@ -32,7 +32,7 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass
             $resolvedArguments = [];
             foreach ($arguments as $key => $argument) {
                 if ($argument instanceof AbstractArgument && $argument->getText() . '.' === $argument->getTextWithContext()) {
-                    $argument->setContext(sprintf('Argument ' . (\is_int($key) ? 1 + $key : '"%3$s"') . ' of ' . (('__construct' === $method) ? 'service "%s"' : 'method call "%s::%s()"'), $this->currentId, $method, $key));
+                    $argument->setContext(sprintf('Argument ' . (\is_int($key) ? 1 + $key : '"%3$s"') . ' of ' . ('__construct' === $method ? 'service "%s"' : 'method call "%s::%s()"'), $this->currentId, $method, $key));
                 }
                 if (\is_int($key)) {
                     $resolvedKeys[$key] = $key;
@@ -41,7 +41,7 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass
                 }
                 if (null === $parameters) {
                     $r = $this->getReflectionMethod($value, $method);
-                    $class = ($r instanceof ReflectionMethod) ? $r->class : $this->currentId;
+                    $class = $r instanceof ReflectionMethod ? $r->class : $this->currentId;
                     $method = $r->getName();
                     $parameters = $r->getParameters();
                 }
@@ -63,10 +63,10 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass
                             continue 2;
                         }
                     }
-                    throw new InvalidArgumentException(sprintf('Invalid service "%s": method "%s()" has no argument named "%s". Check your service definition.', $this->currentId, ($class !== $this->currentId) ? $class . '::' . $method : $method, $key));
+                    throw new InvalidArgumentException(sprintf('Invalid service "%s": method "%s()" has no argument named "%s". Check your service definition.', $this->currentId, $class !== $this->currentId ? $class . '::' . $method : $method, $key));
                 }
                 if (null !== $argument && !$argument instanceof Reference && !$argument instanceof Definition) {
-                    throw new InvalidArgumentException(sprintf('Invalid service "%s": the value of argument "%s" of method "%s()" must be null, an instance of "%s" or an instance of "%s", "%s" given.', $this->currentId, $key, ($class !== $this->currentId) ? $class . '::' . $method : $method, Reference::class, Definition::class, get_debug_type($argument)));
+                    throw new InvalidArgumentException(sprintf('Invalid service "%s": the value of argument "%s" of method "%s()" must be null, an instance of "%s" or an instance of "%s", "%s" given.', $this->currentId, $key, $class !== $this->currentId ? $class . '::' . $method : $method, Reference::class, Definition::class, get_debug_type($argument)));
                 }
                 $typeFound = \false;
                 foreach ($parameters as $j => $p) {
@@ -77,7 +77,7 @@ class ResolveNamedArgumentsPass extends AbstractRecursivePass
                     }
                 }
                 if (!$typeFound) {
-                    throw new InvalidArgumentException(sprintf('Invalid service "%s": method "%s()" has no argument type-hinted as "%s". Check your service definition.', $this->currentId, ($class !== $this->currentId) ? $class . '::' . $method : $method, $key));
+                    throw new InvalidArgumentException(sprintf('Invalid service "%s": method "%s()" has no argument type-hinted as "%s". Check your service definition.', $this->currentId, $class !== $this->currentId ? $class . '::' . $method : $method, $key));
                 }
             }
             if ($resolvedArguments !== $call[1]) {

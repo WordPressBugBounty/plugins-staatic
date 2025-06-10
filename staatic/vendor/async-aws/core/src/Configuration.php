@@ -37,7 +37,7 @@ final class Configuration
             throw new InvalidArgument(\sprintf('Invalid option(s) "%s" passed to "%s::%s". ', implode('", "', array_keys($invalidOptions)), __CLASS__, __METHOD__));
         }
         $options = array_map(static function ($value) {
-            return (null !== $value) ? (string) $value : $value;
+            return null !== $value ? (string) $value : $value;
         }, $options);
         $configuration = new self();
         $options = self::parseEnvironmentVariables($options);

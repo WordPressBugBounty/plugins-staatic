@@ -46,7 +46,11 @@ final class StaticDeployerFactory
      */
     private const BATCH_SIZE_CONSTRAINED = 24;
 
-    public function __construct(LoggerInterface $logger, DeploymentRepositoryInterface $deploymentRepository, ResultRepositoryInterface $resultRepository)
+    public function __construct(
+        LoggerInterface $logger,
+        DeploymentRepositoryInterface $deploymentRepository,
+        ResultRepositoryInterface $resultRepository
+    )
     {
         $this->logger = $logger;
         $this->deploymentRepository = $deploymentRepository;

@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\voku\helper;
 
 use ArrayObject;
+
 abstract class AbstractSimpleHtmlDomNode extends ArrayObject
 {
     public function __get($name)

@@ -3,7 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\Config\Definition\Builder;
 
 use InvalidArgumentException;
-use Staatic\Vendor\Symfony\Component\Config\Definition\ScalarNode;
+use Staatic\Vendor\Symfony\Component\Config\Definition\VariableNode;
 use RuntimeException;
 use Staatic\Vendor\Symfony\Component\Config\Definition\EnumNode;
 class EnumNodeDefinition extends ScalarNodeDefinition
@@ -24,7 +24,7 @@ class EnumNodeDefinition extends ScalarNodeDefinition
         $this->values = $values;
         return $this;
     }
-    protected function instantiateNode(): ScalarNode
+    protected function instantiateNode(): VariableNode
     {
         if (!isset($this->values)) {
             throw new RuntimeException('You must call ->values() on enum nodes.');

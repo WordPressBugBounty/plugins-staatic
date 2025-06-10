@@ -4,6 +4,7 @@ namespace Symfony\Polyfill\Php80;
 
 use __PHP_Incomplete_Class;
 use TypeError;
+
 final class Php80
 {
     public static function fdiv(float $dividend, float $divisor): float

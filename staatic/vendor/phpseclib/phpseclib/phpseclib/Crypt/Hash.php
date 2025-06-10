@@ -178,12 +178,12 @@ class Hash
                     $this->paddingType = self::PADDING_SHA3;
                 }
                 $this->parameters = ['capacity' => 1600 - $this->blockSize, 'rate' => $this->blockSize, 'length' => $this->length, 'padding' => $this->paddingType];
-                $hash = ['Staatic\Vendor\phpseclib3\Crypt\Hash', (\PHP_INT_SIZE == 8) ? 'sha3_64' : 'sha3_32'];
+                $hash = ['Staatic\Vendor\phpseclib3\Crypt\Hash', \PHP_INT_SIZE == 8 ? 'sha3_64' : 'sha3_32'];
             }
         }
         if ($hash == 'sha512/224' || $hash == 'sha512/256') {
             if (version_compare(\PHP_VERSION, '7.1.0') < 0) {
-                $initial = ($hash == 'sha512/256') ? ['22312194FC2BF72C', '9F555FA3C84C64C2', '2393B86B6F53B151', '963877195940EABD', '96283EE2A88EFFE3', 'BE5E1E2553863992', '2B0199FC2C85B8AA', '0EB72DDC81C52CA2'] : ['8C3D37C819544DA2', '73E1996689DCD4D6', '1DFAB7AE32FF9C82', '679DD514582F9FCF', '0F6D2B697BD44DA8', '77E36F7304C48942', '3F9D85A86A1D36C8', '1112E6AD91D692A1'];
+                $initial = $hash == 'sha512/256' ? ['22312194FC2BF72C', '9F555FA3C84C64C2', '2393B86B6F53B151', '963877195940EABD', '96283EE2A88EFFE3', 'BE5E1E2553863992', '2B0199FC2C85B8AA', '0EB72DDC81C52CA2'] : ['8C3D37C819544DA2', '73E1996689DCD4D6', '1DFAB7AE32FF9C82', '679DD514582F9FCF', '0F6D2B697BD44DA8', '77E36F7304C48942', '3F9D85A86A1D36C8', '1112E6AD91D692A1'];
                 for ($i = 0; $i < 8; $i++) {
                     if (\PHP_INT_SIZE == 8) {
                         list(, $initial[$i]) = unpack('J', pack('H*', $initial[$i]));
@@ -193,7 +193,7 @@ class Hash
                     }
                 }
                 $this->parameters = compact('initial');
-                $hash = ['Staatic\Vendor\phpseclib3\Crypt\Hash', (\PHP_INT_SIZE == 8) ? 'sha512_64' : 'sha512'];
+                $hash = ['Staatic\Vendor\phpseclib3\Crypt\Hash', \PHP_INT_SIZE == 8 ? 'sha512_64' : 'sha512'];
             }
         }
         if (is_array($hash)) {
@@ -216,7 +216,7 @@ class Hash
         $taglen = $this->length;
         if ($taglen <= 8) {
             $last = strlen($nonce) - 1;
-            $mask = ($taglen == 4) ? "\x03" : "\x01";
+            $mask = $taglen == 4 ? "\x03" : "\x01";
             $index = $nonce[$last] & $mask;
             $nonce[$last] = $nonce[$last] ^ $index;
         }
@@ -227,7 +227,7 @@ class Hash
         $c->setKey($kp);
         $c->setIV($nonce);
         $t = $c->encrypt("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
-        return ($taglen <= 8) ? substr($t, unpack('C', $index)[1] * $taglen, $taglen) : substr($t, 0, $taglen);
+        return $taglen <= 8 ? substr($t, unpack('C', $index)[1] * $taglen, $taglen) : substr($t, 0, $taglen);
     }
     private function uhash($m, $taglen)
     {
@@ -243,7 +243,7 @@ class Hash
             $L3Key1_i = substr($L3Key1, $i * 64, 64);
             $L3Key2_i = substr($L3Key2, $i * 4, 4);
             $a = self::L1Hash($L1Key_i, $m);
-            $b = (strlen($m) <= 1024) ? "\x00\x00\x00\x00\x00\x00\x00\x00{$a}" : self::L2Hash($L2Key_i, $a);
+            $b = strlen($m) <= 1024 ? "\x00\x00\x00\x00\x00\x00\x00\x00{$a}" : self::L2Hash($L2Key_i, $a);
             $c = self::L3Hash($L3Key1_i, $L3Key2_i, $b);
             $y .= $c;
         }
@@ -256,14 +256,14 @@ class Hash
         $y = '';
         for ($i = 0; $i < count($m) - 1; $i++) {
             $m[$i] = pack('N*', ...unpack('V*', $m[$i]));
-            $y .= (\PHP_INT_SIZE == 8) ? static::nh64($k, $m[$i], $length) : static::nh32($k, $m[$i], $length);
+            $y .= \PHP_INT_SIZE == 8 ? static::nh64($k, $m[$i], $length) : static::nh32($k, $m[$i], $length);
         }
         $length = count($m) ? strlen($m[$i]) : 0;
         $pad = 32 - $length % 32;
         $pad = max(32, $length + $pad % 32);
         $m[$i] = str_pad(isset($m[$i]) ? $m[$i] : '', $pad, "\x00");
         $m[$i] = pack('N*', ...unpack('V*', $m[$i]));
-        $y .= (\PHP_INT_SIZE == 8) ? static::nh64($k, $m[$i], $length * 8) : static::nh32($k, $m[$i], $length * 8);
+        $y .= \PHP_INT_SIZE == 8 ? static::nh64($k, $m[$i], $length * 8) : static::nh32($k, $m[$i], $length * 8);
         return $y;
     }
     private static function mul32_64($x, $y)
@@ -497,8 +497,8 @@ class Hash
             $output = $algo($output, ...array_values($this->parameters));
             return substr($output, 0, $this->length);
         }
-        $output = (!empty($this->key) || is_string($this->key)) ? hash_hmac($algo, $text, $this->computedKey, \true) : hash($algo, $text, \true);
-        return (strlen($output) > $this->length) ? substr($output, 0, $this->length) : $output;
+        $output = !empty($this->key) || is_string($this->key) ? hash_hmac($algo, $text, $this->computedKey, \true) : hash($algo, $text, \true);
+        return strlen($output) > $this->length ? substr($output, 0, $this->length) : $output;
     }
     public function getLength()
     {
@@ -528,7 +528,7 @@ class Hash
                 $temp[$padLength - 1] = $temp[$padLength - 1] | chr(0x80);
                 return $temp;
             default:
-                return ($padLength == 1) ? chr(0x86) : (chr(0x6) . str_repeat("\x00", $padLength - 2) . chr(0x80));
+                return $padLength == 1 ? chr(0x86) : chr(0x6) . str_repeat("\x00", $padLength - 2) . chr(0x80);
         }
     }
     private static function sha3_32($p, $c, $r, $d, $padType)

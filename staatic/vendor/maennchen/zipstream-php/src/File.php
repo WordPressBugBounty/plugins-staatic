@@ -33,7 +33,7 @@ class File
     private $hash;
     private $method;
     private $totalLength;
-    public function __construct(ZipStream $zip, string $name, $opt = null)
+    public function __construct(ZipStream $zip, string $name, ?FileOptions $opt = null)
     {
         $this->zip = $zip;
         $this->name = $name;

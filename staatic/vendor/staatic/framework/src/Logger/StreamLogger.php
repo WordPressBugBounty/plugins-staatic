@@ -48,7 +48,7 @@ class StreamLogger implements LoggerInterface
         $context = array_merge(['source' => $source], $context);
         $date = (new DateTimeImmutable())->format('H:i:s.u');
         $memory = number_format(memory_get_usage() / 1024 / 1024, 3) . ' MB';
-        $contextString = (count($context) > 0) ? sprintf(self::CONTEXT_FORMAT, implode('] [', $context)) : '';
+        $contextString = count($context) > 0 ? sprintf(self::CONTEXT_FORMAT, implode('] [', $context)) : '';
         $this->logStream->write(sprintf(self::FORMAT, $date, $memory, $contextString, $message));
     }
 }

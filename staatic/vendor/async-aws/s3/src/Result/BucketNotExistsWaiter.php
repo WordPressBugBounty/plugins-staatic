@@ -21,7 +21,7 @@ class BucketNotExistsWaiter extends Waiter
         if (404 === $response->getStatusCode()) {
             return self::STATE_SUCCESS;
         }
-        return (null === $exception) ? self::STATE_PENDING : self::STATE_FAILURE;
+        return null === $exception ? self::STATE_PENDING : self::STATE_FAILURE;
     }
     protected function refreshState(): Waiter
     {

@@ -32,13 +32,13 @@ final class DeleteObjectRequest extends Input
         $this->bypassGovernanceRetention = $input['BypassGovernanceRetention'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
         $this->ifMatch = $input['IfMatch'] ?? null;
-        $this->ifMatchLastModifiedTime = (!isset($input['IfMatchLastModifiedTime'])) ? null : (($input['IfMatchLastModifiedTime'] instanceof DateTimeImmutable) ? $input['IfMatchLastModifiedTime'] : new DateTimeImmutable($input['IfMatchLastModifiedTime']));
+        $this->ifMatchLastModifiedTime = !isset($input['IfMatchLastModifiedTime']) ? null : ($input['IfMatchLastModifiedTime'] instanceof DateTimeImmutable ? $input['IfMatchLastModifiedTime'] : new DateTimeImmutable($input['IfMatchLastModifiedTime']));
         $this->ifMatchSize = $input['IfMatchSize'] ?? null;
         parent::__construct($input);
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getBucket(): ?string
     {

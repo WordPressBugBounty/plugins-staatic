@@ -88,7 +88,7 @@ class SetCookie
                 if ($k === 'Expires') {
                     $str .= 'Expires=' . \gmdate('D, d M Y H:i:s \G\M\T', $v) . '; ';
                 } else {
-                    $str .= (($v === \true) ? $k : "{$k}={$v}") . '; ';
+                    $str .= ($v === \true ? $k : "{$k}={$v}") . '; ';
                 }
             }
         }
@@ -129,7 +129,7 @@ class SetCookie
         if (!is_string($domain) && null !== $domain) {
             trigger_deprecation('guzzlehttp/guzzle', '7.4', 'Not passing a string or null to %s::%s() is deprecated and will cause an error in 8.0.', __CLASS__, __FUNCTION__);
         }
-        $this->data['Domain'] = (null === $domain) ? null : (string) $domain;
+        $this->data['Domain'] = null === $domain ? null : (string) $domain;
     }
     public function getPath()
     {
@@ -144,14 +144,14 @@ class SetCookie
     }
     public function getMaxAge()
     {
-        return (null === $this->data['Max-Age']) ? null : (int) $this->data['Max-Age'];
+        return null === $this->data['Max-Age'] ? null : (int) $this->data['Max-Age'];
     }
     public function setMaxAge($maxAge): void
     {
         if (!is_int($maxAge) && null !== $maxAge) {
             trigger_deprecation('guzzlehttp/guzzle', '7.4', 'Not passing an int or null to %s::%s() is deprecated and will cause an error in 8.0.', __CLASS__, __FUNCTION__);
         }
-        $this->data['Max-Age'] = ($maxAge === null) ? null : (int) $maxAge;
+        $this->data['Max-Age'] = $maxAge === null ? null : (int) $maxAge;
     }
     public function getExpires()
     {
@@ -162,7 +162,7 @@ class SetCookie
         if (!is_int($timestamp) && !is_string($timestamp) && null !== $timestamp) {
             trigger_deprecation('guzzlehttp/guzzle', '7.4', 'Not passing an int, string or null to %s::%s() is deprecated and will cause an error in 8.0.', __CLASS__, __FUNCTION__);
         }
-        $this->data['Expires'] = (null === $timestamp) ? null : (\is_numeric($timestamp) ? (int) $timestamp : \strtotime((string) $timestamp));
+        $this->data['Expires'] = null === $timestamp ? null : (\is_numeric($timestamp) ? (int) $timestamp : \strtotime((string) $timestamp));
     }
     public function getSecure()
     {

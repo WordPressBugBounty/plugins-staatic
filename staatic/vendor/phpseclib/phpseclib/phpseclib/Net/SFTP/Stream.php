@@ -132,7 +132,7 @@ class Stream
                     $this->size = 0;
             }
         }
-        $this->pos = ($this->mode[0] != 'a') ? 0 : $this->size;
+        $this->pos = $this->mode[0] != 'a' ? 0 : $this->size;
         return \true;
     }
     private function _stream_read($count)
@@ -329,7 +329,7 @@ class Stream
         if ($path === \false) {
             return \false;
         }
-        $results = ($flags & \STREAM_URL_STAT_LINK) ? $this->sftp->lstat($path) : $this->sftp->stat($path);
+        $results = $flags & \STREAM_URL_STAT_LINK ? $this->sftp->lstat($path) : $this->sftp->stat($path);
         if ($results === \false) {
             return \false;
         }

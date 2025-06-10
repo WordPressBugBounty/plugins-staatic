@@ -36,12 +36,12 @@ class DeleteObjectsOutput extends Result
         $headers = $response->getHeaders();
         $this->requestCharged = $headers['x-amz-request-charged'][0] ?? null;
         $data = new SimpleXMLElement($response->getContent());
-        $this->deleted = (0 === ($v = $data->Deleted)->count()) ? [] : $this->populateResultDeletedObjects($v);
-        $this->errors = (0 === ($v = $data->Error)->count()) ? [] : $this->populateResultErrors($v);
+        $this->deleted = 0 === ($v = $data->Deleted)->count() ? [] : $this->populateResultDeletedObjects($v);
+        $this->errors = 0 === ($v = $data->Error)->count() ? [] : $this->populateResultErrors($v);
     }
     private function populateResultDeletedObject(SimpleXMLElement $xml): DeletedObject
     {
-        return new DeletedObject(['Key' => (null !== $v = $xml->Key[0]) ? (string) $v : null, 'VersionId' => (null !== $v = $xml->VersionId[0]) ? (string) $v : null, 'DeleteMarker' => (null !== $v = $xml->DeleteMarker[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null, 'DeleteMarkerVersionId' => (null !== $v = $xml->DeleteMarkerVersionId[0]) ? (string) $v : null]);
+        return new DeletedObject(['Key' => null !== ($v = $xml->Key[0]) ? (string) $v : null, 'VersionId' => null !== ($v = $xml->VersionId[0]) ? (string) $v : null, 'DeleteMarker' => null !== ($v = $xml->DeleteMarker[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null, 'DeleteMarkerVersionId' => null !== ($v = $xml->DeleteMarkerVersionId[0]) ? (string) $v : null]);
     }
     private function populateResultDeletedObjects(SimpleXMLElement $xml): array
     {
@@ -53,7 +53,7 @@ class DeleteObjectsOutput extends Result
     }
     private function populateResultError(SimpleXMLElement $xml): Error
     {
-        return new Error(['Key' => (null !== $v = $xml->Key[0]) ? (string) $v : null, 'VersionId' => (null !== $v = $xml->VersionId[0]) ? (string) $v : null, 'Code' => (null !== $v = $xml->Code[0]) ? (string) $v : null, 'Message' => (null !== $v = $xml->Message[0]) ? (string) $v : null]);
+        return new Error(['Key' => null !== ($v = $xml->Key[0]) ? (string) $v : null, 'VersionId' => null !== ($v = $xml->VersionId[0]) ? (string) $v : null, 'Code' => null !== ($v = $xml->Code[0]) ? (string) $v : null, 'Message' => null !== ($v = $xml->Message[0]) ? (string) $v : null]);
     }
     private function populateResultErrors(SimpleXMLElement $xml): array
     {

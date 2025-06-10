@@ -55,7 +55,7 @@ abstract class AbstractConfigurator
         }
         if ($value instanceof ReferenceConfigurator) {
             $reference = new Reference($value->id, $value->invalidBehavior);
-            return ($value instanceof ClosureReferenceConfigurator) ? new ServiceClosureArgument($reference) : $reference;
+            return $value instanceof ClosureReferenceConfigurator ? new ServiceClosureArgument($reference) : $reference;
         }
         if ($value instanceof InlineServiceConfigurator) {
             $def = $value->definition;

@@ -374,7 +374,7 @@ abstract class ASN1
                         return null;
                     }
                 }
-                return ($i < $n) ? null : $map;
+                return $i < $n ? null : $map;
             case self::TYPE_SET:
                 $map = [];
                 if (isset($mapping['min']) && isset($mapping['max'])) {
@@ -452,7 +452,7 @@ abstract class ASN1
                 if (isset($mapping['mapping'])) {
                     $offset = ord($decoded['content'][0]);
                     $size = (strlen($decoded['content']) - 1) * 8 - $offset;
-                    $bits = (count($mapping['mapping']) == $size) ? [] : array_fill(0, count($mapping['mapping']) - $size, \false);
+                    $bits = count($mapping['mapping']) == $size ? [] : array_fill(0, count($mapping['mapping']) - $size, \false);
                     for ($i = strlen($decoded['content']) - 1; $i > 0; $i--) {
                         $current = ord($decoded['content'][$i]);
                         for ($j = $offset; $j < 8; $j++) {
@@ -628,7 +628,7 @@ abstract class ASN1
                 break;
             case self::TYPE_UTC_TIME:
             case self::TYPE_GENERALIZED_TIME:
-                $format = ($mapping['type'] == self::TYPE_UTC_TIME) ? 'y' : 'Y';
+                $format = $mapping['type'] == self::TYPE_UTC_TIME ? 'y' : 'Y';
                 $format .= 'mdHis';
                 $date = new DateTime($source, new DateTimeZone('GMT'));
                 $date->setTimezone(new DateTimeZone('GMT'));
@@ -648,7 +648,7 @@ abstract class ASN1
                         $size = $mapping['min'] - 1;
                     }
                     $offset = 8 - ($size + 1 & 7);
-                    $offset = ($offset !== 8) ? $offset : 0;
+                    $offset = $offset !== 8 ? $offset : 0;
                     $value = chr($offset);
                     for ($i = $size + 1; $i < count($mapping['mapping']); $i++) {
                         unset($bits[$i]);
@@ -820,7 +820,7 @@ abstract class ASN1
             if (preg_match('#^(\d{10})(Z|[+-]\d{4})$#', $content, $matches)) {
                 $content = $matches[1] . '00' . $matches[2];
             }
-            $prefix = (substr($content, 0, 2) >= 50) ? '19' : '20';
+            $prefix = substr($content, 0, 2) >= 50 ? '19' : '20';
             $content = $prefix . $content;
         } elseif (strpos($content, '.') !== \false) {
             $format .= '.u';
@@ -908,7 +908,7 @@ abstract class ASN1
                         return \false;
                     }
                     break;
-                case ($c & ((\PHP_INT_SIZE == 8) ? 0x80000000 : (1 << 31))) != 0:
+                case ($c & (\PHP_INT_SIZE == 8 ? 0x80000000 : 1 << 31)) != 0:
                     return \false;
                 case $c >= 0x4000000:
                     $v .= chr(0x80 | $c & 0x3f);
@@ -944,7 +944,7 @@ abstract class ASN1
         $temp = str_replace(["\r", "\n", ' '], '', $temp);
         $temp = preg_replace('#^-+[^-]+-+|-+[^-]+-+$#', '', $temp);
         $temp = preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? Strings::base64_decode($temp) : \false;
-        return ($temp != \false) ? $temp : $str;
+        return $temp != \false ? $temp : $str;
     }
     public static function encodeLength($length)
     {

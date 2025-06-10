@@ -33,7 +33,7 @@ echo \esc_attr($setting->name());
 \esc_attr_e('Add URL', 'staatic');
 ?>"
         data-has-advanced-options="<?php 
-echo ($attributes['hasAdvancedOptions'] ?? \true) ? 'true' : 'false';
+echo $attributes['hasAdvancedOptions'] ?? \true ? 'true' : 'false';
 ?>"
     ></div>
     <textarea

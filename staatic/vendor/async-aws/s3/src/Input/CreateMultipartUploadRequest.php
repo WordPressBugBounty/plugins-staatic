@@ -57,7 +57,7 @@ final class CreateMultipartUploadRequest extends Input
         $this->contentEncoding = $input['ContentEncoding'] ?? null;
         $this->contentLanguage = $input['ContentLanguage'] ?? null;
         $this->contentType = $input['ContentType'] ?? null;
-        $this->expires = (!isset($input['Expires'])) ? null : (($input['Expires'] instanceof DateTimeImmutable) ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
+        $this->expires = !isset($input['Expires']) ? null : ($input['Expires'] instanceof DateTimeImmutable ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
         $this->grantFullControl = $input['GrantFullControl'] ?? null;
         $this->grantRead = $input['GrantRead'] ?? null;
         $this->grantReadAcp = $input['GrantReadACP'] ?? null;
@@ -76,7 +76,7 @@ final class CreateMultipartUploadRequest extends Input
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->tagging = $input['Tagging'] ?? null;
         $this->objectLockMode = $input['ObjectLockMode'] ?? null;
-        $this->objectLockRetainUntilDate = (!isset($input['ObjectLockRetainUntilDate'])) ? null : (($input['ObjectLockRetainUntilDate'] instanceof DateTimeImmutable) ? $input['ObjectLockRetainUntilDate'] : new DateTimeImmutable($input['ObjectLockRetainUntilDate']));
+        $this->objectLockRetainUntilDate = !isset($input['ObjectLockRetainUntilDate']) ? null : ($input['ObjectLockRetainUntilDate'] instanceof DateTimeImmutable ? $input['ObjectLockRetainUntilDate'] : new DateTimeImmutable($input['ObjectLockRetainUntilDate']));
         $this->objectLockLegalHoldStatus = $input['ObjectLockLegalHoldStatus'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
         $this->checksumAlgorithm = $input['ChecksumAlgorithm'] ?? null;
@@ -84,7 +84,7 @@ final class CreateMultipartUploadRequest extends Input
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getAcl(): ?string
     {

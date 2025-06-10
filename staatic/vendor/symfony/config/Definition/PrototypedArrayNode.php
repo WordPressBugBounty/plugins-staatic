@@ -57,7 +57,7 @@ class PrototypedArrayNode extends ArrayNode
         if (null === $children) {
             $this->defaultChildren = ['defaults'];
         } else {
-            $this->defaultChildren = (\is_int($children) && $children > 0) ? range(1, $children) : (array) $children;
+            $this->defaultChildren = \is_int($children) && $children > 0 ? range(1, $children) : (array) $children;
         }
     }
     /**
@@ -69,7 +69,7 @@ class PrototypedArrayNode extends ArrayNode
             $default = $this->prototype->hasDefaultValue() ? $this->prototype->getDefaultValue() : [];
             $defaults = [];
             foreach (array_values($this->defaultChildren) as $i => $name) {
-                $defaults[(null === $this->keyAttribute) ? $i : $name] = $default;
+                $defaults[null === $this->keyAttribute ? $i : $name] = $default;
             }
             return $defaults;
         }

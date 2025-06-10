@@ -49,22 +49,22 @@ class ErrorChunk implements ChunkInterface
     public function isFirst(): bool
     {
         $this->didThrow = \true;
-        throw (null !== $this->error) ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
+        throw null !== $this->error ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
     }
     public function isLast(): bool
     {
         $this->didThrow = \true;
-        throw (null !== $this->error) ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
+        throw null !== $this->error ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
     }
     public function getInformationalStatus(): ?array
     {
         $this->didThrow = \true;
-        throw (null !== $this->error) ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
+        throw null !== $this->error ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
     }
     public function getContent(): string
     {
         $this->didThrow = \true;
-        throw (null !== $this->error) ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
+        throw null !== $this->error ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
     }
     public function getOffset(): int
     {
@@ -96,7 +96,7 @@ class ErrorChunk implements ChunkInterface
     {
         if (!$this->didThrow) {
             $this->didThrow = \true;
-            throw (null !== $this->error) ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
+            throw null !== $this->error ? new TransportException($this->errorMessage, 0, $this->error) : new TimeoutException($this->errorMessage);
         }
     }
 }

@@ -39,7 +39,7 @@ abstract class Loader implements LoaderInterface
         if ($this->supports($resource, $type)) {
             return $this;
         }
-        $loader = (null === $this->resolver) ? \false : $this->resolver->resolve($resource, $type);
+        $loader = null === $this->resolver ? \false : $this->resolver->resolve($resource, $type);
         if (\false === $loader) {
             throw new LoaderLoadException($resource, null, 0, null, $type);
         }

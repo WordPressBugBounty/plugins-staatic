@@ -81,7 +81,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public static function getUriFromGlobals(): UriInterface
     {
         $uri = new Uri('');
-        $uri = $uri->withScheme((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+        $uri = $uri->withScheme(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http');
         $hasPort = \false;
         if (isset($_SERVER['HTTP_HOST'])) {
             [$host, $port] = self::extractHostAndPortFromAuthority($_SERVER['HTTP_HOST']);

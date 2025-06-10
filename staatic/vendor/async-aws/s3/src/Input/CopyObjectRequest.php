@@ -73,10 +73,10 @@ final class CopyObjectRequest extends Input
         $this->contentType = $input['ContentType'] ?? null;
         $this->copySource = $input['CopySource'] ?? null;
         $this->copySourceIfMatch = $input['CopySourceIfMatch'] ?? null;
-        $this->copySourceIfModifiedSince = (!isset($input['CopySourceIfModifiedSince'])) ? null : (($input['CopySourceIfModifiedSince'] instanceof DateTimeImmutable) ? $input['CopySourceIfModifiedSince'] : new DateTimeImmutable($input['CopySourceIfModifiedSince']));
+        $this->copySourceIfModifiedSince = !isset($input['CopySourceIfModifiedSince']) ? null : ($input['CopySourceIfModifiedSince'] instanceof DateTimeImmutable ? $input['CopySourceIfModifiedSince'] : new DateTimeImmutable($input['CopySourceIfModifiedSince']));
         $this->copySourceIfNoneMatch = $input['CopySourceIfNoneMatch'] ?? null;
-        $this->copySourceIfUnmodifiedSince = (!isset($input['CopySourceIfUnmodifiedSince'])) ? null : (($input['CopySourceIfUnmodifiedSince'] instanceof DateTimeImmutable) ? $input['CopySourceIfUnmodifiedSince'] : new DateTimeImmutable($input['CopySourceIfUnmodifiedSince']));
-        $this->expires = (!isset($input['Expires'])) ? null : (($input['Expires'] instanceof DateTimeImmutable) ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
+        $this->copySourceIfUnmodifiedSince = !isset($input['CopySourceIfUnmodifiedSince']) ? null : ($input['CopySourceIfUnmodifiedSince'] instanceof DateTimeImmutable ? $input['CopySourceIfUnmodifiedSince'] : new DateTimeImmutable($input['CopySourceIfUnmodifiedSince']));
+        $this->expires = !isset($input['Expires']) ? null : ($input['Expires'] instanceof DateTimeImmutable ? $input['Expires'] : new DateTimeImmutable($input['Expires']));
         $this->grantFullControl = $input['GrantFullControl'] ?? null;
         $this->grantRead = $input['GrantRead'] ?? null;
         $this->grantReadAcp = $input['GrantReadACP'] ?? null;
@@ -100,7 +100,7 @@ final class CopyObjectRequest extends Input
         $this->requestPayer = $input['RequestPayer'] ?? null;
         $this->tagging = $input['Tagging'] ?? null;
         $this->objectLockMode = $input['ObjectLockMode'] ?? null;
-        $this->objectLockRetainUntilDate = (!isset($input['ObjectLockRetainUntilDate'])) ? null : (($input['ObjectLockRetainUntilDate'] instanceof DateTimeImmutable) ? $input['ObjectLockRetainUntilDate'] : new DateTimeImmutable($input['ObjectLockRetainUntilDate']));
+        $this->objectLockRetainUntilDate = !isset($input['ObjectLockRetainUntilDate']) ? null : ($input['ObjectLockRetainUntilDate'] instanceof DateTimeImmutable ? $input['ObjectLockRetainUntilDate'] : new DateTimeImmutable($input['ObjectLockRetainUntilDate']));
         $this->objectLockLegalHoldStatus = $input['ObjectLockLegalHoldStatus'] ?? null;
         $this->expectedBucketOwner = $input['ExpectedBucketOwner'] ?? null;
         $this->expectedSourceBucketOwner = $input['ExpectedSourceBucketOwner'] ?? null;
@@ -108,7 +108,7 @@ final class CopyObjectRequest extends Input
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getAcl(): ?string
     {

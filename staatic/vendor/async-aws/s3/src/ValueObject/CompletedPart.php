@@ -4,6 +4,7 @@ namespace Staatic\Vendor\AsyncAws\S3\ValueObject;
 
 use DOMElement;
 use DOMDocument;
+
 final class CompletedPart
 {
     private $etag;
@@ -23,7 +24,7 @@ final class CompletedPart
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getChecksumCrc32(): ?string
     {

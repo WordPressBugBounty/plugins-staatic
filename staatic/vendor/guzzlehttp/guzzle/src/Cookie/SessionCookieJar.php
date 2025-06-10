@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\GuzzleHttp\Cookie;
 
 use RuntimeException;
+
 class SessionCookieJar extends CookieJar
 {
     private $sessionKey;

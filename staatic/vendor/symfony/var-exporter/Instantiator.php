@@ -24,6 +24,6 @@ final class Instantiator
         } else {
             $instance = unserialize('O:' . \strlen($class) . ':"' . $class . '":0:{}');
         }
-        return ($properties || $scopedProperties) ? Hydrator::hydrate($instance, $properties, $scopedProperties) : $instance;
+        return $properties || $scopedProperties ? Hydrator::hydrate($instance, $properties, $scopedProperties) : $instance;
     }
 }

@@ -126,7 +126,7 @@ trait HttpClientTrait
             $url = self::parseUrl($url, $options['query']);
             $url = self::resolveUrl($url, $options['base_uri'], $defaultOptions['query'] ?? []);
         }
-        $options['http_version'] = ((string) ($options['http_version'] ?? '')) ?: null;
+        $options['http_version'] = (string) ($options['http_version'] ?? '') ?: null;
         if (0 > $options['timeout'] = (float) ($options['timeout'] ?? \ini_get('default_socket_timeout'))) {
             $options['timeout'] = 172800.0;
         }
@@ -308,7 +308,7 @@ trait HttpClientTrait
             }
         } elseif (\is_array($fingerprint)) {
             foreach ($fingerprint as $algo => $hash) {
-                $fingerprint[$algo] = ('pin-sha256' === $algo) ? (array) $hash : str_replace(':', '', $hash);
+                $fingerprint[$algo] = 'pin-sha256' === $algo ? (array) $hash : str_replace(':', '', $hash);
             }
         } else {
             throw new InvalidArgumentException(sprintf('Option "peer_fingerprint" must be string or array, "%s" given.', get_debug_type($fingerprint)));
@@ -388,7 +388,7 @@ trait HttpClientTrait
             if (!isset($allowedSchemes[$scheme = strtolower($scheme)])) {
                 throw new InvalidArgumentException(sprintf('Unsupported scheme in "%s".', $url));
             }
-            $port = ($allowedSchemes[$scheme] === $port) ? 0 : $port;
+            $port = $allowedSchemes[$scheme] === $port ? 0 : $port;
             $scheme .= ':';
         }
         if (null !== $host = $parts['host'] ?? null) {
@@ -411,7 +411,7 @@ trait HttpClientTrait
                 return rawurlencode($m[0]);
             }, $parts[$part]);
         }
-        return ['scheme' => $scheme, 'authority' => (null !== $host) ? '//' . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') . $host : null, 'path' => isset($parts['path'][0]) ? $parts['path'] : null, 'query' => isset($parts['query']) ? '?' . $parts['query'] : null, 'fragment' => isset($parts['fragment']) ? '#' . $parts['fragment'] : null];
+        return ['scheme' => $scheme, 'authority' => null !== $host ? '//' . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') . $host : null, 'path' => isset($parts['path'][0]) ? $parts['path'] : null, 'query' => isset($parts['query']) ? '?' . $parts['query'] : null, 'fragment' => isset($parts['fragment']) ? '#' . $parts['fragment'] : null];
     }
     private static function removeDotSegments(string $path)
     {
@@ -464,7 +464,7 @@ trait HttpClientTrait
                 $queryArray[rawurldecode(explode('=', $v, 2)[0])] = $v;
             }
         }
-        return implode('&', $replace ? array_replace($query, $queryArray) : ($query + $queryArray));
+        return implode('&', $replace ? array_replace($query, $queryArray) : $query + $queryArray);
     }
     private static function getProxy(?string $proxy, array $url, ?string $noProxy): ?array
     {

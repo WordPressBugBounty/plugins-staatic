@@ -5,6 +5,7 @@ namespace Staatic\Vendor\phpseclib3\Crypt;
 use Exception;
 use Throwable;
 use RuntimeException;
+
 abstract class Random
 {
     public static function string($length)

@@ -50,7 +50,7 @@ class Stream implements StreamInterface
     public function getMetadata($key = null)
     {
         $metadata = stream_get_meta_data($this->stream);
-        return ($key !== null) ? @$metadata[$key] : $metadata;
+        return $key !== null ? @$metadata[$key] : $metadata;
     }
     public function getSize(): ?int
     {

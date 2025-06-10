@@ -35,7 +35,13 @@ final class LogEntry implements JsonSerializable
      */
     private $context = [];
 
-    public function __construct(string $id, DateTimeInterface $date, string $level, string $message, ?array $context = [])
+    public function __construct(
+        string $id,
+        DateTimeInterface $date,
+        string $level,
+        string $message,
+        ?array $context = []
+    )
     {
         $this->id = $id;
         $this->date = $date;

@@ -5,6 +5,7 @@ namespace Staatic\Vendor\Symfony\Component\Config\Exception;
 use Exception;
 use Throwable;
 use JsonException;
+
 class LoaderLoadException extends Exception
 {
     /**

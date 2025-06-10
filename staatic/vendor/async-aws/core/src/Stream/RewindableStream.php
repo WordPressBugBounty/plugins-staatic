@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\AsyncAws\Core\Stream;
 
 use Traversable;
+
 final class RewindableStream implements RequestStream
 {
     private $content;

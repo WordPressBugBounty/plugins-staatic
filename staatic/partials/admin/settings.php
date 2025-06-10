@@ -33,8 +33,8 @@ foreach ($groups as $name => $group) {
     ?>
         <a
             class="nav-tab<?php 
-    echo ($name === $currentGroupName) ? ' nav-tab-active' : '';
-    echo ($name === 'staatic-premium') ? ' staatic-premium' : '';
+    echo $name === $currentGroupName ? ' nav-tab-active' : '';
+    echo $name === 'staatic-premium' ? ' staatic-premium' : '';
     ?>"
             href="<?php 
     echo \admin_url(\sprintf('admin.php?page=%s&group=%s', SettingsPage::PAGE_SLUG, $name));

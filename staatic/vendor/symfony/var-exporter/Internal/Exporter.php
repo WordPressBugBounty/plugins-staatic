@@ -63,7 +63,7 @@ class Exporter
                     $properties = $serializeProperties;
                 } else {
                     foreach ($serializeProperties as $n => $v) {
-                        $c = ($reflector->hasProperty($n) && ($p = $reflector->getProperty($n))->isReadOnly()) ? $p->class : 'stdClass';
+                        $c = $reflector->hasProperty($n) && ($p = $reflector->getProperty($n))->isReadOnly() ? $p->class : 'stdClass';
                         $properties[$c][$n] = $v;
                     }
                 }
@@ -102,7 +102,7 @@ class Exporter
                 $i = 0;
                 $n = (string) $name;
                 if ('' === $n || "\x00" !== $n[0]) {
-                    $c = ($reflector->hasProperty($n) && ($p = $reflector->getProperty($n))->isReadOnly()) ? $p->class : 'stdClass';
+                    $c = $reflector->hasProperty($n) && ($p = $reflector->getProperty($n))->isReadOnly() ? $p->class : 'stdClass';
                 } elseif ('*' === $n[1]) {
                     $n = substr($n, 3);
                     $c = $reflector->getProperty($n)->class;
@@ -253,7 +253,7 @@ class Exporter
                 }
                 continue;
             }
-            $code .= $subIndent . ((1 !== $k - $j) ? $k . ' => ' : '');
+            $code .= $subIndent . (1 !== $k - $j ? $k . ' => ' : '');
             $j = $k;
             $eol = ",\n";
             $c = '[' . self::export($class) . ']';
@@ -268,9 +268,9 @@ class Exporter
             } else {
                 $seen[$class] = \true;
                 if (Registry::$cloneable[$class]) {
-                    $code .= 'clone (' . ($prototypesAccess++ ? '$p' : ('($p = &' . $r . '::$prototypes)')) . $c . ' ?? ' . $r . '::p';
+                    $code .= 'clone (' . ($prototypesAccess++ ? '$p' : '($p = &' . $r . '::$prototypes)') . $c . ' ?? ' . $r . '::p';
                 } else {
-                    $code .= '(' . ($factoriesAccess++ ? '$f' : ('($f = &' . $r . '::$factories)')) . $c . ' ?? ' . $r . '::f';
+                    $code .= '(' . ($factoriesAccess++ ? '$f' : '($f = &' . $r . '::$factories)') . $c . ' ?? ' . $r . '::f';
                     $eol = '()' . $eol;
                 }
                 $code .= '(' . substr($c, 1, -1) . '))';
@@ -299,14 +299,14 @@ class Exporter
         foreach ($value->properties as $class => $properties) {
             $code .= $subIndent . '    ' . self::export($class) . ' => ' . self::export($properties, $subIndent . '    ') . ",\n";
         }
-        $code = [self::export($value->registry, $subIndent), self::export($value->values, $subIndent), ('' !== $code) ? "[\n" . $code . $subIndent . ']' : '[]', self::export($value->value, $subIndent), self::export($value->wakeups, $subIndent)];
+        $code = [self::export($value->registry, $subIndent), self::export($value->values, $subIndent), '' !== $code ? "[\n" . $code . $subIndent . ']' : '[]', self::export($value->value, $subIndent), self::export($value->wakeups, $subIndent)];
         return '\\' . get_class($value) . "::hydrate(\n" . $subIndent . implode(",\n" . $subIndent, $code) . "\n" . $indent . ')';
     }
     private static function getArrayObjectProperties($value, $proto): array
     {
-        $reflector = ($value instanceof ArrayIterator) ? 'ArrayIterator' : 'ArrayObject';
+        $reflector = $value instanceof ArrayIterator ? 'ArrayIterator' : 'ArrayObject';
         $reflector = Registry::$reflectors[$reflector] = Registry::$reflectors[$reflector] ?? Registry::getClassReflector($reflector);
-        $properties = [$arrayValue = (array) $value, $reflector->getMethod('getFlags')->invoke($value), ($value instanceof ArrayObject) ? $reflector->getMethod('getIteratorClass')->invoke($value) : 'ArrayIterator'];
+        $properties = [$arrayValue = (array) $value, $reflector->getMethod('getFlags')->invoke($value), $value instanceof ArrayObject ? $reflector->getMethod('getIteratorClass')->invoke($value) : 'ArrayIterator'];
         $reflector = $reflector->getMethod('setFlags');
         $reflector->invoke($proto, ArrayObject::STD_PROP_LIST);
         if ($properties[1] & ArrayObject::STD_PROP_LIST) {

@@ -4,6 +4,7 @@ namespace Staatic\Vendor\AsyncAws\S3\ValueObject;
 
 use DOMElement;
 use DOMDocument;
+
 final class CompletedMultipartUpload
 {
     private $parts;
@@ -13,7 +14,7 @@ final class CompletedMultipartUpload
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getParts(): array
     {

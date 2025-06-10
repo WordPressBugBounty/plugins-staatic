@@ -57,7 +57,7 @@ class NodeList extends NodeCollection
     }
     public function first()
     {
-        return (!empty($this->nodes)) ? $this->rewind() : null;
+        return !empty($this->nodes) ? $this->rewind() : null;
     }
     public function last()
     {
@@ -65,7 +65,7 @@ class NodeList extends NodeCollection
     }
     public function end()
     {
-        return (!empty($this->nodes)) ? end($this->nodes) : null;
+        return !empty($this->nodes) ? end($this->nodes) : null;
     }
     /**
      * @param int $key

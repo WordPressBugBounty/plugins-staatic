@@ -65,7 +65,7 @@ class Integer extends Base
     {
         $x = ltrim($x, "\x00");
         $xbit = decbin(ord($x[0]));
-        $xlen = ($xbit == '0') ? 0 : strlen($xbit);
+        $xlen = $xbit == '0' ? 0 : strlen($xbit);
         $len = strlen($x);
         if (!$len) {
             return -1;
@@ -81,7 +81,7 @@ class Integer extends Base
             $s = '1' . str_repeat('0', $degr - $d);
             $s = BinaryField::base2ToBase256($s);
             $length = max(strlen($s), strlen($q));
-            $q = (!isset($q)) ? $s : (str_pad($q, $length, "\x00", \STR_PAD_LEFT) ^ str_pad($s, $length, "\x00", \STR_PAD_LEFT));
+            $q = !isset($q) ? $s : str_pad($q, $length, "\x00", \STR_PAD_LEFT) ^ str_pad($s, $length, "\x00", \STR_PAD_LEFT);
             $s = static::polynomialMultiply($s, $y);
             $length = max(strlen($r), strlen($s));
             $r = str_pad($r, $length, "\x00", \STR_PAD_LEFT) ^ str_pad($s, $length, "\x00", \STR_PAD_LEFT);
@@ -126,7 +126,7 @@ class Integer extends Base
         }
         switch (\true) {
             case \PHP_INT_SIZE == 8 && $length <= 4:
-                return ($length != 4) ? self::subMultiply(str_pad($x, 4, "\x00", \STR_PAD_LEFT), str_pad($y, 4, "\x00", \STR_PAD_LEFT)) : self::subMultiply($x, $y);
+                return $length != 4 ? self::subMultiply(str_pad($x, 4, "\x00", \STR_PAD_LEFT), str_pad($y, 4, "\x00", \STR_PAD_LEFT)) : self::subMultiply($x, $y);
             case \PHP_INT_SIZE == 4 || $length > 32:
                 return self::regularPolynomialMultiply($x, $y);
         }

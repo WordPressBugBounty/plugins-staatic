@@ -33,7 +33,12 @@ final class RegisterCommands implements ModuleInterface
      */
     private $redeployCommand;
 
-    public function __construct(DeleteCommand $deleteCommand, MigrateCommand $migrateCommand, PublishCommand $publishCommand, RedeployCommand $redeployCommand)
+    public function __construct(
+        DeleteCommand $deleteCommand,
+        MigrateCommand $migrateCommand,
+        PublishCommand $publishCommand,
+        RedeployCommand $redeployCommand
+    )
     {
         $this->deleteCommand = $deleteCommand;
         $this->migrateCommand = $migrateCommand;

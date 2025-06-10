@@ -72,7 +72,7 @@ class Binary extends Base
             throw new RuntimeException('Affine coordinates need to be manually converted to "Jacobi" coordinates or vice versa');
         }
         if ($p[0]->equals($q[0])) {
-            return (!$p[1]->equals($q[1])) ? [] : $this->doublePoint($p);
+            return !$p[1]->equals($q[1]) ? [] : $this->doublePoint($p);
         }
         list($x1, $y1, $z1) = $p;
         list($x2, $y2, $z2) = $q;

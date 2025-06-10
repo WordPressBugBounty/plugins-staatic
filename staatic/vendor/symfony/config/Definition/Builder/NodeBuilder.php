@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Symfony\Component\Config\Definition\Builder;
 
 use RuntimeException;
+
 class NodeBuilder implements NodeParentInterface
 {
     protected $parent;

@@ -4,6 +4,7 @@ namespace Staatic\Vendor\phpseclib3\Math\Common\FiniteField;
 
 use JsonSerializable;
 use ReturnTypeWillChange;
+
 abstract class Integer implements JsonSerializable
 {
     #[ReturnTypeWillChange]

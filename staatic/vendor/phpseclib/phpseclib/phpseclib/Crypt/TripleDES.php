@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\phpseclib3\Crypt;
 
 use LengthException;
+
 class TripleDES extends DES
 {
     const MODE_3CBC = -2;
@@ -38,7 +39,7 @@ class TripleDES extends DES
         if ($engine == self::ENGINE_OPENSSL) {
             $this->cipher_name_openssl_ecb = 'des-ede3';
             $mode = $this->openssl_translate_mode();
-            $this->cipher_name_openssl = ($mode == 'ecb') ? 'des-ede3' : ('des-ede3-' . $mode);
+            $this->cipher_name_openssl = $mode == 'ecb' ? 'des-ede3' : 'des-ede3-' . $mode;
         }
         return parent::isValidEngineHelper($engine);
     }

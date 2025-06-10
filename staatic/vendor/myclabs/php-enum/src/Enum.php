@@ -7,6 +7,7 @@ use ReflectionClass;
 use UnexpectedValueException;
 use BadMethodCallException;
 use ReturnTypeWillChange;
+
 abstract class Enum implements JsonSerializable
 {
     protected $value;

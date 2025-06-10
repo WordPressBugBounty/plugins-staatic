@@ -18,7 +18,7 @@ class ExpressionLanguageProvider implements ExpressionFunctionProviderInterface
     private $getEnv;
     public function __construct(callable $serviceCompiler = null, Closure $getEnv = null)
     {
-        $this->serviceCompiler = (null === $serviceCompiler) ? null : Closure::fromCallable($serviceCompiler);
+        $this->serviceCompiler = null === $serviceCompiler ? null : Closure::fromCallable($serviceCompiler);
         $this->getEnv = $getEnv;
     }
     public function getFunctions(): array

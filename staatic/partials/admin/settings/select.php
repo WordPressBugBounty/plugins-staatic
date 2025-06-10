@@ -46,7 +46,7 @@ echo \esc_attr($setting->name());
 echo \esc_attr($setting->name());
 ?>"
             <?php 
-echo ($attributes['disabled'] ?? \false) ? 'disabled="disabled"' : '';
+echo $attributes['disabled'] ?? \false ? 'disabled="disabled"' : '';
 ?>
         >
             <?php 
@@ -54,7 +54,7 @@ foreach ($attributes['selectOptions'] as $optionName => $optionLabel) {
     ?>
                 <option
                     <?php 
-    echo ($optionName === $setting->value()) ? 'selected' : '';
+    echo $optionName === $setting->value() ? 'selected' : '';
     ?>
                     value="<?php 
     echo \esc_attr($optionName);

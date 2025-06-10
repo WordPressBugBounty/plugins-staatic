@@ -66,7 +66,7 @@ class MockHandler implements Countable
         if (\is_callable($response)) {
             $response = $response($request, $options);
         }
-        $response = ($response instanceof Throwable) ? P\Create::rejectionFor($response) : P\Create::promiseFor($response);
+        $response = $response instanceof Throwable ? P\Create::rejectionFor($response) : P\Create::promiseFor($response);
         return $response->then(function (?ResponseInterface $value) use ($request, $options) {
             $this->invokeStats($request, $options, $value);
             if ($this->onFulfilled) {

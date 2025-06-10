@@ -37,7 +37,12 @@ final class Cleanup implements ModuleInterface
     /** @var string */
     public const SCHEDULE = 'staatic_maintenance_cron_interval';
 
-    public function __construct(Scheduler $scheduler, LogEntryCleanup $logEntryCleanup, PublicationCleanup $publicationCleanup, ResourceCleanup $resourceCleanup)
+    public function __construct(
+        Scheduler $scheduler,
+        LogEntryCleanup $logEntryCleanup,
+        PublicationCleanup $publicationCleanup,
+        ResourceCleanup $resourceCleanup
+    )
     {
         $this->scheduler = $scheduler;
         $this->logEntryCleanup = $logEntryCleanup;

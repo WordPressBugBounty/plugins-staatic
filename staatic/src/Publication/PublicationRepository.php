@@ -46,7 +46,13 @@ final class PublicationRepository implements LoggerAwareInterface
      */
     private $tableName;
 
-    public function __construct(wpdb $wpdb, BuildRepository $buildRepository, DeploymentRepository $deploymentRepository, WorkDirectorySetting $workDirectory, string $tableName = 'staatic_publications')
+    public function __construct(
+        wpdb $wpdb,
+        BuildRepository $buildRepository,
+        DeploymentRepository $deploymentRepository,
+        WorkDirectorySetting $workDirectory,
+        string $tableName = 'staatic_publications'
+    )
     {
         $this->wpdb = $wpdb;
         $this->buildRepository = $buildRepository;

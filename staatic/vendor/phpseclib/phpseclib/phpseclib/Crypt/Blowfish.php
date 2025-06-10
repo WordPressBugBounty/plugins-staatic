@@ -173,7 +173,7 @@ class Blowfish extends BlockCipher
         $in = unpack('N*', $in);
         $l = $in[1];
         $r = $in[2];
-        list($r, $l) = (\PHP_INT_SIZE == 4) ? self::encryptBlockHelperSlow($l, $r, $sb, $p) : self::encryptBlockHelperFast($l, $r, $sb, $p);
+        list($r, $l) = \PHP_INT_SIZE == 4 ? self::encryptBlockHelperSlow($l, $r, $sb, $p) : self::encryptBlockHelperFast($l, $r, $sb, $p);
         return pack("N*", $r, $l);
     }
     private static function encryptBlockHelperFast($x0, $x1, array $sbox, array $p)

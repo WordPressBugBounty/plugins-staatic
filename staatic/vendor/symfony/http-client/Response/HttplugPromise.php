@@ -12,10 +12,7 @@ final class HttplugPromise implements HttplugPromiseInterface
      * @var GuzzlePromiseInterface
      */
     private $promise;
-    /**
-     * @param mixed $promise
-     */
-    public function __construct($promise)
+    public function __construct(GuzzlePromiseInterface $promise)
     {
         $this->promise = $promise;
     }

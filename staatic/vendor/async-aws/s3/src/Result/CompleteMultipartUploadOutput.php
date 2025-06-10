@@ -106,13 +106,13 @@ class CompleteMultipartUploadOutput extends Result
         $this->bucketKeyEnabled = isset($headers['x-amz-server-side-encryption-bucket-key-enabled'][0]) ? filter_var($headers['x-amz-server-side-encryption-bucket-key-enabled'][0], \FILTER_VALIDATE_BOOLEAN) : null;
         $this->requestCharged = $headers['x-amz-request-charged'][0] ?? null;
         $data = new SimpleXMLElement($response->getContent());
-        $this->location = (null !== $v = $data->Location[0]) ? (string) $v : null;
-        $this->bucket = (null !== $v = $data->Bucket[0]) ? (string) $v : null;
-        $this->key = (null !== $v = $data->Key[0]) ? (string) $v : null;
-        $this->etag = (null !== $v = $data->ETag[0]) ? (string) $v : null;
-        $this->checksumCrc32 = (null !== $v = $data->ChecksumCRC32[0]) ? (string) $v : null;
-        $this->checksumCrc32C = (null !== $v = $data->ChecksumCRC32C[0]) ? (string) $v : null;
-        $this->checksumSha1 = (null !== $v = $data->ChecksumSHA1[0]) ? (string) $v : null;
-        $this->checksumSha256 = (null !== $v = $data->ChecksumSHA256[0]) ? (string) $v : null;
+        $this->location = null !== ($v = $data->Location[0]) ? (string) $v : null;
+        $this->bucket = null !== ($v = $data->Bucket[0]) ? (string) $v : null;
+        $this->key = null !== ($v = $data->Key[0]) ? (string) $v : null;
+        $this->etag = null !== ($v = $data->ETag[0]) ? (string) $v : null;
+        $this->checksumCrc32 = null !== ($v = $data->ChecksumCRC32[0]) ? (string) $v : null;
+        $this->checksumCrc32C = null !== ($v = $data->ChecksumCRC32C[0]) ? (string) $v : null;
+        $this->checksumSha1 = null !== ($v = $data->ChecksumSHA1[0]) ? (string) $v : null;
+        $this->checksumSha256 = null !== ($v = $data->ChecksumSHA256[0]) ? (string) $v : null;
     }
 }

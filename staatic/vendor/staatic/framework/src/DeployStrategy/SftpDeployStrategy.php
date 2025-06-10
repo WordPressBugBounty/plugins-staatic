@@ -3,7 +3,6 @@
 namespace Staatic\Framework\DeployStrategy;
 
 use Exception;
-use Staatic\Vendor\GuzzleHttp\Psr7\StreamWrapper;
 use InvalidArgumentException;
 use Staatic\Vendor\phpseclib3\Crypt\PublicKeyLoader;
 use Staatic\Vendor\phpseclib3\Net\SFTP;
@@ -88,7 +87,7 @@ final class SftpDeployStrategy implements DeployStrategyInterface, LoggerAwareIn
             throw new InvalidArgumentException('Missing required option "password" or "sshKey"');
         }
         if (!empty($options['targetDirectory']) && $targetDirectory = trim($options['targetDirectory'])) {
-            $this->targetDirectory = ($targetDirectory === '/') ? '/' : rtrim($targetDirectory, '/');
+            $this->targetDirectory = $targetDirectory === '/' ? '/' : rtrim($targetDirectory, '/');
         }
         $this->basePath = isset($options['basePath']) ? rtrim($options['basePath'], '/') : '';
         $this->host = $options['host'];

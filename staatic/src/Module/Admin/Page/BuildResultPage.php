@@ -20,7 +20,10 @@ final class BuildResultPage implements ModuleInterface
      */
     private $resourceRepository;
 
-    public function __construct(ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository)
+    public function __construct(
+        ResultRepositoryInterface $resultRepository,
+        ResourceRepositoryInterface $resourceRepository
+    )
     {
         $this->resultRepository = $resultRepository;
         $this->resourceRepository = $resourceRepository;

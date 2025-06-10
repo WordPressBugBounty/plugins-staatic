@@ -142,7 +142,7 @@ final class AmpClientState extends ClientState
             {
                 $result = $this->connector->connect($this->uri ?? $uri, $context, $token);
                 $result->onResolve(function ($e, $socket) {
-                    $this->handle = (null !== $socket) ? $socket->getResource() : \false;
+                    $this->handle = null !== $socket ? $socket->getResource() : \false;
                 });
                 return $result;
             }
@@ -166,7 +166,7 @@ final class AmpClientState extends ClientState
                 $connector = new Http1TunnelConnector($proxySocket, $proxyHeaders, $connector);
             }
         }
-        $maxHostConnections = (0 < $this->maxHostConnections) ? $this->maxHostConnections : \PHP_INT_MAX;
+        $maxHostConnections = 0 < $this->maxHostConnections ? $this->maxHostConnections : \PHP_INT_MAX;
         $pool = new DefaultConnectionFactory($connector, $context);
         $pool = ConnectionLimitingPool::byAuthority($maxHostConnections, $pool);
         return $this->clients[$key] = [($this->clientConfigurator)(new PooledHttpClient($pool)), $handleConnector];

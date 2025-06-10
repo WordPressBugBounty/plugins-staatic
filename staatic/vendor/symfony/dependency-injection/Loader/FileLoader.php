@@ -83,7 +83,7 @@ abstract class FileLoader extends BaseFileLoader
         if (\is_array($exclude) && \in_array('', $exclude, \true)) {
             throw new InvalidArgumentException('The exclude list must not contain an empty value.');
         }
-        $source = (\func_num_args() > 4) ? func_get_arg(4) : null;
+        $source = \func_num_args() > 4 ? func_get_arg(4) : null;
         $autoconfigureAttributes = new RegisterAutoconfigureAttributesPass();
         $autoconfigureAttributes = $autoconfigureAttributes->accept($prototype) ? $autoconfigureAttributes : null;
         $classes = $this->findClasses($namespace, $resource, (array) $exclude, $autoconfigureAttributes, $source);
@@ -112,7 +112,7 @@ abstract class FileLoader extends BaseFileLoader
                 }
                 $definition->setClass($class);
                 foreach (class_implements($class, \false) as $interface) {
-                    $this->singlyImplemented[$interface] = (($this->singlyImplemented[$interface] ?? $class) !== $class) ? \false : $class;
+                    $this->singlyImplemented[$interface] = ($this->singlyImplemented[$interface] ?? $class) !== $class ? \false : $class;
                 }
             }
         }
@@ -201,7 +201,7 @@ abstract class FileLoader extends BaseFileLoader
             }
         }
         if (null !== $prefixLen) {
-            $attributes = (null !== $source) ? ['source' => sprintf('in "%s/%s"', basename(\dirname($source)), basename($source))] : [];
+            $attributes = null !== $source ? ['source' => sprintf('in "%s/%s"', basename(\dirname($source)), basename($source))] : [];
             foreach ($excludePaths as $path => $_) {
                 $class = $namespace . ltrim(str_replace('/', '\\', substr($path, $prefixLen, substr_compare($path, '.php', -strlen('.php')) === 0 ? -4 : null)), '\\');
                 if (!$this->container->has($class)) {

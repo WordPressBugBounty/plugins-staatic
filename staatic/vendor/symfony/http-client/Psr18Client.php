@@ -49,7 +49,7 @@ final class Psr18Client implements ClientInterface, RequestFactoryInterface, Str
     public function __construct(HttpClientInterface $client = null, ResponseFactoryInterface $responseFactory = null, StreamFactoryInterface $streamFactory = null)
     {
         $this->client = $client ?? HttpClient::create();
-        $streamFactory = $streamFactory ?? (($responseFactory instanceof StreamFactoryInterface) ? $responseFactory : null);
+        $streamFactory = $streamFactory ?? ($responseFactory instanceof StreamFactoryInterface ? $responseFactory : null);
         if (null === $responseFactory || null === $streamFactory) {
             if (!class_exists(Psr17Factory::class) && !class_exists(Psr17FactoryDiscovery::class)) {
                 throw new LogicException('You cannot use the "Symfony\Component\HttpClient\Psr18Client" as no PSR-17 factories have been provided. Try running "composer require nyholm/psr7".');
@@ -99,7 +99,7 @@ final class Psr18Client implements ClientInterface, RequestFactoryInterface, Str
                     }
                 }
             }
-            $body = ($response instanceof StreamableInterface) ? $response->toStream(\false) : StreamWrapper::createResource($response, $this->client);
+            $body = $response instanceof StreamableInterface ? $response->toStream(\false) : StreamWrapper::createResource($response, $this->client);
             $body = $this->streamFactory->createStreamFromResource($body);
             if ($body->isSeekable()) {
                 $body->seek(0);

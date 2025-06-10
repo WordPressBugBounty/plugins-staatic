@@ -38,9 +38,9 @@ final class HeadObjectRequest extends Input
     {
         $this->bucket = $input['Bucket'] ?? null;
         $this->ifMatch = $input['IfMatch'] ?? null;
-        $this->ifModifiedSince = (!isset($input['IfModifiedSince'])) ? null : (($input['IfModifiedSince'] instanceof DateTimeImmutable) ? $input['IfModifiedSince'] : new DateTimeImmutable($input['IfModifiedSince']));
+        $this->ifModifiedSince = !isset($input['IfModifiedSince']) ? null : ($input['IfModifiedSince'] instanceof DateTimeImmutable ? $input['IfModifiedSince'] : new DateTimeImmutable($input['IfModifiedSince']));
         $this->ifNoneMatch = $input['IfNoneMatch'] ?? null;
-        $this->ifUnmodifiedSince = (!isset($input['IfUnmodifiedSince'])) ? null : (($input['IfUnmodifiedSince'] instanceof DateTimeImmutable) ? $input['IfUnmodifiedSince'] : new DateTimeImmutable($input['IfUnmodifiedSince']));
+        $this->ifUnmodifiedSince = !isset($input['IfUnmodifiedSince']) ? null : ($input['IfUnmodifiedSince'] instanceof DateTimeImmutable ? $input['IfUnmodifiedSince'] : new DateTimeImmutable($input['IfUnmodifiedSince']));
         $this->key = $input['Key'] ?? null;
         $this->range = $input['Range'] ?? null;
         $this->responseCacheControl = $input['ResponseCacheControl'] ?? null;
@@ -48,7 +48,7 @@ final class HeadObjectRequest extends Input
         $this->responseContentEncoding = $input['ResponseContentEncoding'] ?? null;
         $this->responseContentLanguage = $input['ResponseContentLanguage'] ?? null;
         $this->responseContentType = $input['ResponseContentType'] ?? null;
-        $this->responseExpires = (!isset($input['ResponseExpires'])) ? null : (($input['ResponseExpires'] instanceof DateTimeImmutable) ? $input['ResponseExpires'] : new DateTimeImmutable($input['ResponseExpires']));
+        $this->responseExpires = !isset($input['ResponseExpires']) ? null : ($input['ResponseExpires'] instanceof DateTimeImmutable ? $input['ResponseExpires'] : new DateTimeImmutable($input['ResponseExpires']));
         $this->versionId = $input['VersionId'] ?? null;
         $this->sseCustomerAlgorithm = $input['SSECustomerAlgorithm'] ?? null;
         $this->sseCustomerKey = $input['SSECustomerKey'] ?? null;
@@ -61,7 +61,7 @@ final class HeadObjectRequest extends Input
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getBucket(): ?string
     {

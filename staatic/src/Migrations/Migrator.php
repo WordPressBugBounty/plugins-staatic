@@ -97,7 +97,7 @@ final class Migrator implements LoggerAwareInterface
         string $direction
     ): array
     {
-        $filter = ($direction === self::DIRECTION_UP) ? function ($migrationSpec) use (
+        $filter = $direction === self::DIRECTION_UP ? function ($migrationSpec) use (
             $targetVersion,
             $installedVersion
         ) {
@@ -123,7 +123,7 @@ final class Migrator implements LoggerAwareInterface
 
     private function sortMigrations(array $migrations, string $direction): array
     {
-        $comparator = ($direction === self::DIRECTION_UP) ? function ($a, $b) {
+        $comparator = $direction === self::DIRECTION_UP ? function ($a, $b) {
             return $this->compareMigrations($a, $b);
         } : function ($a, $b) {
             return $this->compareMigrations($b, $a);

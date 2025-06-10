@@ -31,7 +31,11 @@ final class PublicationLogsExportPage implements ModuleInterface
     /** @var string */
     public const PAGE_SLUG = 'staatic-publication-logs-export';
 
-    public function __construct(AdminNavigation $navigation, PublicationRepository $publicationRepository, PublicationLogsExporter $logsExporter)
+    public function __construct(
+        AdminNavigation $navigation,
+        PublicationRepository $publicationRepository,
+        PublicationLogsExporter $logsExporter
+    )
     {
         $this->navigation = $navigation;
         $this->publicationRepository = $publicationRepository;

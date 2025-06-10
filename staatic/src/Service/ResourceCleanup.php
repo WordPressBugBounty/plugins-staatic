@@ -36,7 +36,11 @@ final class ResourceCleanup
      */
     private $resourceDirectory;
 
-    public function __construct(ResultRepository $resultRepository, WorkDirectorySetting $workDirectory, LoggerInterface $logger)
+    public function __construct(
+        ResultRepository $resultRepository,
+        WorkDirectorySetting $workDirectory,
+        LoggerInterface $logger
+    )
     {
         $this->resultRepository = $resultRepository;
         $this->workDirectory = $workDirectory;

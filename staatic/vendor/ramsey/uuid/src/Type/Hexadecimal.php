@@ -19,7 +19,7 @@ final class Hexadecimal implements TypeInterface
      */
     public function __construct($value)
     {
-        $this->value = ($value instanceof self) ? (string) $value : $this->prepareValue($value);
+        $this->value = $value instanceof self ? (string) $value : $this->prepareValue($value);
     }
     public function toString(): string
     {

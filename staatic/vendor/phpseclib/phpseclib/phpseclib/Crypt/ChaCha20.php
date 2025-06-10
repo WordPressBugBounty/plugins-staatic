@@ -40,12 +40,12 @@ class ChaCha20 extends Salsa20
     private function encrypt_with_libsodium($plaintext)
     {
         $params = [$plaintext, $this->aad, $this->nonce, $this->key];
-        $ciphertext = (strlen($this->nonce) == 8) ? sodium_crypto_aead_chacha20poly1305_encrypt(...$params) : sodium_crypto_aead_chacha20poly1305_ietf_encrypt(...$params);
+        $ciphertext = strlen($this->nonce) == 8 ? sodium_crypto_aead_chacha20poly1305_encrypt(...$params) : sodium_crypto_aead_chacha20poly1305_ietf_encrypt(...$params);
         if (!$this->usePoly1305) {
             return substr($ciphertext, 0, strlen($plaintext));
         }
         $newciphertext = substr($ciphertext, 0, strlen($plaintext));
-        $this->newtag = ($this->usingGeneratedPoly1305Key && strlen($this->nonce) == 12) ? substr($ciphertext, strlen($plaintext)) : $this->poly1305($newciphertext);
+        $this->newtag = $this->usingGeneratedPoly1305Key && strlen($this->nonce) == 12 ? substr($ciphertext, strlen($plaintext)) : $this->poly1305($newciphertext);
         return $newciphertext;
     }
     private function decrypt_with_libsodium($ciphertext)
@@ -70,7 +70,7 @@ class ChaCha20 extends Salsa20
             }
             $this->oldtag = \false;
         }
-        $plaintext = (strlen($this->nonce) == 8) ? sodium_crypto_aead_chacha20poly1305_encrypt(...$params) : sodium_crypto_aead_chacha20poly1305_ietf_encrypt(...$params);
+        $plaintext = strlen($this->nonce) == 8 ? sodium_crypto_aead_chacha20poly1305_encrypt(...$params) : sodium_crypto_aead_chacha20poly1305_ietf_encrypt(...$params);
         return substr($plaintext, 0, strlen($ciphertext));
     }
     public function setNonce($nonce)

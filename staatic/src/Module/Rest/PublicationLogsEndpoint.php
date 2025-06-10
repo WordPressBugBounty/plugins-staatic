@@ -33,7 +33,11 @@ final class PublicationLogsEndpoint implements ModuleInterface
 
     public const ENDPOINT = '/publication-logs';
 
-    public function __construct(PublicationRepository $publicationRepository, LogEntryRepository $logEntryRepository, Formatter $formatter)
+    public function __construct(
+        PublicationRepository $publicationRepository,
+        LogEntryRepository $logEntryRepository,
+        Formatter $formatter
+    )
     {
         $this->publicationRepository = $publicationRepository;
         $this->logEntryRepository = $logEntryRepository;

@@ -109,9 +109,9 @@ abstract class Engine implements JsonSerializable
     {
         $comparison = $this->compare(new static());
         if ($comparison == 0) {
-            return ($this->precision > 0) ? str_repeat(chr(0), $this->precision + 1 >> 3) : '';
+            return $this->precision > 0 ? str_repeat(chr(0), $this->precision + 1 >> 3) : '';
         }
-        $temp = ($comparison < 0) ? $this->add(new static(1)) : $this;
+        $temp = $comparison < 0 ? $this->add(new static(1)) : $this;
         $bytes = $temp->toBytes();
         if (!strlen($bytes)) {
             $bytes = chr(0);
@@ -119,7 +119,7 @@ abstract class Engine implements JsonSerializable
         if (ord($bytes[0]) & 0x80) {
             $bytes = chr(0) . $bytes;
         }
-        return ($comparison < 0) ? ~$bytes : $bytes;
+        return $comparison < 0 ? ~$bytes : $bytes;
     }
     public function toHex($twos_compliment = \false)
     {
@@ -129,7 +129,7 @@ abstract class Engine implements JsonSerializable
     {
         $hex = $this->toBytes($twos_compliment);
         $bits = Strings::bin2bits($hex);
-        $result = ($this->precision > 0) ? substr($bits, -$this->precision) : ltrim($bits, '0');
+        $result = $this->precision > 0 ? substr($bits, -$this->precision) : ltrim($bits, '0');
         if ($twos_compliment && $this->compare(new static()) > 0 && $this->precision <= 0) {
             return '0' . $result;
         }
@@ -150,8 +150,8 @@ abstract class Engine implements JsonSerializable
         if (!$gcd->equals(static::$one[static::class])) {
             return \false;
         }
-        $x = ($x->compare(static::$zero[static::class]) < 0) ? $x->add($n) : $x;
-        return ($this->compare(static::$zero[static::class]) < 0) ? $this->normalize($n->subtract($x)) : $this->normalize($x);
+        $x = $x->compare(static::$zero[static::class]) < 0 ? $x->add($n) : $x;
+        return $this->compare(static::$zero[static::class]) < 0 ? $this->normalize($n->subtract($x)) : $this->normalize($x);
     }
     public function __sleep()
     {
@@ -187,7 +187,7 @@ abstract class Engine implements JsonSerializable
     public function __debugInfo()
     {
         $result = ['value' => '0x' . $this->toHex(\true), 'engine' => basename(static::class)];
-        return ($this->precision > 0) ? $result + ['precision' => $this->precision] : $result;
+        return $this->precision > 0 ? $result + ['precision' => $this->precision] : $result;
     }
     public function setPrecision($bits)
     {
@@ -245,7 +245,7 @@ abstract class Engine implements JsonSerializable
             $x[$i] = chr($temp);
             $carry = $temp >> 8;
         }
-        $carry = ($carry != 0) ? chr($carry) : '';
+        $carry = $carry != 0 ? chr($carry) : '';
         $x = $carry . $x . str_repeat(chr(0), $num_bytes);
     }
     public function bitwise_leftRotate($shift)
@@ -311,7 +311,7 @@ abstract class Engine implements JsonSerializable
      */
     protected function powModOuter($e, $n)
     {
-        $n = ($this->bitmask !== \false && $this->bitmask->compare($n) < 0) ? $this->bitmask : $n->abs();
+        $n = $this->bitmask !== \false && $this->bitmask->compare($n) < 0 ? $this->bitmask : $n->abs();
         if ($e->compare(new static()) < 0) {
             $e = $e->abs();
             $temp = $this->modInverse($n);
@@ -607,7 +607,7 @@ abstract class Engine implements JsonSerializable
         }
         $min = $nums[0];
         for ($i = 1; $i < count($nums); $i++) {
-            $min = ($min->compare($nums[$i]) > 0) ? $nums[$i] : $min;
+            $min = $min->compare($nums[$i]) > 0 ? $nums[$i] : $min;
         }
         return $min;
     }
@@ -621,14 +621,14 @@ abstract class Engine implements JsonSerializable
         }
         $max = $nums[0];
         for ($i = 1; $i < count($nums); $i++) {
-            $max = ($max->compare($nums[$i]) < 0) ? $nums[$i] : $max;
+            $max = $max->compare($nums[$i]) < 0 ? $nums[$i] : $max;
         }
         return $max;
     }
     public function createRecurringModuloFunction()
     {
         $class = static::class;
-        $fqengine = (!method_exists(static::$modexpEngine[static::class], 'reduce')) ? '\Staatic\Vendor\phpseclib3\Math\BigInteger\Engines\\' . static::ENGINE_DIR . '\DefaultEngine' : static::$modexpEngine[static::class];
+        $fqengine = !method_exists(static::$modexpEngine[static::class], 'reduce') ? '\Staatic\Vendor\phpseclib3\Math\BigInteger\Engines\\' . static::ENGINE_DIR . '\DefaultEngine' : static::$modexpEngine[static::class];
         if (method_exists($fqengine, 'generateCustomReduction')) {
             $func = $fqengine::generateCustomReduction($this, static::class);
             return eval('return function(' . static::class . ' $x) use ($func, $class) {

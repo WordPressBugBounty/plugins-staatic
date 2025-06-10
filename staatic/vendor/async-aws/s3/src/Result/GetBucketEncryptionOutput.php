@@ -26,7 +26,7 @@ class GetBucketEncryptionOutput extends Result
     }
     private function populateResultServerSideEncryptionByDefault(SimpleXMLElement $xml): ServerSideEncryptionByDefault
     {
-        return new ServerSideEncryptionByDefault(['SSEAlgorithm' => (string) $xml->SSEAlgorithm, 'KMSMasterKeyID' => (null !== $v = $xml->KMSMasterKeyID[0]) ? (string) $v : null]);
+        return new ServerSideEncryptionByDefault(['SSEAlgorithm' => (string) $xml->SSEAlgorithm, 'KMSMasterKeyID' => null !== ($v = $xml->KMSMasterKeyID[0]) ? (string) $v : null]);
     }
     private function populateResultServerSideEncryptionConfiguration(SimpleXMLElement $xml): ServerSideEncryptionConfiguration
     {
@@ -34,7 +34,7 @@ class GetBucketEncryptionOutput extends Result
     }
     private function populateResultServerSideEncryptionRule(SimpleXMLElement $xml): ServerSideEncryptionRule
     {
-        return new ServerSideEncryptionRule(['ApplyServerSideEncryptionByDefault' => (0 === $xml->ApplyServerSideEncryptionByDefault->count()) ? null : $this->populateResultServerSideEncryptionByDefault($xml->ApplyServerSideEncryptionByDefault), 'BucketKeyEnabled' => (null !== $v = $xml->BucketKeyEnabled[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null]);
+        return new ServerSideEncryptionRule(['ApplyServerSideEncryptionByDefault' => 0 === $xml->ApplyServerSideEncryptionByDefault->count() ? null : $this->populateResultServerSideEncryptionByDefault($xml->ApplyServerSideEncryptionByDefault), 'BucketKeyEnabled' => null !== ($v = $xml->BucketKeyEnabled[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null]);
     }
     private function populateResultServerSideEncryptionRules(SimpleXMLElement $xml): array
     {

@@ -102,7 +102,7 @@ class AmpListener implements EventListener
             $requestUri .= '?' . $query;
         }
         if ('CONNECT' === $method = $request->getMethod()) {
-            $requestUri = $uri->getHost() . ': ' . ($uri->getPort() ?? (('https' === $uri->getScheme()) ? 443 : 80));
+            $requestUri = $uri->getHost() . ': ' . ($uri->getPort() ?? ('https' === $uri->getScheme() ? 443 : 80));
         }
         $this->info['debug'] .= sprintf("> %s %s HTTP/%s \r\n", $method, $requestUri, $request->getProtocolVersions()[0]);
         foreach ($request->getRawHeaders() as [$name, $value]) {

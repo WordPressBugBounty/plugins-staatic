@@ -54,10 +54,10 @@ $this->render('admin/publication/_header.php', \compact('publication', 'currentT
 \esc_html_e('Published By', 'staatic');
 ?></th>
                 <td><?php 
-echo $publication->userId() ? \esc_html($publication->publisher()->data->display_name) : ('<em>' . \esc_html__(
+echo $publication->userId() ? \esc_html($publication->publisher()->data->display_name) : '<em>' . \esc_html__(
     'system',
     'staatic'
-) . '</em>');
+) . '</em>';
 ?></td>
             </tr>
             <tr>
@@ -123,9 +123,9 @@ echo \wp_kses_post(\sprintf(
     /* translators: 1: Number of resources, 2: Redirect/redirects, 3: Number of failed resources, 4: Failure/failures. */
     \__('(%1$s %2$s, %3$s %4$s)', 'staatic'),
     $_formatter->number($resultsPerStatusCategory[3]),
-    ($resultsPerStatusCategory[3] === 1) ? \__('redirect', 'staatic') : \__('redirects', 'staatic'),
-    \sprintf(($numFailedResults > 0) ? '<b>%s</b>' : '%s', $_formatter->number($numFailedResults)),
-    ($numFailedResults === 1) ? \__('failure', 'staatic') : \__('failures', 'staatic')
+    $resultsPerStatusCategory[3] === 1 ? \__('redirect', 'staatic') : \__('redirects', 'staatic'),
+    \sprintf($numFailedResults > 0 ? '<b>%s</b>' : '%s', $_formatter->number($numFailedResults)),
+    $numFailedResults === 1 ? \__('failure', 'staatic') : \__('failures', 'staatic')
 ));
 ?>
                     </small>
@@ -170,10 +170,10 @@ if (\count($logEntries) > 0) {
         ?>
 
                 <?php 
-        $source = ($logEntry->context() && isset($logEntry->context()['source'])) ? $logEntry->context()['source'] : null;
+        $source = $logEntry->context() && isset($logEntry->context()['source']) ? $logEntry->context()['source'] : null;
         ?>
                 <?php 
-        $failure = ($logEntry->context() && isset($logEntry->context()['failure'])) ? $logEntry->context()['failure'] : null;
+        $failure = $logEntry->context() && isset($logEntry->context()['failure']) ? $logEntry->context()['failure'] : null;
         ?>
 
                 <li class="staatic-log-level-<?php 
@@ -194,7 +194,7 @@ if (\count($logEntries) > 0) {
         if ($failure) {
             ?>
                         <?php 
-            $failureSummary = (\preg_match('~\w+:\s+(.+?) in .+?:\d+\n~s', $failure, $match) === 1) ? $match[1] : null;
+            $failureSummary = \preg_match('~\w+:\s+(.+?) in .+?:\d+\n~s', $failure, $match) === 1 ? $match[1] : null;
             ?>
                         <?php 
             $showSensitiveData = \current_user_can('staatic_manage_settings');

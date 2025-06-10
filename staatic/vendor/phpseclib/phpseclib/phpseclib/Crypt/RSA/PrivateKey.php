@@ -100,7 +100,7 @@ final class PrivateKey extends RSA implements Common\PrivateKey
     private function emsa_pss_encode($m, $emBits)
     {
         $emLen = $emBits + 1 >> 3;
-        $sLen = ($this->sLen !== null) ? $this->sLen : $this->hLen;
+        $sLen = $this->sLen !== null ? $this->sLen : $this->hLen;
         $mHash = $this->hash->hash($m);
         if ($emLen < $this->hLen + $sLen + 2) {
             throw new LengthException('RSA modulus too short');

@@ -196,22 +196,22 @@ class ListMultipartUploadsOutput extends Result implements IteratorAggregate
         $headers = $response->getHeaders();
         $this->requestCharged = $headers['x-amz-request-charged'][0] ?? null;
         $data = new SimpleXMLElement($response->getContent());
-        $this->bucket = (null !== $v = $data->Bucket[0]) ? (string) $v : null;
-        $this->keyMarker = (null !== $v = $data->KeyMarker[0]) ? (string) $v : null;
-        $this->uploadIdMarker = (null !== $v = $data->UploadIdMarker[0]) ? (string) $v : null;
-        $this->nextKeyMarker = (null !== $v = $data->NextKeyMarker[0]) ? (string) $v : null;
-        $this->prefix = (null !== $v = $data->Prefix[0]) ? (string) $v : null;
-        $this->delimiter = (null !== $v = $data->Delimiter[0]) ? (string) $v : null;
-        $this->nextUploadIdMarker = (null !== $v = $data->NextUploadIdMarker[0]) ? (string) $v : null;
-        $this->maxUploads = (null !== $v = $data->MaxUploads[0]) ? (int) (string) $v : null;
-        $this->isTruncated = (null !== $v = $data->IsTruncated[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null;
-        $this->uploads = (0 === ($v = $data->Upload)->count()) ? [] : $this->populateResultMultipartUploadList($v);
-        $this->commonPrefixes = (0 === ($v = $data->CommonPrefixes)->count()) ? [] : $this->populateResultCommonPrefixList($v);
-        $this->encodingType = (null !== $v = $data->EncodingType[0]) ? (string) $v : null;
+        $this->bucket = null !== ($v = $data->Bucket[0]) ? (string) $v : null;
+        $this->keyMarker = null !== ($v = $data->KeyMarker[0]) ? (string) $v : null;
+        $this->uploadIdMarker = null !== ($v = $data->UploadIdMarker[0]) ? (string) $v : null;
+        $this->nextKeyMarker = null !== ($v = $data->NextKeyMarker[0]) ? (string) $v : null;
+        $this->prefix = null !== ($v = $data->Prefix[0]) ? (string) $v : null;
+        $this->delimiter = null !== ($v = $data->Delimiter[0]) ? (string) $v : null;
+        $this->nextUploadIdMarker = null !== ($v = $data->NextUploadIdMarker[0]) ? (string) $v : null;
+        $this->maxUploads = null !== ($v = $data->MaxUploads[0]) ? (int) (string) $v : null;
+        $this->isTruncated = null !== ($v = $data->IsTruncated[0]) ? filter_var((string) $v, \FILTER_VALIDATE_BOOLEAN) : null;
+        $this->uploads = 0 === ($v = $data->Upload)->count() ? [] : $this->populateResultMultipartUploadList($v);
+        $this->commonPrefixes = 0 === ($v = $data->CommonPrefixes)->count() ? [] : $this->populateResultCommonPrefixList($v);
+        $this->encodingType = null !== ($v = $data->EncodingType[0]) ? (string) $v : null;
     }
     private function populateResultCommonPrefix(SimpleXMLElement $xml): CommonPrefix
     {
-        return new CommonPrefix(['Prefix' => (null !== $v = $xml->Prefix[0]) ? (string) $v : null]);
+        return new CommonPrefix(['Prefix' => null !== ($v = $xml->Prefix[0]) ? (string) $v : null]);
     }
     private function populateResultCommonPrefixList(SimpleXMLElement $xml): array
     {
@@ -223,11 +223,11 @@ class ListMultipartUploadsOutput extends Result implements IteratorAggregate
     }
     private function populateResultInitiator(SimpleXMLElement $xml): Initiator
     {
-        return new Initiator(['ID' => (null !== $v = $xml->ID[0]) ? (string) $v : null, 'DisplayName' => (null !== $v = $xml->DisplayName[0]) ? (string) $v : null]);
+        return new Initiator(['ID' => null !== ($v = $xml->ID[0]) ? (string) $v : null, 'DisplayName' => null !== ($v = $xml->DisplayName[0]) ? (string) $v : null]);
     }
     private function populateResultMultipartUpload(SimpleXMLElement $xml): MultipartUpload
     {
-        return new MultipartUpload(['UploadId' => (null !== $v = $xml->UploadId[0]) ? (string) $v : null, 'Key' => (null !== $v = $xml->Key[0]) ? (string) $v : null, 'Initiated' => (null !== $v = $xml->Initiated[0]) ? new DateTimeImmutable((string) $v) : null, 'StorageClass' => (null !== $v = $xml->StorageClass[0]) ? (string) $v : null, 'Owner' => (0 === $xml->Owner->count()) ? null : $this->populateResultOwner($xml->Owner), 'Initiator' => (0 === $xml->Initiator->count()) ? null : $this->populateResultInitiator($xml->Initiator), 'ChecksumAlgorithm' => (null !== $v = $xml->ChecksumAlgorithm[0]) ? (string) $v : null]);
+        return new MultipartUpload(['UploadId' => null !== ($v = $xml->UploadId[0]) ? (string) $v : null, 'Key' => null !== ($v = $xml->Key[0]) ? (string) $v : null, 'Initiated' => null !== ($v = $xml->Initiated[0]) ? new DateTimeImmutable((string) $v) : null, 'StorageClass' => null !== ($v = $xml->StorageClass[0]) ? (string) $v : null, 'Owner' => 0 === $xml->Owner->count() ? null : $this->populateResultOwner($xml->Owner), 'Initiator' => 0 === $xml->Initiator->count() ? null : $this->populateResultInitiator($xml->Initiator), 'ChecksumAlgorithm' => null !== ($v = $xml->ChecksumAlgorithm[0]) ? (string) $v : null]);
     }
     private function populateResultMultipartUploadList(SimpleXMLElement $xml): array
     {
@@ -239,6 +239,6 @@ class ListMultipartUploadsOutput extends Result implements IteratorAggregate
     }
     private function populateResultOwner(SimpleXMLElement $xml): Owner
     {
-        return new Owner(['DisplayName' => (null !== $v = $xml->DisplayName[0]) ? (string) $v : null, 'ID' => (null !== $v = $xml->ID[0]) ? (string) $v : null]);
+        return new Owner(['DisplayName' => null !== ($v = $xml->DisplayName[0]) ? (string) $v : null, 'ID' => null !== ($v = $xml->ID[0]) ? (string) $v : null]);
     }
 }

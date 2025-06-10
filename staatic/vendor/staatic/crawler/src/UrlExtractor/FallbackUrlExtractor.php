@@ -40,11 +40,11 @@ final class FallbackUrlExtractor extends AbstractPatternUrlExtractor
             $slash = preg_quote($options['encode']('/'), '~');
             $doubleColon = preg_quote($options['encode'](':'), '~');
             $authority = preg_quote($options['encode']($this->baseUrl->getAuthority()), '~');
-            $filterBasePath = ($this->filterBasePath === null) ? '' : preg_quote($options['encode'](trim($this->filterBasePath, '/')), '~');
+            $filterBasePath = $this->filterBasePath === null ? '' : preg_quote($options['encode'](trim($this->filterBasePath, '/')), '~');
             $patterns[] = ['pattern' => '~' . ($this->extendedUrlContext ? '(?P<before>.{0,100})' : '') . '(?P<url>
                     (?P<scheme>https?' . $doubleColon . ')?' . $slash . $slash . $authority . '
                     (?P<port>' . $doubleColon . '(?:80|443))?
-                    (?P<path>' . (empty($filterBasePath) ? '' : ($slash . $filterBasePath)) . '
+                    (?P<path>' . (empty($filterBasePath) ? '' : $slash . $filterBasePath) . '
 
                         # Either the URL has an extra path or in the future it has a non-path char.
                         (' . $slash . '|(?![a-z0-9-._]))

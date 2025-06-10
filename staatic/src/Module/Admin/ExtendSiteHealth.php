@@ -136,7 +136,7 @@ final class ExtendSiteHealth implements ModuleInterface
                 ],
                 'http_https_to_http' => [
                     'label' => __('Downgrade HTTPS to HTTP while crawling site', 'staatic'),
-                    'value' => ($downgradeHttps === null) ? __('Undefined', 'staatic') : ($downgradeHttps ? __('Enabled', 'staatic') : __('Disabled', 'staatic'))
+                    'value' => $downgradeHttps === null ? __('Undefined', 'staatic') : ($downgradeHttps ? __('Enabled', 'staatic') : __('Disabled', 'staatic'))
                 ],
                 'http_timeout' => [
                     'label' => __('HTTP timeout', 'staatic'),

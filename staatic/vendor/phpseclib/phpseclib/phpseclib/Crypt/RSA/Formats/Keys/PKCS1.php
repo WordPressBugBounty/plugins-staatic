@@ -66,7 +66,7 @@ abstract class PKCS1 extends Progenitor
     public static function savePrivateKey($n, $e, $d, $primes, $exponents, $coefficients, $password = '', $options = [])
     {
         $num_primes = count($primes);
-        $key = ['version' => ($num_primes == 2) ? 'two-prime' : 'multi', 'modulus' => $n, 'publicExponent' => $e, 'privateExponent' => $d, 'prime1' => $primes[1], 'prime2' => $primes[2], 'exponent1' => $exponents[1], 'exponent2' => $exponents[2], 'coefficient' => $coefficients[2]];
+        $key = ['version' => $num_primes == 2 ? 'two-prime' : 'multi', 'modulus' => $n, 'publicExponent' => $e, 'privateExponent' => $d, 'prime1' => $primes[1], 'prime2' => $primes[2], 'exponent1' => $exponents[1], 'exponent2' => $exponents[2], 'coefficient' => $coefficients[2]];
         for ($i = 3; $i <= $num_primes; $i++) {
             $key['otherPrimeInfos'][] = ['prime' => $primes[$i], 'exponent' => $exponents[$i], 'coefficient' => $coefficients[$i]];
         }

@@ -62,7 +62,7 @@ abstract class PKCS8 extends Progenitor
     {
         $components = [];
         if (isset($key['privateKey'])) {
-            $components['curve'] = ($key['privateKeyAlgorithm']['algorithm'] == 'id-Ed25519') ? new Ed25519() : new Ed448();
+            $components['curve'] = $key['privateKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new Ed25519() : new Ed448();
             $expected = chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($components['curve']::SIZE);
             if (substr($key['privateKey'], 0, 2) != $expected) {
                 throw new RuntimeException('The first two bytes of the ' . $key['privateKeyAlgorithm']['algorithm'] . ' private key field should be 0x' . bin2hex($expected));
@@ -73,7 +73,7 @@ abstract class PKCS8 extends Progenitor
         }
         if (isset($key['publicKey'])) {
             if (!isset($components['curve'])) {
-                $components['curve'] = ($key['publicKeyAlgorithm']['algorithm'] == 'id-Ed25519') ? new Ed25519() : new Ed448();
+                $components['curve'] = $key['publicKeyAlgorithm']['algorithm'] == 'id-Ed25519' ? new Ed25519() : new Ed448();
             }
             $components['QA'] = self::extractPoint($key['publicKey'], $components['curve']);
         }
@@ -94,7 +94,7 @@ abstract class PKCS8 extends Progenitor
             throw new UnsupportedCurveException('Montgomery Curves are not supported');
         }
         if ($curve instanceof TwistedEdwardsCurve) {
-            return self::wrapPublicKey($curve->encodePoint($publicKey), null, ($curve instanceof Ed25519) ? 'id-Ed25519' : 'id-Ed448', $options);
+            return self::wrapPublicKey($curve->encodePoint($publicKey), null, $curve instanceof Ed25519 ? 'id-Ed25519' : 'id-Ed448', $options);
         }
         $params = new Element(self::encodeParameters($curve, \false, $options));
         $key = "\x04" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
@@ -113,7 +113,7 @@ abstract class PKCS8 extends Progenitor
             throw new UnsupportedCurveException('Montgomery Curves are not supported');
         }
         if ($curve instanceof TwistedEdwardsCurve) {
-            return self::wrapPrivateKey(chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($curve::SIZE) . $secret, [], null, $password, ($curve instanceof Ed25519) ? 'id-Ed25519' : 'id-Ed448');
+            return self::wrapPrivateKey(chr(ASN1::TYPE_OCTET_STRING) . ASN1::encodeLength($curve::SIZE) . $secret, [], null, $password, $curve instanceof Ed25519 ? 'id-Ed25519' : 'id-Ed448');
         }
         $publicKey = "\x04" . $publicKey[0]->toBytes() . $publicKey[1]->toBytes();
         $params = new Element(self::encodeParameters($curve, \false, $options));

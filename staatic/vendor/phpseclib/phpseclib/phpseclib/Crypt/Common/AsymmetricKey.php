@@ -74,7 +74,7 @@ abstract class AsymmetricKey
         $new = static::onLoad($components);
         $new->format = $format;
         $new->comment = $comment;
-        return ($new instanceof PrivateKey) ? $new->withPassword($password) : $new;
+        return $new instanceof PrivateKey ? $new->withPassword($password) : $new;
     }
     public static function loadPrivateKey($key, $password = '')
     {
@@ -116,7 +116,7 @@ abstract class AsymmetricKey
         $components['secret'] = isset($components['secret']) ? $components['secret'] : '';
         $new = static::onLoad($components);
         $new->format = $format;
-        return ($new instanceof PrivateKey) ? $new->withPassword($password) : $new;
+        return $new instanceof PrivateKey ? $new->withPassword($password) : $new;
     }
     public static function loadPrivateKeyFormat($type, $key, $password = \false)
     {
@@ -287,6 +287,6 @@ abstract class AsymmetricKey
     {
         $z1 = $this->bits2int($in);
         $z2 = $z1->subtract($this->q);
-        return ($z2->compare(self::$zero) < 0) ? $this->int2octets($z1) : $this->int2octets($z2);
+        return $z2->compare(self::$zero) < 0 ? $this->int2octets($z1) : $this->int2octets($z2);
     }
 }

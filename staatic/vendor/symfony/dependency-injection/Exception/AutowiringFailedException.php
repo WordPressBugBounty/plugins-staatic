@@ -4,6 +4,7 @@ namespace Staatic\Vendor\Symfony\Component\DependencyInjection\Exception;
 
 use Throwable;
 use Closure;
+
 class AutowiringFailedException extends RuntimeException
 {
     /**

@@ -270,7 +270,7 @@ final class Response
             $message = \sprintf('HTTP %d returned for "%s".', $code, $url);
         }
         if ($this->resolveResult instanceof Exception) {
-            $this->logger->log((404 === $code) ? LogLevel::INFO : LogLevel::ERROR, $message ?? $this->resolveResult->getMessage(), $context);
+            $this->logger->log(404 === $code ? LogLevel::INFO : LogLevel::ERROR, $message ?? $this->resolveResult->getMessage(), $context);
             $this->didThrow = \true;
             throw $this->resolveResult;
         }

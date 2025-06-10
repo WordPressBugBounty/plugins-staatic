@@ -110,7 +110,7 @@ abstract class PuTTY
         }
         $components['type'] = $type = rtrim($key[0]);
         if (!in_array($type, static::$types)) {
-            $error = (count(static::$types) == 1) ? 'Only ' . static::$types[0] . ' keys are supported. ' : '';
+            $error = count(static::$types) == 1 ? 'Only ' . static::$types[0] . ' keys are supported. ' : '';
             throw new UnsupportedAlgorithmException($error . 'This is an unsupported ' . $type . ' key');
         }
         $encryption = trim(preg_replace('#Encryption: (.+)#', '$1', $key[1]));
@@ -181,7 +181,7 @@ abstract class PuTTY
      */
     protected static function wrapPrivateKey($public, $private, $type, $password, $options = [])
     {
-        $encryption = (!empty($password) || is_string($password)) ? 'aes256-cbc' : 'none';
+        $encryption = !empty($password) || is_string($password) ? 'aes256-cbc' : 'none';
         $comment = isset($options['comment']) ? $options['comment'] : self::$comment;
         $version = isset($options['version']) ? $options['version'] : self::$version;
         $key = "PuTTY-User-Key-File-{$version}: {$type}\r\n";

@@ -15,7 +15,7 @@ class RetryMiddleware
     {
         $this->decider = $decider;
         $this->nextHandler = $nextHandler;
-        $this->delay = $delay ?: (__CLASS__ . '::exponentialDelay');
+        $this->delay = $delay ?: __CLASS__ . '::exponentialDelay';
     }
     /**
      * @param int $retries

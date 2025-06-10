@@ -8,6 +8,7 @@ use ArrayAccess;
 use RecursiveIterator;
 use ReturnTypeWillChange;
 use RecursiveIteratorIterator;
+
 class NodeCollection implements Countable, ArrayAccess, RecursiveIterator
 {
     protected $nodes = [];

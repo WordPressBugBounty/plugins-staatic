@@ -4,6 +4,7 @@ namespace Staatic\Vendor\Symfony\Component\Filesystem\Exception;
 
 use RuntimeException;
 use Throwable;
+
 class IOException extends RuntimeException implements IOExceptionInterface
 {
     /**

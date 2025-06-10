@@ -42,7 +42,12 @@ class PublicationsTable extends AbstractListTable
     /** @var string */
     protected const NAME = 'publication_list_table';
 
-    public function __construct(Formatter $formatter, ColumnFactory $columnFactory, PublicationRepository $publicationRepository, PublicationTaskProvider $publicationTaskProvider)
+    public function __construct(
+        Formatter $formatter,
+        ColumnFactory $columnFactory,
+        PublicationRepository $publicationRepository,
+        PublicationTaskProvider $publicationTaskProvider
+    )
     {
         $this->formatter = $formatter;
         $this->columnFactory = $columnFactory;

@@ -11,6 +11,6 @@ final class UrlHasher
     public static function hash($url): string
     {
         $string = (string) $url;
-        return md5(($string === '/') ? '/' : rtrim($string, '/'));
+        return md5($string === '/' ? '/' : rtrim($string, '/'));
     }
 }

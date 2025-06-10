@@ -39,7 +39,11 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
      */
     private $deployTableName;
 
-    public function __construct(wpdb $wpdb, string $tableName = 'staatic_results', string $deployTableName = 'staatic_results_deployment')
+    public function __construct(
+        wpdb $wpdb,
+        string $tableName = 'staatic_results',
+        string $deployTableName = 'staatic_results_deployment'
+    )
     {
         $this->wpdb = $wpdb;
         $this->logger = new NullLogger();
@@ -142,7 +146,7 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
         $values = [];
         foreach ($insertValues as $row) {
             foreach ($row as $value) {
-                $values[] = ($value === null) ? $nullPlaceholder : $value;
+                $values[] = $value === null ? $nullPlaceholder : $value;
             }
         }
         $statement = $this->wpdb->prepare(
@@ -467,7 +471,7 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
         $results = $this->wpdb->get_results(
             "\n            SELECT *\n            FROM {$this->tableName}\n            WHERE build_uuid = UNHEX(REPLACE('" . esc_sql(
                 $buildId
-            ) . "', '-', ''))" . ((!empty($statusCategories)) ? "\n            AND SUBSTR(status_code, 1, 1) IN (" . implode(
+            ) . "', '-', ''))" . (!empty($statusCategories) ? "\n            AND SUBSTR(status_code, 1, 1) IN (" . implode(
                 ', ',
                 array_map(function ($category) {
             return intval($category);

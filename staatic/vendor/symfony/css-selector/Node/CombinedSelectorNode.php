@@ -40,7 +40,7 @@ class CombinedSelectorNode extends AbstractNode
     }
     public function __toString(): string
     {
-        $combinator = (' ' === $this->combinator) ? '<followed>' : $this->combinator;
+        $combinator = ' ' === $this->combinator ? '<followed>' : $this->combinator;
         return sprintf('%s[%s %s %s]', $this->getNodeName(), $this->selector, $combinator, $this->subSelector);
     }
 }

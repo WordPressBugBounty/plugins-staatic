@@ -30,7 +30,11 @@ final class GithubDeployStrategyFactory
      */
     private $httpClientFactory;
 
-    public function __construct(ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository, HttpClientFactory $httpClientFactory)
+    public function __construct(
+        ResultRepositoryInterface $resultRepository,
+        ResourceRepositoryInterface $resourceRepository,
+        HttpClientFactory $httpClientFactory
+    )
     {
         $this->resultRepository = $resultRepository;
         $this->resourceRepository = $resourceRepository;
@@ -55,7 +59,7 @@ final class GithubDeployStrategyFactory
     {
         $token = get_option(
             'staatic_github_token'
-        ) ?: ($_ENV['GH_TOKEN'] ?? $_SERVER['GH_TOKEN'] ?? $_ENV['GITHUB_TOKEN'] ?? $_SERVER['GITHUB_TOKEN'] ?? null);
+        ) ?: $_ENV['GH_TOKEN'] ?? $_SERVER['GH_TOKEN'] ?? $_ENV['GITHUB_TOKEN'] ?? $_SERVER['GITHUB_TOKEN'] ?? null;
         if (empty($token)) {
             throw new RuntimeException('GitHub token is not configured.');
         }

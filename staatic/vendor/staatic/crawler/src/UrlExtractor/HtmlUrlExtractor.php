@@ -129,15 +129,15 @@ final class HtmlUrlExtractor implements UrlExtractorInterface, FilterableInterfa
     }
     private function findMappedElements($document)
     {
-        return ($document instanceof DOMDocument) ? (new DOMXPath($document))->query($this->tagsExpression) : $document->find($this->tagsSelector);
+        return $document instanceof DOMDocument ? (new DOMXPath($document))->query($this->tagsExpression) : $document->find($this->tagsSelector);
     }
     private function findStyleElements($document)
     {
-        return ($document instanceof DOMDocument) ? (new DOMXPath($document))->query('//style') : $document->find('style');
+        return $document instanceof DOMDocument ? (new DOMXPath($document))->query('//style') : $document->find('style');
     }
     private function findStyleAttributes($document)
     {
-        return ($document instanceof DOMDocument) ? (new DOMXPath($document))->query($this->stylesExpression) : $document->find($this->stylesSelector);
+        return $document instanceof DOMDocument ? (new DOMXPath($document))->query($this->stylesExpression) : $document->find($this->stylesSelector);
     }
     private function handleElementAttributes($element, array $attributes, UriInterface $baseUrl): Generator
     {

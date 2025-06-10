@@ -83,7 +83,7 @@ final class BigDecimal extends BigNumber
         }
         [$a, $b] = $this->scaleValues($this, $that);
         $value = Calculator::get()->add($a, $b);
-        $scale = ($this->scale > $that->scale) ? $this->scale : $that->scale;
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
         return new BigDecimal($value, $scale);
     }
     /**
@@ -97,7 +97,7 @@ final class BigDecimal extends BigNumber
         }
         [$a, $b] = $this->scaleValues($this, $that);
         $value = Calculator::get()->sub($a, $b);
-        $scale = ($this->scale > $that->scale) ? $this->scale : $that->scale;
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
         return new BigDecimal($value, $scale);
     }
     /**
@@ -207,7 +207,7 @@ final class BigDecimal extends BigNumber
         $p = $this->valueWithMinScale($that->scale);
         $q = $that->valueWithMinScale($this->scale);
         $remainder = Calculator::get()->divR($p, $q);
-        $scale = ($this->scale > $that->scale) ? $this->scale : $that->scale;
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
         return new BigDecimal($remainder, $scale);
     }
     /**
@@ -222,7 +222,7 @@ final class BigDecimal extends BigNumber
         $p = $this->valueWithMinScale($that->scale);
         $q = $that->valueWithMinScale($this->scale);
         [$quotient, $remainder] = Calculator::get()->divQR($p, $q);
-        $scale = ($this->scale > $that->scale) ? $this->scale : $that->scale;
+        $scale = $this->scale > $that->scale ? $this->scale : $that->scale;
         $quotient = new BigDecimal($quotient, 0);
         $remainder = new BigDecimal($remainder, $scale);
         return [$quotient, $remainder];
@@ -333,7 +333,7 @@ final class BigDecimal extends BigNumber
     }
     public function getSign(): int
     {
-        return ($this->value === '0') ? 0 : (($this->value[0] === '-') ? -1 : 1);
+        return $this->value === '0' ? 0 : ($this->value[0] === '-' ? -1 : 1);
     }
     public function getUnscaledValue(): BigInteger
     {
@@ -365,7 +365,7 @@ final class BigDecimal extends BigNumber
     }
     public function toBigInteger(): BigInteger
     {
-        $zeroScaleDecimal = ($this->scale === 0) ? $this : $this->dividedBy(1, 0);
+        $zeroScaleDecimal = $this->scale === 0 ? $this : $this->dividedBy(1, 0);
         return self::newBigInteger($zeroScaleDecimal->value);
     }
     public function toBigDecimal(): BigDecimal

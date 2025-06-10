@@ -85,7 +85,7 @@ class ServicesConfigurator extends AbstractConfigurator
         $definition->setBindings(unserialize(serialize($defaults->getBindings())));
         $definition->setChanges([]);
         $configurator = new ServiceConfigurator($this->container, $this->instanceof, \true, $this, $definition, $id, $defaults->getTags(), $this->path);
-        return (null !== $class) ? $configurator->class($class) : $configurator;
+        return null !== $class ? $configurator->class($class) : $configurator;
     }
     /**
      * @param string $id
@@ -143,7 +143,7 @@ class ServicesConfigurator extends AbstractConfigurator
                 $definition->setChanges($changes);
                 $services[$i] = $definition;
             } elseif (!$service instanceof ReferenceConfigurator) {
-                throw new InvalidArgumentException(sprintf('"%s()" expects a list of definitions as returned by "%s()" or "%s()", "%s" given at index "%s" for service "%s".', __METHOD__, InlineServiceConfigurator::FACTORY, ReferenceConfigurator::FACTORY, ($service instanceof AbstractConfigurator) ? $service::FACTORY . '()' : get_debug_type($service), $i, $id));
+                throw new InvalidArgumentException(sprintf('"%s()" expects a list of definitions as returned by "%s()" or "%s()", "%s" given at index "%s" for service "%s".', __METHOD__, InlineServiceConfigurator::FACTORY, ReferenceConfigurator::FACTORY, $service instanceof AbstractConfigurator ? $service::FACTORY . '()' : get_debug_type($service), $i, $id));
             }
         }
         $alias = $this->alias($id, '');

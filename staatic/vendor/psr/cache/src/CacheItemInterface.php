@@ -4,6 +4,7 @@ namespace Staatic\Vendor\Psr\Cache;
 
 use DateTimeInterface;
 use DateInterval;
+
 interface CacheItemInterface
 {
     public function getKey(): string;

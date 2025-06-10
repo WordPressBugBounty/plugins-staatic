@@ -35,7 +35,7 @@ class ConsoleLogger implements LoggerInterface
         $color = self::LOG_LEVEL_COLORS[$level];
         $date = (new DateTimeImmutable())->format('H:i:s.u');
         $memory = number_format(memory_get_usage() / 1024 / 1024, 3) . ' MiB';
-        $contextString = (count($context) > 0) ? sprintf(self::CONTEXT_FORMAT, implode('] [', $context)) : '';
+        $contextString = count($context) > 0 ? sprintf(self::CONTEXT_FORMAT, implode('] [', $context)) : '';
         $format = $this->includeContext ? self::FORMAT_WITH_CONTEXT : self::FORMAT_BASIC;
         printf($format, $date, $memory, $contextString, $color, $message);
     }

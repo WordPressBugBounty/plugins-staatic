@@ -34,7 +34,7 @@ interface CalculatorInterface
      * @param string $value
      * @param int $base
      */
-    public function fromBase($value, $base);
+    public function fromBase($value, $base): IntegerObject;
     /**
      * @param IntegerObject $value
      * @param int $base
@@ -47,5 +47,5 @@ interface CalculatorInterface
     /**
      * @param Hexadecimal $value
      */
-    public function toInteger($value);
+    public function toInteger($value): IntegerObject;
 }

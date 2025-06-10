@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\AsyncAws\Core\Stream;
 
 use IteratorAggregate;
+
 interface RequestStream extends IteratorAggregate
 {
     public function length(): ?int;

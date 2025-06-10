@@ -40,10 +40,10 @@ final class SiteUrlProvider
 
     private function determineSiteUrl(): UriInterface
     {
-        $siteUrl = ($_ENV['STAATIC_SITE_URL'] ?? $_SERVER['STAATIC_SITE_URL'] ?? get_option(
+        $siteUrl = $_ENV['STAATIC_SITE_URL'] ?? $_SERVER['STAATIC_SITE_URL'] ?? get_option(
             'staatic_override_site_url',
             null
-        )) ?: WordpressEnv::getBaseUrl();
+        ) ?: WordpressEnv::getBaseUrl();
         $siteUrl = apply_filters('staatic_site_url', $siteUrl);
 
         return $this->convertSiteUrl($siteUrl);

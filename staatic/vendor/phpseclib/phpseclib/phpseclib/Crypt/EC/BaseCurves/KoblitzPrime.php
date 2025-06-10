@@ -23,7 +23,7 @@ class KoblitzPrime extends Prime
             $inv = $this->one->divide($this->two)->negate();
             $s = $this->three->negate()->squareRoot()->multiply($inv);
             $betas = [$inv->add($s), $inv->subtract($s)];
-            $this->beta = ($betas[0]->compare($betas[1]) < 0) ? $betas[0] : $betas[1];
+            $this->beta = $betas[0]->compare($betas[1]) < 0 ? $betas[0] : $betas[1];
         }
         if (!isset($this->basis)) {
             $factory = new PrimeField($this->order);

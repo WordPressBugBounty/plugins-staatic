@@ -23,7 +23,7 @@ class ZipStream
     public $ofs;
     protected $need_headers;
     protected $output_name;
-    public function __construct(?string $name = null, $opt = null)
+    public function __construct(?string $name = null, ?ArchiveOptions $opt = null)
     {
         $this->opt = $opt ?: new ArchiveOptions();
         $this->output_name = $name;

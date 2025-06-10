@@ -206,7 +206,7 @@ public function NAME(PARAM_TYPE $value): static
 
     return $this;
 }';
-                $class->addMethod($node->getName(), $body, ['PROPERTY' => $property->getName(), 'PROTOTYPE_TYPE' => implode('|', $prototypeParameterTypes), 'EXTRA_TYPE' => $nodeTypesWithoutArray ? '|' . implode('|', $nodeTypesWithoutArray) : '', 'PARAM_TYPE' => \in_array('mixed', $nodeParameterTypes, \true) ? 'mixed' : ('ParamConfigurator|' . implode('|', $nodeParameterTypes))]);
+                $class->addMethod($node->getName(), $body, ['PROPERTY' => $property->getName(), 'PROTOTYPE_TYPE' => implode('|', $prototypeParameterTypes), 'EXTRA_TYPE' => $nodeTypesWithoutArray ? '|' . implode('|', $nodeTypesWithoutArray) : '', 'PARAM_TYPE' => \in_array('mixed', $nodeParameterTypes, \true) ? 'mixed' : 'ParamConfigurator|' . implode('|', $nodeParameterTypes)]);
             } else {
                 $body = '
 /**
@@ -219,7 +219,7 @@ public function NAME(string $VAR, TYPE $VALUE): static
 
     return $this;
 }';
-                $class->addMethod($methodName, $body, ['PROPERTY' => $property->getName(), 'TYPE' => \in_array('mixed', $prototypeParameterTypes, \true) ? 'mixed' : ('ParamConfigurator|' . implode('|', $prototypeParameterTypes)), 'VAR' => ('' === $key) ? 'key' : $key, 'VALUE' => ('value' === $key) ? 'data' : 'value']);
+                $class->addMethod($methodName, $body, ['PROPERTY' => $property->getName(), 'TYPE' => \in_array('mixed', $prototypeParameterTypes, \true) ? 'mixed' : 'ParamConfigurator|' . implode('|', $prototypeParameterTypes), 'VAR' => '' === $key ? 'key' : $key, 'VALUE' => 'value' === $key ? 'data' : 'value']);
             }
             return;
         }
@@ -291,7 +291,7 @@ COMMENTpublic function NAME(string $VAR, array $VALUE = []): CLASS
     return $this->PROPERTY[$VAR];
 }';
             $class->addUse(InvalidConfigurationException::class);
-            $class->addMethod($methodName, str_replace('$value', '$VAR', $body), ['COMMENT' => $comment, 'PROPERTY' => $property->getName(), 'CLASS' => $childClass->getFqcn(), 'VAR' => ('' === $key) ? 'key' : $key, 'VALUE' => ('value' === $key) ? 'data' : 'value', 'PARAM_TYPE' => \in_array('mixed', $prototypeParameterTypes, \true) ? 'mixed' : implode('|', $prototypeParameterTypes)]);
+            $class->addMethod($methodName, str_replace('$value', '$VAR', $body), ['COMMENT' => $comment, 'PROPERTY' => $property->getName(), 'CLASS' => $childClass->getFqcn(), 'VAR' => '' === $key ? 'key' : $key, 'VALUE' => 'value' === $key ? 'data' : 'value', 'PARAM_TYPE' => \in_array('mixed', $prototypeParameterTypes, \true) ? 'mixed' : implode('|', $prototypeParameterTypes)]);
         }
         $this->buildNode($prototype, $childClass, $namespace . '\\' . $childClass->getName());
     }
@@ -351,11 +351,11 @@ public function NAME($value): static
                 $comment .= ' * @example ' . $example . "\n";
             }
             if ('' !== $default = $node->getDefaultValue()) {
-                $comment .= ' * @default ' . ((null === $default) ? 'null' : var_export($default, \true)) . "\n";
+                $comment .= ' * @default ' . (null === $default ? 'null' : var_export($default, \true)) . "\n";
             }
             if ($node instanceof EnumNode) {
                 $comment .= sprintf(' * @param ParamConfigurator|%s $value', implode('|', array_unique(array_map(function ($a) {
-                    return (!$a instanceof UnitEnum) ? var_export($a, \true) : ('\\' . ltrim(var_export($a, \true), '\\'));
+                    return !$a instanceof UnitEnum ? var_export($a, \true) : '\\' . ltrim(var_export($a, \true), '\\');
                 }, $node->getValues())))) . "\n";
             } else {
                 $parameterTypes = $this->getParameterTypes($node);
@@ -381,7 +381,7 @@ public function NAME($value): static
             return $name;
         }
         $parent = $node->getParent();
-        $mappings = ($parent instanceof ArrayNode) ? $parent->getXmlRemappings() : [];
+        $mappings = $parent instanceof ArrayNode ? $parent->getXmlRemappings() : [];
         foreach ($mappings as $map) {
             if ($map[1] === $name) {
                 $name = $map[0];
@@ -423,9 +423,9 @@ public function NAME(): array
             $code = '$value[\'ORG_NAME\']';
             if (null !== $p->getType()) {
                 if ($p->isArray()) {
-                    $code = $p->areScalarsAllowed() ? 'array_map(fn ($v) => \is_array($v) ? new ' . $p->getType() . '($v) : $v, $value[\'ORG_NAME\'])' : ('array_map(fn ($v) => new ' . $p->getType() . '($v), $value[\'ORG_NAME\'])');
+                    $code = $p->areScalarsAllowed() ? 'array_map(fn ($v) => \is_array($v) ? new ' . $p->getType() . '($v) : $v, $value[\'ORG_NAME\'])' : 'array_map(fn ($v) => new ' . $p->getType() . '($v), $value[\'ORG_NAME\'])';
                 } else {
-                    $code = $p->areScalarsAllowed() ? '\is_array($value[\'ORG_NAME\']) ? new ' . $p->getType() . '($value[\'ORG_NAME\']) : $value[\'ORG_NAME\']' : ('new ' . $p->getType() . '($value[\'ORG_NAME\'])');
+                    $code = $p->areScalarsAllowed() ? '\is_array($value[\'ORG_NAME\']) ? new ' . $p->getType() . '($value[\'ORG_NAME\']) : $value[\'ORG_NAME\']' : 'new ' . $p->getType() . '($value[\'ORG_NAME\'])';
                 }
             }
             $body .= strtr('

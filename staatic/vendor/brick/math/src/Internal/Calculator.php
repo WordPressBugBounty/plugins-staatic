@@ -54,7 +54,7 @@ abstract class Calculator
      */
     final public function abs($n): string
     {
-        return ($n[0] === '-') ? \substr($n, 1) : $n;
+        return $n[0] === '-' ? \substr($n, 1) : $n;
     }
     /**
      * @param string $n
@@ -233,7 +233,7 @@ abstract class Calculator
         for ($i = \strlen($number) - 1; $i >= 0; $i--) {
             $index = \strpos($alphabet, $number[$i]);
             if ($index !== 0) {
-                $result = $this->add($result, ($index === 1) ? $power : $this->mul($power, (string) $index));
+                $result = $this->add($result, $index === 1 ? $power : $this->mul($power, (string) $index));
             }
             if ($i !== 0) {
                 $power = $this->mul($power, $base);
@@ -300,15 +300,15 @@ abstract class Calculator
                 $increment = $discardedFractionSign() > 0;
                 break;
             case RoundingMode::HALF_CEILING:
-                $increment = $isPositiveOrZero ? $discardedFractionSign() >= 0 : ($discardedFractionSign() > 0);
+                $increment = $isPositiveOrZero ? $discardedFractionSign() >= 0 : $discardedFractionSign() > 0;
                 break;
             case RoundingMode::HALF_FLOOR:
-                $increment = $isPositiveOrZero ? $discardedFractionSign() > 0 : ($discardedFractionSign() >= 0);
+                $increment = $isPositiveOrZero ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
                 break;
             case RoundingMode::HALF_EVEN:
                 $lastDigit = (int) $quotient[-1];
                 $lastDigitIsEven = $lastDigit % 2 === 0;
-                $increment = $lastDigitIsEven ? $discardedFractionSign() > 0 : ($discardedFractionSign() >= 0);
+                $increment = $lastDigitIsEven ? $discardedFractionSign() > 0 : $discardedFractionSign() >= 0;
                 break;
             default:
                 throw new InvalidArgumentException('Invalid rounding mode.');
@@ -421,7 +421,7 @@ abstract class Calculator
         for ($i = \strlen($bytes) - 1; $i >= 0; $i--) {
             $index = \ord($bytes[$i]);
             if ($index !== 0) {
-                $result = $this->add($result, ($index === 1) ? $power : $this->mul($power, (string) $index));
+                $result = $this->add($result, $index === 1 ? $power : $this->mul($power, (string) $index));
             }
             if ($i !== 0) {
                 $power = $this->mul($power, '256');

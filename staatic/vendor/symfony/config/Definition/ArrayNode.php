@@ -230,12 +230,12 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
                     }
                 }
             }
-            $msg = sprintf('Unrecognized option%s "%s" under "%s"', (1 === \count($value)) ? '' : 's', implode(', ', array_keys($value)), $this->getPath());
+            $msg = sprintf('Unrecognized option%s "%s" under "%s"', 1 === \count($value) ? '' : 's', implode(', ', array_keys($value)), $this->getPath());
             if (\count($guesses)) {
                 asort($guesses);
                 $msg .= sprintf('. Did you mean "%s"?', implode('", "', array_keys($guesses)));
             } else {
-                $msg .= sprintf('. Available option%s %s "%s".', (1 === \count($proposals)) ? '' : 's', (1 === \count($proposals)) ? 'is' : 'are', implode('", "', $proposals));
+                $msg .= sprintf('. Available option%s %s "%s".', 1 === \count($proposals) ? '' : 's', 1 === \count($proposals) ? 'is' : 'are', implode('", "', $proposals));
             }
             $ex = new InvalidConfigurationException($msg);
             $ex->setPath($this->getPath());

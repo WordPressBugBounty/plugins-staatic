@@ -79,7 +79,7 @@ abstract class EvalBarrett extends Base
         $code .= '$temp = array_slice($n, ' . (count($m) - 1) . ');';
         $code .= self::generateInlineMultiply('temp', $u, 'temp2', $class);
         $code .= self::generateInlineTrim('temp2');
-        $code .= ($class::BASE == 26) ? '$temp = array_slice($temp2, ' . (count($m) + 1) . ');' : ('$temp = array_slice($temp2, ' . ((count($m) >> 1) + 1) . ');');
+        $code .= $class::BASE == 26 ? '$temp = array_slice($temp2, ' . (count($m) + 1) . ');' : '$temp = array_slice($temp2, ' . ((count($m) >> 1) + 1) . ');';
         $code .= self::generateInlineMultiply('temp', $m, 'temp2', $class);
         $code .= self::generateInlineTrim('temp2');
         $code .= self::generateInlineSubtract2('n', 'temp2', 'temp', $class);
@@ -121,13 +121,13 @@ abstract class EvalBarrett extends Base
                 $subtemp = $' . $input . '[0] * ' . $arr[$i];
             $regular .= $i ? ' + $carry;' : ';';
             $regular .= '$carry = ';
-            $regular .= ($class::BASE === 26) ? 'intval($subtemp / 0x4000000);' : '$subtemp >> 31;';
+            $regular .= $class::BASE === 26 ? 'intval($subtemp / 0x4000000);' : '$subtemp >> 31;';
             $regular .= '$' . $output . '[' . $i . '] = ';
             if ($class::BASE === 26) {
                 $regular .= '(int) (';
             }
             $regular .= '$subtemp - ' . $class::BASE_FULL . ' * $carry';
-            $regular .= ($class::BASE === 26) ? ');' : ';';
+            $regular .= $class::BASE === 26 ? ');' : ';';
         }
         $regular .= '$' . $output . '[' . count($arr) . '] = $carry;';
         $regular .= '
@@ -138,13 +138,13 @@ abstract class EvalBarrett extends Base
                 $subtemp = $' . $output . '[$k] + $' . $input . '[$i] * ' . $arr[$j];
             $regular .= $j ? ' + $carry;' : ';';
             $regular .= '$carry = ';
-            $regular .= ($class::BASE === 26) ? 'intval($subtemp / 0x4000000);' : '$subtemp >> 31;';
+            $regular .= $class::BASE === 26 ? 'intval($subtemp / 0x4000000);' : '$subtemp >> 31;';
             $regular .= '$' . $output . '[$k] = ';
             if ($class::BASE === 26) {
                 $regular .= '(int) (';
             }
             $regular .= '$subtemp - ' . $class::BASE_FULL . ' * $carry';
-            $regular .= ($class::BASE === 26) ? ');' : ';';
+            $regular .= $class::BASE === 26 ? ');' : ';';
         }
         $regular .= '$' . $output . '[++$k] = $carry; $carry = 0;';
         $regular .= '}}';
@@ -163,7 +163,7 @@ abstract class EvalBarrett extends Base
                            $carry;
                 $carry = $sum >= ' . self::float2string($class::MAX_DIGIT2) . ';
                 $sum = $carry ? $sum - ' . self::float2string($class::MAX_DIGIT2) . ' : $sum;';
-        $code .= ($class::BASE === 26) ? '$upper = intval($sum / 0x4000000); $' . $result . '[$i] = (int) ($sum - ' . $class::BASE_FULL . ' * $upper);' : ('$upper = $sum >> 31; $' . $result . '[$i] = $sum - ' . $class::BASE_FULL . ' * $upper;');
+        $code .= $class::BASE === 26 ? '$upper = intval($sum / 0x4000000); $' . $result . '[$i] = (int) ($sum - ' . $class::BASE_FULL . ' * $upper);' : '$upper = $sum >> 31; $' . $result . '[$i] = $sum - ' . $class::BASE_FULL . ' * $upper;';
         $code .= '
                 $' . $result . '[$j] = $upper;
             }
@@ -197,7 +197,7 @@ abstract class EvalBarrett extends Base
                     $sum+= ' . self::float2string($class::MAX_DIGIT2) . ';
                 }
                 $subtemp = ';
-        $code .= ($class::BASE === 26) ? 'intval($sum / 0x4000000);' : '$sum >> 31;';
+        $code .= $class::BASE === 26 ? 'intval($sum / 0x4000000);' : '$sum >> 31;';
         $code .= '$' . $result . '[$i] = ';
         if ($class::BASE === 26) {
             $code .= '(int) (';
@@ -239,7 +239,7 @@ abstract class EvalBarrett extends Base
                     $sum+= ' . self::float2string($class::MAX_DIGIT2) . ';
                 }
                 $subtemp = ';
-            $code .= ($class::BASE === 26) ? 'intval($sum / 0x4000000);' : '$sum >> 31;';
+            $code .= $class::BASE === 26 ? 'intval($sum / 0x4000000);' : '$sum >> 31;';
             $code .= '
                 $' . $result . '[' . $i . '] = ';
             if ($class::BASE === 26) {

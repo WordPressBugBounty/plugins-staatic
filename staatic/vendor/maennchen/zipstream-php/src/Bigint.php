@@ -106,7 +106,7 @@ class Bigint
     protected function fillBytes($value, $start, $count): void
     {
         for ($i = 0; $i < $count; $i++) {
-            $this->bytes[$start + $i] = ($i >= \PHP_INT_SIZE) ? 0 : ($value & 0xff);
+            $this->bytes[$start + $i] = $i >= \PHP_INT_SIZE ? 0 : $value & 0xff;
             $value >>= 8;
         }
     }

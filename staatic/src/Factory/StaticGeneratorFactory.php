@@ -176,7 +176,18 @@ final class StaticGeneratorFactory
      */
     private $transformers;
 
-    public function __construct(LoggerInterface $logger, HttpClientFactory $httpClientFactory, CrawlProfileFactory $crawlProfileFactory, CrawlQueueInterface $crawlQueue, KnownUrlsContainerFactory $knownUrlsContainerFactory, BuildRepositoryInterface $buildRepository, ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository, UrlTransformerFactory $urlTransformerFactory, HtmlUrlExtractorMapping $htmlUrlExtractorMapping)
+    public function __construct(
+        LoggerInterface $logger,
+        HttpClientFactory $httpClientFactory,
+        CrawlProfileFactory $crawlProfileFactory,
+        CrawlQueueInterface $crawlQueue,
+        KnownUrlsContainerFactory $knownUrlsContainerFactory,
+        BuildRepositoryInterface $buildRepository,
+        ResultRepositoryInterface $resultRepository,
+        ResourceRepositoryInterface $resourceRepository,
+        UrlTransformerFactory $urlTransformerFactory,
+        HtmlUrlExtractorMapping $htmlUrlExtractorMapping
+    )
     {
         $this->logger = $logger;
         $this->httpClientFactory = $httpClientFactory;

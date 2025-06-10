@@ -119,7 +119,7 @@ class ServiceLocator implements ServiceProviderInterface, Countable
             if (!$alternatives = array_keys($this->factories)) {
                 return 'is empty...';
             }
-            $format = sprintf('only knows about the %s service%s.', $format, (1 < \count($alternatives)) ? 's' : '');
+            $format = sprintf('only knows about the %s service%s.', $format, 1 < \count($alternatives) ? 's' : '');
         }
         $last = array_pop($alternatives);
         return sprintf($format, $alternatives ? implode('", "', $alternatives) : $last, $alternatives ? sprintf(' %s "%s"', $separator, $last) : '');

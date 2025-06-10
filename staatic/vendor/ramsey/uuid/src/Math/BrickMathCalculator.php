@@ -73,7 +73,7 @@ final class BrickMathCalculator implements CalculatorInterface
      * @param string $value
      * @param int $base
      */
-    public function fromBase($value, $base)
+    public function fromBase($value, $base): IntegerObject
     {
         try {
             return new IntegerObject((string) BigInteger::fromBase($value, $base));
@@ -103,7 +103,7 @@ final class BrickMathCalculator implements CalculatorInterface
     /**
      * @param Hexadecimal $value
      */
-    public function toInteger($value)
+    public function toInteger($value): IntegerObject
     {
         return $this->fromBase($value->toString(), 16);
     }

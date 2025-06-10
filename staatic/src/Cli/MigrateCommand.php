@@ -33,10 +33,11 @@ class MigrateCommand
      */
     private $force = \false;
 
-    /**
-     * @param mixed $logger
-     */
-    public function __construct($logger, Formatter $formatter, MigrationCoordinatorFactory $coordinatorFactory)
+    public function __construct(
+        PsrLoggerInterface $logger,
+        Formatter $formatter,
+        MigrationCoordinatorFactory $coordinatorFactory
+    )
     {
         $this->logger = $logger;
         $this->formatter = $formatter;
@@ -87,7 +88,7 @@ class MigrateCommand
         if ($verbose && $this->logger instanceof LoggerInterface) {
             $this->logger->enableConsoleLogger();
         }
-        $namespaces = ($namespace === 'all') ? $this->namespaces() : [$namespace];
+        $namespaces = $namespace === 'all' ? $this->namespaces() : [$namespace];
         foreach ($namespaces as $namespace) {
             $this->migrateNamespace($namespace, $targetVersion);
         }

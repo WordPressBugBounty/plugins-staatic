@@ -382,7 +382,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     public function get($id, $invalidBehavior = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)
     {
         if ($this->isCompiled() && isset($this->removedIds[$id])) {
-            return (ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE >= $invalidBehavior) ? parent::get($id) : null;
+            return ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE >= $invalidBehavior ? parent::get($id) : null;
         }
         return $this->doGet($id, $invalidBehavior);
     }
@@ -896,7 +896,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             $refs = $types = [];
             foreach ($value->getValues() as $k => $v) {
                 $refs[$k] = [$v, null];
-                $types[$k] = ($v instanceof TypedReference) ? $v->getType() : '?';
+                $types[$k] = $v instanceof TypedReference ? $v->getType() : '?';
             }
             $value = new ServiceLocator(Closure::fromCallable([$this, 'resolveServices']), $refs, $types);
         } elseif ($value instanceof Reference) {
@@ -1017,7 +1017,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         if (!\is_string($value) || 38 > \strlen($value) || \false === stripos($value, 'env_')) {
             return $value;
         }
-        $envPlaceholders = ($bag instanceof EnvPlaceholderParameterBag) ? $bag->getEnvPlaceholders() : $this->envPlaceholders;
+        $envPlaceholders = $bag instanceof EnvPlaceholderParameterBag ? $bag->getEnvPlaceholders() : $this->envPlaceholders;
         $completed = \false;
         preg_match_all('/env_[a-f0-9]{16}_\w+_[a-f0-9]{32}/Ui', $value, $matches);
         $usedPlaceholders = array_flip($matches[0]);
@@ -1051,7 +1051,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     public function getEnvCounters(): array
     {
         $bag = $this->getParameterBag();
-        $envPlaceholders = ($bag instanceof EnvPlaceholderParameterBag) ? $bag->getEnvPlaceholders() : $this->envPlaceholders;
+        $envPlaceholders = $bag instanceof EnvPlaceholderParameterBag ? $bag->getEnvPlaceholders() : $this->envPlaceholders;
         foreach ($envPlaceholders as $env => $placeholders) {
             if (!isset($this->envCounters[$env])) {
                 $this->envCounters[$env] = 0;

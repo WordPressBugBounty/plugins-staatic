@@ -36,7 +36,7 @@ class GMP extends Engine
                 }
                 break;
             case 16:
-                $temp = $this->is_negative ? '-0x' . $this->value : ('0x' . $this->value);
+                $temp = $this->is_negative ? '-0x' . $this->value : '0x' . $this->value;
                 $this->value = gmp_init($temp);
                 break;
             case 10:
@@ -65,10 +65,10 @@ class GMP extends Engine
             return $this->toBytesHelper();
         }
         if (gmp_cmp($this->value, gmp_init(0)) == 0) {
-            return ($this->precision > 0) ? str_repeat(chr(0), $this->precision + 1 >> 3) : '';
+            return $this->precision > 0 ? str_repeat(chr(0), $this->precision + 1 >> 3) : '';
         }
         $temp = gmp_export($this->value);
-        return ($this->precision > 0) ? substr(str_pad($temp, $this->precision >> 3, chr(0), \STR_PAD_LEFT), -($this->precision >> 3)) : ltrim($temp, chr(0));
+        return $this->precision > 0 ? substr(str_pad($temp, $this->precision >> 3, chr(0), \STR_PAD_LEFT), -($this->precision >> 3)) : ltrim($temp, chr(0));
     }
     /**
      * @param \Staatic\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $y
@@ -138,7 +138,7 @@ class GMP extends Engine
     {
         $temp = new self();
         $temp->value = gmp_invert($this->value, $n->value);
-        return ($temp->value === \false) ? \false : $this->normalize($temp);
+        return $temp->value === \false ? \false : $this->normalize($temp);
     }
     /**
      * @param \Staatic\Vendor\phpseclib3\Math\BigInteger\Engines\GMP $n

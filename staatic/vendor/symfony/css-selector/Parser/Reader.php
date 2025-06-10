@@ -48,7 +48,7 @@ class Reader
     public function getOffset($string)
     {
         $position = strpos($this->source, $string, $this->position);
-        return (\false === $position) ? \false : ($position - $this->position);
+        return \false === $position ? \false : $position - $this->position;
     }
     /**
      * @param string $pattern

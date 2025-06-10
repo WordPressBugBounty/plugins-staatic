@@ -5,6 +5,7 @@ namespace Staatic\Vendor\Masterminds\HTML5\Serializer;
 use DOMDocument;
 use DOMDocumentFragment;
 use DOMNodeList;
+
 class Traverser
 {
     protected static $local_ns = array('http://www.w3.org/1999/xhtml' => 'html', 'http://www.w3.org/1998/Math/MathML' => 'math', 'http://www.w3.org/2000/svg' => 'svg');

@@ -5,6 +5,7 @@ namespace Staatic\Vendor\GuzzleHttp\Promise;
 
 use RuntimeException;
 use JsonSerializable;
+
 class RejectionException extends RuntimeException
 {
     private $reason;

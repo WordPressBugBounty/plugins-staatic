@@ -29,7 +29,11 @@ final class GithubDeployerModule implements ModuleInterface
 
     public const DEPLOYMENT_METHOD_NAME = 'github';
 
-    public function __construct(Settings $settings, ServiceLocator $settingLocator, GithubDeployStrategyFactory $deployStrategyFactory)
+    public function __construct(
+        Settings $settings,
+        ServiceLocator $settingLocator,
+        GithubDeployStrategyFactory $deployStrategyFactory
+    )
     {
         $this->settings = $settings;
         $this->settingLocator = $settingLocator;

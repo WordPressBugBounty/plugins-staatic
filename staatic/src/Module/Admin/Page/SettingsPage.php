@@ -62,11 +62,11 @@ final class SettingsPage implements ModuleInterface
     {
         $groups = $this->settings->groups();
         $groupNames = array_keys($groups);
-        $currentGroupName = (isset($_REQUEST['group']) && in_array(
+        $currentGroupName = isset($_REQUEST['group']) && in_array(
             $_REQUEST['group'],
             $groupNames,
             \true
-        )) ? $_REQUEST['group'] : $groupNames[0];
+        ) ? $_REQUEST['group'] : $groupNames[0];
         $errors = $this->settings->renderErrors();
         $hiddenFields = $this->settings->renderHiddenFields($currentGroupName);
         $settings = $this->settings->renderSettings($currentGroupName);

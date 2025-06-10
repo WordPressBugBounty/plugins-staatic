@@ -98,11 +98,11 @@ class PublicationLogsTable extends AbstractListTable
             $result .= sprintf('<br><span class="staatic-log-debug">%s</span>', implode('<br>', $details));
         }
         if (isset($context['failure'])) {
-            $failureSummary = (preg_match(
+            $failureSummary = preg_match(
                 '~\w+:\s+(.+?) in .+?:\d+\n~s',
                 $context['failure'],
                 $match
-            ) === 1) ? $match[1] : null;
+            ) === 1 ? $match[1] : null;
             if ($this->showSensitiveData) {
                 if ($failureSummary) {
                     $result .= sprintf('<details class="staatic-publication-error">

@@ -13,6 +13,7 @@ namespace Staatic\Vendor\Composer\Autoload;
 
 use InvalidArgumentException;
 use Closure;
+
 /**
  * ClassLoader implements a PSR-0, PSR-4 and classmap class loader.
  *
@@ -312,7 +313,7 @@ class ClassLoader
      */
     public function setApcuPrefix($apcuPrefix)
     {
-        $this->apcuPrefix = (function_exists('apcu_fetch') && filter_var(ini_get('apc.enabled'), \FILTER_VALIDATE_BOOLEAN)) ? $apcuPrefix : null;
+        $this->apcuPrefix = function_exists('apcu_fetch') && filter_var(ini_get('apc.enabled'), \FILTER_VALIDATE_BOOLEAN) ? $apcuPrefix : null;
     }
     /**
      * The APCu prefix in use, or null if APCu caching is not enabled.

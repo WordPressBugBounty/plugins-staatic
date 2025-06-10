@@ -158,10 +158,10 @@ abstract class AbstractRecursivePass implements CompilerPassInterface
         }
         if (!$r = $r->getConstructor()) {
             if ($required) {
-                throw new RuntimeException(sprintf('Invalid service "%s": class%s has no constructor.', $this->currentId, sprintf(($class !== $this->currentId) ? ' "%s"' : '', $class)));
+                throw new RuntimeException(sprintf('Invalid service "%s": class%s has no constructor.', $this->currentId, sprintf($class !== $this->currentId ? ' "%s"' : '', $class)));
             }
         } elseif (!$r->isPublic()) {
-            throw new RuntimeException(sprintf('Invalid service "%s": ', $this->currentId) . sprintf(($class !== $this->currentId) ? 'constructor of class "%s"' : 'its constructor', $class) . ' must be public.');
+            throw new RuntimeException(sprintf('Invalid service "%s": ', $this->currentId) . sprintf($class !== $this->currentId ? 'constructor of class "%s"' : 'its constructor', $class) . ' must be public.');
         }
         return $r;
     }
@@ -188,11 +188,11 @@ abstract class AbstractRecursivePass implements CompilerPassInterface
                 return new ReflectionMethod(static function (...$arguments) {
                 }, '__invoke');
             }
-            throw new RuntimeException(sprintf('Invalid service "%s": method "%s()" does not exist.', $this->currentId, ($class !== $this->currentId) ? $class . '::' . $method : $method));
+            throw new RuntimeException(sprintf('Invalid service "%s": method "%s()" does not exist.', $this->currentId, $class !== $this->currentId ? $class . '::' . $method : $method));
         }
         $r = $r->getMethod($method);
         if (!$r->isPublic()) {
-            throw new RuntimeException(sprintf('Invalid service "%s": method "%s()" must be public.', $this->currentId, ($class !== $this->currentId) ? $class . '::' . $method : $method));
+            throw new RuntimeException(sprintf('Invalid service "%s": method "%s()" must be public.', $this->currentId, $class !== $this->currentId ? $class . '::' . $method : $method));
         }
         return $r;
     }

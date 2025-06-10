@@ -22,7 +22,7 @@ interface UuidInterface extends DeprecatedUuidInterface, JsonSerializable, Seria
     public function getBytes(): string;
     public function getFields();
     public function getHex(): Hexadecimal;
-    public function getInteger();
+    public function getInteger(): IntegerObject;
     public function getUrn(): string;
     public function toString(): string;
     public function __toString(): string;

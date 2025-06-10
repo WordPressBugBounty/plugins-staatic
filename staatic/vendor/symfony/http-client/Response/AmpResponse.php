@@ -86,7 +86,7 @@ final class AmpResponse implements ResponseInterface, StreamableInterface
         };
         $onProgress = $this->onProgress = static function () use (&$info, $onProgress) {
             $info['total_time'] = microtime(\true) - $info['start_time'];
-            $onProgress((int) $info['size_download'], (((int) (1 + $info['download_content_length'])) ?: 1) - 1, (array) $info);
+            $onProgress((int) $info['size_download'], ((int) (1 + $info['download_content_length']) ?: 1) - 1, (array) $info);
         };
         $pauseDeferred = new Deferred();
         $pause = new Success();
@@ -126,7 +126,7 @@ final class AmpResponse implements ResponseInterface, StreamableInterface
      */
     public function getInfo($type = null)
     {
-        return (null !== $type) ? $this->info[$type] ?? null : $this->info;
+        return null !== $type ? $this->info[$type] ?? null : $this->info;
     }
     public function __sleep(): array
     {
@@ -156,7 +156,7 @@ final class AmpResponse implements ResponseInterface, StreamableInterface
         }
         if (!isset($response->multi->openHandles[$response->id])) {
             $response->multi->handlesActivity[$response->id][] = null;
-            $response->multi->handlesActivity[$response->id][] = (null !== $response->info['error']) ? new TransportException($response->info['error']) : null;
+            $response->multi->handlesActivity[$response->id][] = null !== $response->info['error'] ? new TransportException($response->info['error']) : null;
         }
     }
     private static function perform(ClientState $multi, array &$responses = null): void
@@ -186,7 +186,7 @@ final class AmpResponse implements ResponseInterface, StreamableInterface
             }
         });
         Loop::run();
-        return (null === self::$delay) ? 1 : 0;
+        return null === self::$delay ? 1 : 0;
     }
     private static function generateResponse(Request $request, AmpClientState $multi, string $id, array &$info, array &$headers, CancellationTokenSource $canceller, array &$options, Closure $onProgress, &$handle, ?LoggerInterface $logger, Promise &$pause): Generator
     {
@@ -281,7 +281,7 @@ final class AmpResponse implements ResponseInterface, StreamableInterface
                 $originRequest->removeHeader('content-length');
                 $originRequest->removeHeader('content-type');
                 if ('POST' === $response->getRequest()->getMethod() || 303 === $status) {
-                    $info['http_method'] = ('HEAD' === $response->getRequest()->getMethod()) ? 'HEAD' : 'GET';
+                    $info['http_method'] = 'HEAD' === $response->getRequest()->getMethod() ? 'HEAD' : 'GET';
                     $request->setMethod($info['http_method']);
                 }
             } else {

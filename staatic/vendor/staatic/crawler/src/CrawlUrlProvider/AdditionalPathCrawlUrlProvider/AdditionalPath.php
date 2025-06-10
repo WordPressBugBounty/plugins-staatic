@@ -46,7 +46,7 @@ class AdditionalPath
         $this->dontSave = $dontSave;
         $this->recursive = $recursive;
         $this->path = self::normalizePath($path);
-        $this->uriBasePath = ($uriBasePath === '/') ? '/' : rtrim($uriBasePath, '/\\');
+        $this->uriBasePath = $uriBasePath === '/' ? '/' : rtrim($uriBasePath, '/\\');
     }
     /**
      * @param UriInterface $url
@@ -124,6 +124,6 @@ class AdditionalPath
         if (!$basePath) {
             return null;
         }
-        return (($rootUrlPath === '/') ? '' : $rootUrlPath) . $basePath;
+        return ($rootUrlPath === '/' ? '' : $rootUrlPath) . $basePath;
     }
 }

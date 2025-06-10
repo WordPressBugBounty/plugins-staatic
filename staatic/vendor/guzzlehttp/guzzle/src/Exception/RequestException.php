@@ -28,7 +28,7 @@ class RequestException extends TransferException implements RequestExceptionInte
      */
     public static function wrapException($request, $e): RequestException
     {
-        return ($e instanceof RequestException) ? $e : new RequestException($e->getMessage(), $request, null, $e);
+        return $e instanceof RequestException ? $e : new RequestException($e->getMessage(), $request, null, $e);
     }
     /**
      * @param RequestInterface $request

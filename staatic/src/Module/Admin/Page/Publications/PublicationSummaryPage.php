@@ -48,7 +48,13 @@ final class PublicationSummaryPage implements ModuleInterface
      */
     private $publication;
 
-    public function __construct(AdminNavigation $navigation, PartialRenderer $renderer, PublicationRepository $publicationRepository, ResultRepository $resultRepository, LogEntryRepository $logEntryRepository)
+    public function __construct(
+        AdminNavigation $navigation,
+        PartialRenderer $renderer,
+        PublicationRepository $publicationRepository,
+        ResultRepository $resultRepository,
+        LogEntryRepository $logEntryRepository
+    )
     {
         $this->navigation = $navigation;
         $this->renderer = $renderer;
@@ -62,6 +68,11 @@ final class PublicationSummaryPage implements ModuleInterface
         if (!is_admin()) {
             return;
         }
+        add_action('init', [$this, 'addPage']);
+    }
+
+    public function addPage(): void
+    {
         $this->navigation->addPage(
             __('Publication Summary', 'staatic'),
             self::PAGE_SLUG,
@@ -102,9 +113,7 @@ final class PublicationSummaryPage implements ModuleInterface
         $numLogsTotal = 20;
         $numInitialLogs = 5;
         $initialLogEntries = $this->getFilteredLogEntries($this->publication->id(), $numInitialLogs + 1, 'ASC');
-        $extraInitialEntryId = (count($initialLogEntries) > $numInitialLogs) ? array_pop(
-            $initialLogEntries
-        )->id() : null;
+        $extraInitialEntryId = count($initialLogEntries) > $numInitialLogs ? array_pop($initialLogEntries)->id() : null;
         $finalLogEntries = $this->getFilteredLogEntries(
             $this->publication->id(),
             $numLogsTotal - $numInitialLogs,
@@ -126,7 +135,7 @@ final class PublicationSummaryPage implements ModuleInterface
                 break;
             }
         }
-        $breakLogEntryId = (count($allLogEntries) >= $numLogsTotal && !$found) ? reset($finalLogEntries)->id() : null;
+        $breakLogEntryId = count($allLogEntries) >= $numLogsTotal && !$found ? reset($finalLogEntries)->id() : null;
 
         return [$allLogEntries, $breakLogEntryId];
     }

@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\Masterminds\HTML5;
 
 use DOMElement;
+
 interface InstructionProcessor
 {
     /**

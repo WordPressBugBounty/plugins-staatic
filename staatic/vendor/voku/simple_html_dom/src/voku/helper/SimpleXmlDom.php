@@ -8,6 +8,7 @@ use DOMNode;
 use BadMethodCallException;
 use DOMElement;
 use RuntimeException;
+
 class SimpleXmlDom extends AbstractSimpleXmlDom implements IteratorAggregate, SimpleXmlDomInterface
 {
     public function __construct(DOMNode $node)

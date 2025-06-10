@@ -270,7 +270,7 @@ abstract class AbstractListTable
     {
         $optionName = sprintf('staatic_%s_per_page', static::NAME);
 
-        return ($option === $optionName) ? $value : $status;
+        return $option === $optionName ? $value : $status;
     }
 
     public static function saveScreenOption($status, $option, $value)

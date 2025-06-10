@@ -60,7 +60,16 @@ final class PublicationManager implements PublicationManagerInterface
      */
     private $siteUrlProvider;
 
-    public function __construct(wpdb $wpdb, BuildRepositoryInterface $buildRepository, PublicationRepository $publicationRepository, BackgroundPublisher $backgroundPublisher, DeploymentFactory $deploymentFactory, DestinationUrlSetting $destinationUrl, PreviewUrlSetting $previewUrl, SiteUrlProvider $siteUrlProvider)
+    public function __construct(
+        wpdb $wpdb,
+        BuildRepositoryInterface $buildRepository,
+        PublicationRepository $publicationRepository,
+        BackgroundPublisher $backgroundPublisher,
+        DeploymentFactory $deploymentFactory,
+        DestinationUrlSetting $destinationUrl,
+        PreviewUrlSetting $previewUrl,
+        SiteUrlProvider $siteUrlProvider
+    )
     {
         $this->wpdb = $wpdb;
         $this->buildRepository = $buildRepository;

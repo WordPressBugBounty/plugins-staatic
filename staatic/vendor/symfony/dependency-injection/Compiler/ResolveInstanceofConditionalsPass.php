@@ -47,7 +47,7 @@ class ResolveInstanceofConditionalsPass implements CompilerPassInterface
         $instanceofCalls = [];
         $instanceofBindings = [];
         $reflectionClass = null;
-        $parent = ($definition instanceof ChildDefinition) ? $definition->getParent() : null;
+        $parent = $definition instanceof ChildDefinition ? $definition->getParent() : null;
         foreach ($conditionals as $interface => $instanceofDefs) {
             if ($interface !== $class && !($reflectionClass = $reflectionClass ?? ($container->getReflectionClass($class, \false) ?: \false))) {
                 continue;
@@ -57,7 +57,7 @@ class ResolveInstanceofConditionalsPass implements CompilerPassInterface
             }
             foreach ($instanceofDefs as $key => $instanceofDef) {
                 $instanceofDef = clone $instanceofDef;
-                $instanceofDef->setAbstract(\true)->setParent($parent ?: ('.abstract.instanceof.' . $id));
+                $instanceofDef->setAbstract(\true)->setParent($parent ?: '.abstract.instanceof.' . $id);
                 $parent = '.instanceof.' . $interface . '.' . $key . '.' . $id;
                 $container->setDefinition($parent, $instanceofDef);
                 $instanceofTags[] = [$interface, $instanceofDef->getTags()];

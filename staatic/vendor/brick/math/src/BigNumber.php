@@ -77,7 +77,7 @@ abstract class BigNumber implements JsonSerializable
             }
             if ($point !== null || $exponent !== null) {
                 $fractional = $fractional ?? '';
-                $exponent = ($exponent !== null) ? (int) $exponent : 0;
+                $exponent = $exponent !== null ? (int) $exponent : 0;
                 if ($exponent === \PHP_INT_MIN || $exponent === \PHP_INT_MAX) {
                     throw new NumberFormatException('Exponent too large.');
                 }
@@ -174,7 +174,7 @@ abstract class BigNumber implements JsonSerializable
         $sum = null;
         foreach ($values as $value) {
             $value = static::of($value);
-            $sum = ($sum === null) ? $value : self::add($sum, $value);
+            $sum = $sum === null ? $value : self::add($sum, $value);
         }
         if ($sum === null) {
             throw new InvalidArgumentException(__METHOD__ . '() expects at least one value.');
@@ -203,7 +203,7 @@ abstract class BigNumber implements JsonSerializable
         if ($number === '') {
             return '0';
         }
-        return ($sign === '-') ? '-' . $number : $number;
+        return $sign === '-' ? '-' . $number : $number;
     }
     /**
      * @param \Staatic\Vendor\Brick\Math\BigNumber|int|float|string $that

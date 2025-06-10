@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Staatic\Vendor\voku\helper;
 
 use BadMethodCallException;
+
 abstract class AbstractSimpleHtmlDom
 {
     protected static $functionAliases = ['children' => 'childNodes', 'first_child' => 'firstChild', 'last_child' => 'lastChild', 'next_sibling' => 'nextSibling', 'prev_sibling' => 'previousSibling', 'parent' => 'parentNode', 'outertext' => 'html', 'outerhtml' => 'html', 'innertext' => 'innerHtml', 'innerhtml' => 'innerHtml', 'innerhtmlkeep' => 'innerHtmlKeep'];

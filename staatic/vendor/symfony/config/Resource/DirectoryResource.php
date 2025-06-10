@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use RuntimeException;
+
 class DirectoryResource implements SelfCheckingResourceInterface
 {
     /**

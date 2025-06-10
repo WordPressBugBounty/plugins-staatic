@@ -31,7 +31,7 @@ final class ServerSentEvent extends DataChunk implements ChunkInterface
             if (0 === $i = strpos($line, ':')) {
                 continue;
             }
-            $i = (\false === $i) ? \strlen($line) : $i;
+            $i = \false === $i ? \strlen($line) : $i;
             $field = substr($line, 0, $i);
             $i += 1 + (' ' === ($line[1 + $i] ?? ''));
             switch ($field) {
@@ -42,7 +42,7 @@ final class ServerSentEvent extends DataChunk implements ChunkInterface
                     $this->type = substr($line, $i);
                     break;
                 case 'data':
-                    $this->data .= (('' === $this->data) ? '' : "\n") . substr($line, $i);
+                    $this->data .= ('' === $this->data ? '' : "\n") . substr($line, $i);
                     break;
                 case 'retry':
                     $retry = substr($line, $i);

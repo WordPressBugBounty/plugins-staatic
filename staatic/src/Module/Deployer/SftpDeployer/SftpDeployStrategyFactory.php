@@ -30,7 +30,11 @@ final class SftpDeployStrategyFactory
      */
     private $httpClientFactory;
 
-    public function __construct(ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository, HttpClientFactory $httpClientFactory)
+    public function __construct(
+        ResultRepositoryInterface $resultRepository,
+        ResourceRepositoryInterface $resourceRepository,
+        HttpClientFactory $httpClientFactory
+    )
     {
         $this->resultRepository = $resultRepository;
         $this->resourceRepository = $resourceRepository;

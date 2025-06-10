@@ -105,7 +105,7 @@ final class PublicKey extends RSA implements Common\PublicKey
             return \false;
         }
         $hash = $decoded['digestAlgorithm']['algorithm'];
-        $hash = (substr($hash, 0, 3) == 'id-') ? substr($hash, 3) : $hash;
+        $hash = substr($hash, 0, 3) == 'id-' ? substr($hash, 3) : $hash;
         $hash = new Hash($hash);
         $em = $hash->hash($m);
         $em2 = $decoded['digest'];
@@ -114,7 +114,7 @@ final class PublicKey extends RSA implements Common\PublicKey
     private function emsa_pss_verify($m, $em, $emBits)
     {
         $emLen = $emBits + 7 >> 3;
-        $sLen = ($this->sLen !== null) ? $this->sLen : $this->hLen;
+        $sLen = $this->sLen !== null ? $this->sLen : $this->hLen;
         $mHash = $this->hash->hash($m);
         if ($emLen < $this->hLen + $sLen + 2) {
             return \false;

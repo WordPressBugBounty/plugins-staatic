@@ -526,7 +526,7 @@ class XmlFileLoader extends FileLoader
             } elseif ('\\' === \DIRECTORY_SEPARATOR && strncmp($location, '\\\\', strlen('\\\\')) === 0) {
                 $locationstart = '';
             }
-            $drive = ('\\' === \DIRECTORY_SEPARATOR) ? array_shift($parts) . '/' : '';
+            $drive = '\\' === \DIRECTORY_SEPARATOR ? array_shift($parts) . '/' : '';
             $location = $locationstart . $drive . implode('/', array_map('rawurlencode', $parts));
             $imports .= sprintf('  <xsd:import namespace="%s" schemaLocation="%s" />' . "\n", $namespace, $location);
         }

@@ -3,6 +3,7 @@
 namespace Staatic\Vendor\phpseclib3\System\SSH\Common\Traits;
 
 use RuntimeException;
+
 trait ReadBytes
 {
     public function readBytes($length)

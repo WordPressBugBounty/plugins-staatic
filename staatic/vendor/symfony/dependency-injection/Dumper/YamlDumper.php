@@ -113,7 +113,7 @@ class YamlDumper extends Dumper
             }
             $decorationOnInvalid = $decoratedService[3] ?? ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE;
             if (\in_array($decorationOnInvalid, [ContainerInterface::IGNORE_ON_INVALID_REFERENCE, ContainerInterface::NULL_ON_INVALID_REFERENCE])) {
-                $invalidBehavior = (ContainerInterface::NULL_ON_INVALID_REFERENCE === $decorationOnInvalid) ? 'null' : 'ignore';
+                $invalidBehavior = ContainerInterface::NULL_ON_INVALID_REFERENCE === $decorationOnInvalid ? 'null' : 'ignore';
                 $code .= sprintf("        decoration_on_invalid: %s\n", $invalidBehavior);
             }
         }
@@ -213,9 +213,9 @@ class YamlDumper extends Dumper
                     if (!\is_array($content)) {
                         $content = ['tag' => $content];
                     }
-                    $content['exclude'] = (1 === \count($excludes)) ? $excludes[0] : $excludes;
+                    $content['exclude'] = 1 === \count($excludes) ? $excludes[0] : $excludes;
                 }
-                return new TaggedValue(($value instanceof TaggedIteratorArgument) ? 'tagged_iterator' : 'tagged_locator', $content);
+                return new TaggedValue($value instanceof TaggedIteratorArgument ? 'tagged_iterator' : 'tagged_locator', $content);
             }
             if ($value instanceof IteratorArgument) {
                 $tag = 'iterator';

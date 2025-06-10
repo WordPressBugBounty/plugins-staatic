@@ -55,11 +55,13 @@ final class Logger implements \Staatic\WordPress\Logging\LoggerInterface
      */
     private $context = [];
 
-    /**
-     * @param mixed $databaseLogger
-     * @param mixed $consoleLogger
-     */
-    public function __construct($databaseLogger, $consoleLogger, string $minimumLevel = LogLevel::DEBUG, bool $consoleLoggerEnabled = \false, bool $databaseLoggerEnabled = \true)
+    public function __construct(
+        PsrLoggerInterface $databaseLogger,
+        PsrLoggerInterface $consoleLogger,
+        string $minimumLevel = LogLevel::DEBUG,
+        bool $consoleLoggerEnabled = \false,
+        bool $databaseLoggerEnabled = \true
+    )
     {
         $this->databaseLogger = $databaseLogger;
         $this->consoleLogger = $consoleLogger;

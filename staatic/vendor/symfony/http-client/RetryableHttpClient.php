@@ -94,11 +94,11 @@ class RetryableHttpClient implements HttpClientInterface, ResetInterface
                 }
             }
             $context->getResponse()->cancel();
-            $delay = $this->getDelayFromHeader($context->getHeaders()) ?? $this->strategy->getDelay($context, (!$exception && $chunk->isLast()) ? $content : null, $exception);
+            $delay = $this->getDelayFromHeader($context->getHeaders()) ?? $this->strategy->getDelay($context, !$exception && $chunk->isLast() ? $content : null, $exception);
             ++$retryCount;
             $content = '';
             $firstChunk = null;
-            $this->logger->info('Try #{count} after {delay}ms' . ($exception ? ': ' . $exception->getMessage() : (', status code: ' . $context->getStatusCode())), ['count' => $retryCount, 'delay' => $delay]);
+            $this->logger->info('Try #{count} after {delay}ms' . ($exception ? ': ' . $exception->getMessage() : ', status code: ' . $context->getStatusCode()), ['count' => $retryCount, 'delay' => $delay]);
             $context->setInfo('retry_count', $retryCount);
             $context->replaceRequest($method, $url, $options);
             $context->pause($delay / 1000);

@@ -4,6 +4,7 @@ namespace Staatic\Vendor\Symfony\Component\Config\Exception;
 
 use InvalidArgumentException;
 use Throwable;
+
 class FileLocatorFileNotFoundException extends InvalidArgumentException
 {
     /**

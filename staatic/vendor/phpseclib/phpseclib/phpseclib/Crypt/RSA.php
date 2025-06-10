@@ -103,7 +103,7 @@ abstract class RSA extends AsymmetricKey
                 $n = $n->multiply($primes[$i]);
                 $temp = $primes[$i]->subtract(self::$one);
                 $lcm['top'] = $lcm['top']->multiply($temp);
-                $lcm['bottom'] = ($lcm['bottom'] === \false) ? $temp : $lcm['bottom']->gcd($temp);
+                $lcm['bottom'] = $lcm['bottom'] === \false ? $temp : $lcm['bottom']->gcd($temp);
             }
             list($temp) = $lcm['top']->divide($lcm['bottom']);
             $gcd = $temp->gcd($e);
@@ -274,7 +274,7 @@ abstract class RSA extends AsymmetricKey
     }
     public function getLength()
     {
-        return (!isset($this->modulus)) ? 0 : $this->modulus->getLength();
+        return !isset($this->modulus) ? 0 : $this->modulus->getLength();
     }
     public function withHash($hash)
     {
@@ -330,7 +330,7 @@ abstract class RSA extends AsymmetricKey
     }
     public function getSaltLength()
     {
-        return ($this->sLen !== null) ? $this->sLen : $this->hLen;
+        return $this->sLen !== null ? $this->sLen : $this->hLen;
     }
     public function withLabel($label)
     {
@@ -388,7 +388,7 @@ abstract class RSA extends AsymmetricKey
         if (!isset(self::$engines['PHP'])) {
             self::useBestEngine();
         }
-        return (self::$engines['OpenSSL'] && self::$defaultExponent == 65537) ? 'OpenSSL' : 'PHP';
+        return self::$engines['OpenSSL'] && self::$defaultExponent == 65537 ? 'OpenSSL' : 'PHP';
     }
     public static function enableBlinding()
     {

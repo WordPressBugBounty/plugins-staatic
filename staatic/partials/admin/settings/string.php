@@ -42,7 +42,7 @@ echo \esc_attr($setting->name());
 echo \esc_attr($setting->value());
 ?>"
             <?php 
-echo ($attributes['disabled'] ?? \false) ? 'disabled="disabled"' : '';
+echo $attributes['disabled'] ?? \false ? 'disabled="disabled"' : '';
 ?>
             <?php 
 echo isset($attributes['options']) ? 'list="' . \esc_attr($setting->name()) . '_options' . '"' : '';

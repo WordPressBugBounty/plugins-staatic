@@ -25,7 +25,7 @@ final class TaskCollection implements IteratorAggregate
         return new ArrayIterator($this->tasks);
     }
 
-    /** @param TaskInterface|mixed[] $tasks */
+    /** @param TaskInterface|TaskInterface[] $tasks */
     public function add($tasks): self
     {
         $tasks = is_array($tasks) ? $tasks : [$tasks];

@@ -33,7 +33,11 @@ final class DeploymentRepository implements DeploymentRepositoryInterface, Logge
      */
     private $deployTableName;
 
-    public function __construct(wpdb $wpdb, string $tableName = 'staatic_deployments', string $deployTableName = 'staatic_results_deployment')
+    public function __construct(
+        wpdb $wpdb,
+        string $tableName = 'staatic_deployments',
+        string $deployTableName = 'staatic_results_deployment'
+    )
     {
         $this->wpdb = $wpdb;
         $this->logger = new NullLogger();

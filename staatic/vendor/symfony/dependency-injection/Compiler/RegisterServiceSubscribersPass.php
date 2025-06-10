@@ -103,7 +103,7 @@ class RegisterServiceSubscribersPass extends AbstractRecursivePass
             unset($serviceMap[$key]);
         }
         if ($serviceMap = array_keys($serviceMap)) {
-            $message = sprintf((1 < \count($serviceMap)) ? 'keys "%s" do' : 'key "%s" does', str_replace('%', '%%', implode('", "', $serviceMap)));
+            $message = sprintf(1 < \count($serviceMap) ? 'keys "%s" do' : 'key "%s" does', str_replace('%', '%%', implode('", "', $serviceMap)));
             throw new InvalidArgumentException(sprintf('Service %s not exist in the map returned by "%s::getSubscribedServices()" for service "%s".', $message, $class, $this->currentId));
         }
         $locatorRef = ServiceLocatorTagPass::register($this->container, $subscriberMap, $this->currentId);

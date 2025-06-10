@@ -53,7 +53,7 @@ final class TransientCache implements CacheInterface
     {
         $this->validateKey($key);
         $transientKey = $this->transientKey($key);
-        $ttl = ($ttl === null) ? $this->defaultTtl : $ttl;
+        $ttl = $ttl === null ? $this->defaultTtl : $ttl;
 
         return set_transient($transientKey, serialize($value), $ttl);
     }

@@ -135,7 +135,7 @@ class ReflectionClassResource implements SelfCheckingResourceInterface
                 yield $p->isPublic() ? 'public' : 'protected';
                 yield $p->isStatic() ? 'static' : '';
                 yield '$' . $p->name;
-                yield print_r((isset($defaults[$p->name]) && !\is_object($defaults[$p->name])) ? $defaults[$p->name] : null, \true);
+                yield print_r(isset($defaults[$p->name]) && !\is_object($defaults[$p->name]) ? $defaults[$p->name] : null, \true);
             }
         }
         foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED) as $m) {

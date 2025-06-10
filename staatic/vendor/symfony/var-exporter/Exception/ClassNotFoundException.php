@@ -4,6 +4,7 @@ namespace Staatic\Vendor\Symfony\Component\VarExporter\Exception;
 
 use Exception;
 use Throwable;
+
 class ClassNotFoundException extends Exception implements ExceptionInterface
 {
     public function __construct(string $class, ?Throwable $previous = null)

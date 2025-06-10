@@ -5,6 +5,7 @@ namespace Symfony\Polyfill\Php74;
 use ArrayIterator;
 use ArrayObject;
 use ReflectionClass;
+
 final class Php74
 {
     public static function get_mangled_object_vars($obj)
@@ -14,10 +15,10 @@ final class Php74
             return null;
         }
         if ($obj instanceof ArrayIterator || $obj instanceof ArrayObject) {
-            $reflector = new ReflectionClass(($obj instanceof ArrayIterator) ? 'ArrayIterator' : 'ArrayObject');
+            $reflector = new ReflectionClass($obj instanceof ArrayIterator ? 'ArrayIterator' : 'ArrayObject');
             $flags = $reflector->getMethod('getFlags')->invoke($obj);
             $reflector = $reflector->getMethod('setFlags');
-            $reflector->invoke($obj, ($flags & ArrayObject::STD_PROP_LIST) ? 0 : ArrayObject::STD_PROP_LIST);
+            $reflector->invoke($obj, $flags & ArrayObject::STD_PROP_LIST ? 0 : ArrayObject::STD_PROP_LIST);
             $arr = (array) $obj;
             $reflector->invoke($obj, $flags);
         } else {

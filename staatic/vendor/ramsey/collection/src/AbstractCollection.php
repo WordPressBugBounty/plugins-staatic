@@ -120,7 +120,7 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
         usort($collection->data, function ($a, $b) use ($propertyOrMethod, $order): int {
             $aValue = $this->extractValue($a, $propertyOrMethod);
             $bValue = $this->extractValue($b, $propertyOrMethod);
-            return ($aValue <=> $bValue) * (($order === Sort::Descending) ? -1 : 1);
+            return ($aValue <=> $bValue) * ($order === Sort::Descending ? -1 : 1);
         });
         return $collection;
     }
@@ -225,7 +225,7 @@ abstract class AbstractCollection extends AbstractArray implements CollectionInt
                 $a = spl_object_id($a);
                 $b = spl_object_id($b);
             }
-            return ($a === $b) ? 0 : (($a < $b) ? 1 : -1);
+            return $a === $b ? 0 : ($a < $b ? 1 : -1);
         };
     }
     private function getUniformType(CollectionInterface $collection): string

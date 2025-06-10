@@ -129,7 +129,7 @@ final class AwsDeployStrategy implements DeployStrategyInterface, LoggerAwareInt
         $this->accessKeyId = $options['accessKeyId'] ?? null;
         $this->secretAccessKey = $options['secretAccessKey'] ?? null;
         $this->bucket = $options['bucket'];
-        $this->prefix = empty($options['prefix']) ? '' : (trim($options['prefix'], '/') . '/');
+        $this->prefix = empty($options['prefix']) ? '' : trim($options['prefix'], '/') . '/';
         $this->objectAcl = empty($options['objectAcl']) ? null : $options['objectAcl'];
         if (!empty($options['retainPaths'])) {
             $this->retainPaths = $options['retainPaths'];

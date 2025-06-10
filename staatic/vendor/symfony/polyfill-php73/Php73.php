@@ -12,7 +12,7 @@ final class Php73
         $ns = 1000000000.0 * (float) $ns;
         if ($asNum) {
             $ns += $s * 1000000000.0;
-            return (\PHP_INT_SIZE === 4) ? $ns : (int) $ns;
+            return \PHP_INT_SIZE === 4 ? $ns : (int) $ns;
         }
         return [$s, (int) $ns];
     }

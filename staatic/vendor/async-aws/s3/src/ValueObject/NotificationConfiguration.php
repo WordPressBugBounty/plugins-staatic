@@ -4,6 +4,7 @@ namespace Staatic\Vendor\AsyncAws\S3\ValueObject;
 
 use DOMElement;
 use DOMDocument;
+
 final class NotificationConfiguration
 {
     private $topicConfigurations;
@@ -19,7 +20,7 @@ final class NotificationConfiguration
     }
     public static function create($input): self
     {
-        return ($input instanceof self) ? $input : new self($input);
+        return $input instanceof self ? $input : new self($input);
     }
     public function getEventBridgeConfiguration(): ?EventBridgeConfiguration
     {

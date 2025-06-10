@@ -289,7 +289,7 @@ class SSH2
         $this->curTimeout = $this->timeout;
         if (!is_resource($this->fsock)) {
             $start = microtime(\true);
-            $this->fsock = @fsockopen($this->host, $this->port, $errno, $errstr, ($this->curTimeout == 0) ? 100000 : $this->curTimeout);
+            $this->fsock = @fsockopen($this->host, $this->port, $errno, $errstr, $this->curTimeout == 0 ? 100000 : $this->curTimeout);
             if (!$this->fsock) {
                 $host = $this->host . ':' . $this->port;
                 throw new UnableToConnectException(rtrim("Cannot connect to {$host}. Error {$errno}. {$errstr}"));
@@ -542,7 +542,7 @@ class SSH2
         }
         $exchange_hash_rfc4419 = '';
         if (strpos($this->kex_algorithm, 'curve25519-sha256') === 0 || strpos($this->kex_algorithm, 'ecdh-sha2-nistp') === 0) {
-            $curve = (strpos($this->kex_algorithm, 'curve25519-sha256') === 0) ? 'Curve25519' : substr($this->kex_algorithm, 10);
+            $curve = strpos($this->kex_algorithm, 'curve25519-sha256') === 0 ? 'Curve25519' : substr($this->kex_algorithm, 10);
             $ourPrivate = EC::createKey($curve);
             $ourPublicBytes = $ourPrivate->getPublicKey()->getEncodedCoordinates();
             $clientKexInitMessage = 'Staatic\Vendor\NET_SSH2_MSG_KEX_ECDH_INIT';
@@ -992,7 +992,7 @@ class SSH2
             $this->bitmap |= self::MASK_LOGIN_REQ;
         }
         if (strlen($this->last_interactive_response)) {
-            return (!Strings::is_stringable($password) && !is_array($password)) ? \false : $this->keyboard_interactive_process($password);
+            return !Strings::is_stringable($password) && !is_array($password) ? \false : $this->keyboard_interactive_process($password);
         }
         if ($password instanceof PrivateKey) {
             return $this->privatekey_login($username, $password);
@@ -1689,7 +1689,7 @@ class SSH2
             $packet->plain = $raw;
         }
         if ($this->hmac_check instanceof Hash) {
-            $reconstructed = (!$this->hmac_check_etm) ? pack('Na*', $packet->packet_length, $packet->plain) : substr($packet->raw, 0, -$this->hmac_size);
+            $reconstructed = !$this->hmac_check_etm ? pack('Na*', $packet->packet_length, $packet->plain) : substr($packet->raw, 0, -$this->hmac_size);
             if (($this->hmac_check->getHash() & "\xff\xff\xff\xff") == 'umac') {
                 $this->hmac_check->setNonce("\x00\x00\x00\x00" . pack('N', $this->get_seq_no));
                 if ($hmac != $this->hmac_check->hash($reconstructed)) {
@@ -1748,7 +1748,7 @@ class SSH2
         $this->get_seq_no++;
         if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
             $current = microtime(\true);
-            $message_number = isset(self::$message_numbers[ord($payload[0])]) ? self::$message_numbers[ord($payload[0])] : ('UNKNOWN (' . ord($payload[0]) . ')');
+            $message_number = isset(self::$message_numbers[ord($payload[0])]) ? self::$message_numbers[ord($payload[0])] : 'UNKNOWN (' . ord($payload[0]) . ')';
             $message_number = '<- ' . $message_number . ' (since last: ' . round($current - $this->last_packet, 4) . ', network: ' . round($packet->read_time, 4) . 's)';
             $this->append_log($message_number, $payload);
         }
@@ -2020,7 +2020,7 @@ class SSH2
                                     $window_size += 0x80000000;
                                 }
                                 $this->window_size_client_to_server[$channel] = $window_size;
-                                $result = ($client_channel == $channel) ? \true : $this->get_channel_packet($client_channel, $skip_extended);
+                                $result = $client_channel == $channel ? \true : $this->get_channel_packet($client_channel, $skip_extended);
                                 $this->on_channel_open();
                                 return $result;
                             case NET_SSH2_MSG_CHANNEL_OPEN_FAILURE:
@@ -2162,7 +2162,7 @@ class SSH2
                     $packet = $length . $this->encrypt->encrypt(substr($packet, 4));
                     break;
                 default:
-                    $packet = ($this->hmac_create instanceof Hash && $this->hmac_create_etm) ? ($packet & "\xff\xff\xff\xff") . $this->encrypt->encrypt(substr($packet, 4)) : $this->encrypt->encrypt($packet);
+                    $packet = $this->hmac_create instanceof Hash && $this->hmac_create_etm ? ($packet & "\xff\xff\xff\xff") . $this->encrypt->encrypt(substr($packet, 4)) : $this->encrypt->encrypt($packet);
             }
         }
         if ($this->hmac_create instanceof Hash && $this->hmac_create_etm) {
@@ -2174,7 +2174,7 @@ class SSH2
             }
         }
         $this->send_seq_no++;
-        $packet .= ($this->encrypt && $this->encrypt->usesNonce()) ? $this->encrypt->getTag() : $hmac;
+        $packet .= $this->encrypt && $this->encrypt->usesNonce() ? $this->encrypt->getTag() : $hmac;
         if (!$this->keyExchangeInProgress) {
             $this->bytesTransferredSinceLastKEX += strlen($packet);
         }
@@ -2183,14 +2183,14 @@ class SSH2
         $stop = microtime(\true);
         if (defined('Staatic\Vendor\NET_SSH2_LOGGING')) {
             $current = microtime(\true);
-            $message_number = isset(self::$message_numbers[ord($logged[0])]) ? self::$message_numbers[ord($logged[0])] : ('UNKNOWN (' . ord($logged[0]) . ')');
+            $message_number = isset(self::$message_numbers[ord($logged[0])]) ? self::$message_numbers[ord($logged[0])] : 'UNKNOWN (' . ord($logged[0]) . ')';
             $message_number = '-> ' . $message_number . ' (since last: ' . round($current - $this->last_packet, 4) . ', network: ' . round($stop - $start, 4) . 's)';
             $this->append_log($message_number, $logged);
         }
         $this->last_packet = microtime(\true);
         if (strlen($packet) != $sent) {
             $this->disconnect_helper(NET_SSH2_DISCONNECT_BY_APPLICATION);
-            $message = ($sent === \false) ? 'Unable to write ' . strlen($packet) . ' bytes' : ("Only {$sent} of " . strlen($packet) . " bytes were sent");
+            $message = $sent === \false ? 'Unable to write ' . strlen($packet) . ' bytes' : "Only {$sent} of " . strlen($packet) . " bytes were sent";
             throw new RuntimeException($message);
         }
         if ($this->bytesTransferredSinceLastKEX > $this->doKeyReexchangeAfterXBytes) {
@@ -2225,7 +2225,7 @@ class SSH2
                 break;
             case self::LOG_SIMPLE_REALTIME:
                 echo $message_number;
-                echo (\PHP_SAPI == 'cli') ? "\r\n" : '<br>';
+                echo \PHP_SAPI == 'cli' ? "\r\n" : '<br>';
                 @flush();
                 @ob_flush();
                 break;
@@ -2276,7 +2276,7 @@ class SSH2
                 break;
             case self::LOG_REALTIME_SIMPLE:
                 echo $message_number;
-                echo (\PHP_SAPI == 'cli') ? "\r\n" : '<br>';
+                echo \PHP_SAPI == 'cli' ? "\r\n" : '<br>';
         }
     }
     protected function send_channel_packet($client_channel, $data)
@@ -2368,7 +2368,7 @@ class SSH2
                 return $this->message_number_log;
             case self::LOG_COMPLEX:
                 $log = $this->format_log($this->message_log, $this->message_number_log);
-                return (\PHP_SAPI == 'cli') ? $log : ('<pre>' . $log . '</pre>');
+                return \PHP_SAPI == 'cli' ? $log : '<pre>' . $log . '</pre>';
             default:
                 return \false;
         }
@@ -2574,7 +2574,7 @@ class SSH2
             }
             if (count($p) != count($m)) {
                 $diff = array_diff($m, $p);
-                $msg = (count($diff) == 1) ? ' is not a supported algorithm' : ' are not supported algorithms';
+                $msg = count($diff) == 1 ? ' is not a supported algorithm' : ' are not supported algorithms';
                 throw new UnsupportedAlgorithmException(implode(', ', $diff) . $msg);
             }
         }
@@ -2685,7 +2685,7 @@ class SSH2
     public static function getConnectionByResourceId($id)
     {
         if (isset(self::$connections[$id])) {
-            return (self::$connections[$id] instanceof WeakReference) ? self::$connections[$id]->get() : self::$connections[$id];
+            return self::$connections[$id] instanceof WeakReference ? self::$connections[$id]->get() : self::$connections[$id];
         }
         return \false;
     }

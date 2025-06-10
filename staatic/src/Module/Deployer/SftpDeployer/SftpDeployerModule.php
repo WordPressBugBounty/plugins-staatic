@@ -29,7 +29,11 @@ final class SftpDeployerModule implements ModuleInterface
 
     public const DEPLOYMENT_METHOD_NAME = 'sftp';
 
-    public function __construct(Settings $settings, ServiceLocator $settingLocator, SftpDeployStrategyFactory $deployStrategyFactory)
+    public function __construct(
+        Settings $settings,
+        ServiceLocator $settingLocator,
+        SftpDeployStrategyFactory $deployStrategyFactory
+    )
     {
         $this->settings = $settings;
         $this->settingLocator = $settingLocator;

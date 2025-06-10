@@ -41,7 +41,12 @@ final class PublicationLogsPage implements ModuleInterface
      */
     private $publication;
 
-    public function __construct(AdminNavigation $navigation, PartialRenderer $renderer, PublicationRepository $publicationRepository, PublicationLogsTable $listTable)
+    public function __construct(
+        AdminNavigation $navigation,
+        PartialRenderer $renderer,
+        PublicationRepository $publicationRepository,
+        PublicationLogsTable $listTable
+    )
     {
         $this->navigation = $navigation;
         $this->renderer = $renderer;

@@ -6,6 +6,7 @@ use IteratorAggregate;
 use Countable;
 use Closure;
 use Traversable;
+
 class RewindableGenerator implements IteratorAggregate, Countable
 {
     /**

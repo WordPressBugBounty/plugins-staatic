@@ -71,7 +71,7 @@ class BinaryField extends FiniteField
     }
     public function newInteger($num)
     {
-        return new Integer($this->instanceID, ($num instanceof BigInteger) ? $num->toBytes() : $num);
+        return new Integer($this->instanceID, $num instanceof BigInteger ? $num->toBytes() : $num);
     }
     public function randomInteger()
     {

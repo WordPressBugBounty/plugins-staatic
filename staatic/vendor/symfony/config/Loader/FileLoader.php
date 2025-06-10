@@ -52,13 +52,13 @@ abstract class FileLoader extends Loader
             $ret = [];
             $isSubpath = 0 !== $i && strpos(substr($resource, 0, $i), '/') !== false;
             foreach ($this->glob($resource, \false, $_, $ignoreErrors || !$isSubpath, \false, $excluded) as $path => $info) {
-                if (null !== $res = $this->doImport($path, ('glob' === $type) ? null : $type, $ignoreErrors, $sourceResource)) {
+                if (null !== $res = $this->doImport($path, 'glob' === $type ? null : $type, $ignoreErrors, $sourceResource)) {
                     $ret[] = $res;
                 }
                 $isSubpath = \true;
             }
             if ($isSubpath) {
-                return isset($ret[1]) ? $ret : ($ret[0] ?? null);
+                return isset($ret[1]) ? $ret : $ret[0] ?? null;
             }
         }
         return $this->doImport($resource, $type, $ignoreErrors, $sourceResource);

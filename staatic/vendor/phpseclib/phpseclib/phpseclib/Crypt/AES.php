@@ -4,6 +4,7 @@ namespace Staatic\Vendor\phpseclib3\Crypt;
 
 use BadMethodCallException;
 use LengthException;
+
 class AES extends Rijndael
 {
     public function setBlockLength($length)

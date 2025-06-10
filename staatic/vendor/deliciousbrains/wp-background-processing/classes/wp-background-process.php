@@ -3,6 +3,7 @@
 namespace Staatic\Vendor;
 
 use stdClass;
+
 abstract class WP_Background_Process extends WP_Async_Request
 {
     const CHAIN_ID_ARG_NAME = 'chain_id';
@@ -326,7 +327,7 @@ abstract class WP_Background_Process extends WP_Async_Request
             $interval = $this->cron_interval;
         }
         $interval = \apply_filters($this->cron_interval_identifier, $interval);
-        return (\is_int($interval) && 0 < $interval) ? $interval : 5;
+        return \is_int($interval) && 0 < $interval ? $interval : 5;
     }
     public function schedule_cron_healthcheck($schedules)
     {

@@ -34,7 +34,7 @@ abstract class Montgomery extends Base
         $mod2 = new $class();
         $mod2->value = [1];
         $mod2->lshift($j);
-        $part1 = ($mod1->value != [1]) ? parent::slidingWindow($x, $e, $mod1, $class) : new $class();
+        $part1 = $mod1->value != [1] ? parent::slidingWindow($x, $e, $mod1, $class) : new $class();
         $part2 = PowerOfTwo::slidingWindow($x, $e, $mod2, $class);
         $y1 = $mod2->modInverse($mod1);
         $y2 = $mod1->modInverse($mod2);

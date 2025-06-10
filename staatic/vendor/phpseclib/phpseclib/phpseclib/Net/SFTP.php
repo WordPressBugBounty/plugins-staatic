@@ -123,7 +123,7 @@ class SFTP extends SSH2
         if (empty(self::$packet_types)) {
             self::$packet_types = [1 => 'Staatic\Vendor\NET_SFTP_INIT', 2 => 'Staatic\Vendor\NET_SFTP_VERSION', 3 => 'Staatic\Vendor\NET_SFTP_OPEN', 4 => 'Staatic\Vendor\NET_SFTP_CLOSE', 5 => 'Staatic\Vendor\NET_SFTP_READ', 6 => 'Staatic\Vendor\NET_SFTP_WRITE', 7 => 'Staatic\Vendor\NET_SFTP_LSTAT', 9 => 'Staatic\Vendor\NET_SFTP_SETSTAT', 10 => 'Staatic\Vendor\NET_SFTP_FSETSTAT', 11 => 'Staatic\Vendor\NET_SFTP_OPENDIR', 12 => 'Staatic\Vendor\NET_SFTP_READDIR', 13 => 'Staatic\Vendor\NET_SFTP_REMOVE', 14 => 'Staatic\Vendor\NET_SFTP_MKDIR', 15 => 'Staatic\Vendor\NET_SFTP_RMDIR', 16 => 'Staatic\Vendor\NET_SFTP_REALPATH', 17 => 'Staatic\Vendor\NET_SFTP_STAT', 18 => 'Staatic\Vendor\NET_SFTP_RENAME', 19 => 'Staatic\Vendor\NET_SFTP_READLINK', 20 => 'Staatic\Vendor\NET_SFTP_SYMLINK', 21 => 'Staatic\Vendor\NET_SFTP_LINK', 101 => 'Staatic\Vendor\NET_SFTP_STATUS', 102 => 'Staatic\Vendor\NET_SFTP_HANDLE', 103 => 'Staatic\Vendor\NET_SFTP_DATA', 104 => 'Staatic\Vendor\NET_SFTP_NAME', 105 => 'Staatic\Vendor\NET_SFTP_ATTRS', 200 => 'Staatic\Vendor\NET_SFTP_EXTENDED', 201 => 'Staatic\Vendor\NET_SFTP_EXTENDED_REPLY'];
             self::$status_codes = [0 => 'Staatic\Vendor\NET_SFTP_STATUS_OK', 1 => 'Staatic\Vendor\NET_SFTP_STATUS_EOF', 2 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_SUCH_FILE', 3 => 'Staatic\Vendor\NET_SFTP_STATUS_PERMISSION_DENIED', 4 => 'Staatic\Vendor\NET_SFTP_STATUS_FAILURE', 5 => 'Staatic\Vendor\NET_SFTP_STATUS_BAD_MESSAGE', 6 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_CONNECTION', 7 => 'Staatic\Vendor\NET_SFTP_STATUS_CONNECTION_LOST', 8 => 'Staatic\Vendor\NET_SFTP_STATUS_OP_UNSUPPORTED', 9 => 'Staatic\Vendor\NET_SFTP_STATUS_INVALID_HANDLE', 10 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_SUCH_PATH', 11 => 'Staatic\Vendor\NET_SFTP_STATUS_FILE_ALREADY_EXISTS', 12 => 'Staatic\Vendor\NET_SFTP_STATUS_WRITE_PROTECT', 13 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_MEDIA', 14 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_SPACE_ON_FILESYSTEM', 15 => 'Staatic\Vendor\NET_SFTP_STATUS_QUOTA_EXCEEDED', 16 => 'Staatic\Vendor\NET_SFTP_STATUS_UNKNOWN_PRINCIPAL', 17 => 'Staatic\Vendor\NET_SFTP_STATUS_LOCK_CONFLICT', 18 => 'Staatic\Vendor\NET_SFTP_STATUS_DIR_NOT_EMPTY', 19 => 'Staatic\Vendor\NET_SFTP_STATUS_NOT_A_DIRECTORY', 20 => 'Staatic\Vendor\NET_SFTP_STATUS_INVALID_FILENAME', 21 => 'Staatic\Vendor\NET_SFTP_STATUS_LINK_LOOP', 22 => 'Staatic\Vendor\NET_SFTP_STATUS_CANNOT_DELETE', 23 => 'Staatic\Vendor\NET_SFTP_STATUS_INVALID_PARAMETER', 24 => 'Staatic\Vendor\NET_SFTP_STATUS_FILE_IS_A_DIRECTORY', 25 => 'Staatic\Vendor\NET_SFTP_STATUS_BYTE_RANGE_LOCK_CONFLICT', 26 => 'Staatic\Vendor\NET_SFTP_STATUS_BYTE_RANGE_LOCK_REFUSED', 27 => 'Staatic\Vendor\NET_SFTP_STATUS_DELETE_PENDING', 28 => 'Staatic\Vendor\NET_SFTP_STATUS_FILE_CORRUPT', 29 => 'Staatic\Vendor\NET_SFTP_STATUS_OWNER_INVALID', 30 => 'Staatic\Vendor\NET_SFTP_STATUS_GROUP_INVALID', 31 => 'Staatic\Vendor\NET_SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK'];
-            self::$attributes = [0x1 => 'Staatic\Vendor\NET_SFTP_ATTR_SIZE', 0x2 => 'Staatic\Vendor\NET_SFTP_ATTR_UIDGID', 0x80 => 'Staatic\Vendor\NET_SFTP_ATTR_OWNERGROUP', 0x4 => 'Staatic\Vendor\NET_SFTP_ATTR_PERMISSIONS', 0x8 => 'Staatic\Vendor\NET_SFTP_ATTR_ACCESSTIME', 0x10 => 'Staatic\Vendor\NET_SFTP_ATTR_CREATETIME', 0x20 => 'Staatic\Vendor\NET_SFTP_ATTR_MODIFYTIME', 0x40 => 'Staatic\Vendor\NET_SFTP_ATTR_ACL', 0x100 => 'Staatic\Vendor\NET_SFTP_ATTR_SUBSECOND_TIMES', 0x200 => 'Staatic\Vendor\NET_SFTP_ATTR_BITS', 0x400 => 'Staatic\Vendor\NET_SFTP_ATTR_ALLOCATION_SIZE', 0x800 => 'Staatic\Vendor\NET_SFTP_ATTR_TEXT_HINT', 0x1000 => 'Staatic\Vendor\NET_SFTP_ATTR_MIME_TYPE', 0x2000 => 'Staatic\Vendor\NET_SFTP_ATTR_LINK_COUNT', 0x4000 => 'Staatic\Vendor\NET_SFTP_ATTR_UNTRANSLATED_NAME', 0x8000 => 'Staatic\Vendor\NET_SFTP_ATTR_CTIME', (\PHP_INT_SIZE == 4) ? -1 << 31 : 0x80000000 => 'Staatic\Vendor\NET_SFTP_ATTR_EXTENDED'];
+            self::$attributes = [0x1 => 'Staatic\Vendor\NET_SFTP_ATTR_SIZE', 0x2 => 'Staatic\Vendor\NET_SFTP_ATTR_UIDGID', 0x80 => 'Staatic\Vendor\NET_SFTP_ATTR_OWNERGROUP', 0x4 => 'Staatic\Vendor\NET_SFTP_ATTR_PERMISSIONS', 0x8 => 'Staatic\Vendor\NET_SFTP_ATTR_ACCESSTIME', 0x10 => 'Staatic\Vendor\NET_SFTP_ATTR_CREATETIME', 0x20 => 'Staatic\Vendor\NET_SFTP_ATTR_MODIFYTIME', 0x40 => 'Staatic\Vendor\NET_SFTP_ATTR_ACL', 0x100 => 'Staatic\Vendor\NET_SFTP_ATTR_SUBSECOND_TIMES', 0x200 => 'Staatic\Vendor\NET_SFTP_ATTR_BITS', 0x400 => 'Staatic\Vendor\NET_SFTP_ATTR_ALLOCATION_SIZE', 0x800 => 'Staatic\Vendor\NET_SFTP_ATTR_TEXT_HINT', 0x1000 => 'Staatic\Vendor\NET_SFTP_ATTR_MIME_TYPE', 0x2000 => 'Staatic\Vendor\NET_SFTP_ATTR_LINK_COUNT', 0x4000 => 'Staatic\Vendor\NET_SFTP_ATTR_UNTRANSLATED_NAME', 0x8000 => 'Staatic\Vendor\NET_SFTP_ATTR_CTIME', \PHP_INT_SIZE == 4 ? -1 << 31 : 0x80000000 => 'Staatic\Vendor\NET_SFTP_ATTR_EXTENDED'];
             self::$open_flags = [0x1 => 'Staatic\Vendor\NET_SFTP_OPEN_READ', 0x2 => 'Staatic\Vendor\NET_SFTP_OPEN_WRITE', 0x4 => 'Staatic\Vendor\NET_SFTP_OPEN_APPEND', 0x8 => 'Staatic\Vendor\NET_SFTP_OPEN_CREATE', 0x10 => 'Staatic\Vendor\NET_SFTP_OPEN_TRUNCATE', 0x20 => 'Staatic\Vendor\NET_SFTP_OPEN_EXCL', 0x40 => 'Staatic\Vendor\NET_SFTP_OPEN_TEXT'];
             self::$open_flags5 = [0x0 => 'Staatic\Vendor\NET_SFTP_OPEN_CREATE_NEW', 0x1 => 'Staatic\Vendor\NET_SFTP_OPEN_CREATE_TRUNCATE', 0x2 => 'Staatic\Vendor\NET_SFTP_OPEN_OPEN_EXISTING', 0x3 => 'Staatic\Vendor\NET_SFTP_OPEN_OPEN_OR_CREATE', 0x4 => 'Staatic\Vendor\NET_SFTP_OPEN_TRUNCATE_EXISTING', 0x8 => 'Staatic\Vendor\NET_SFTP_OPEN_APPEND_DATA', 0x10 => 'Staatic\Vendor\NET_SFTP_OPEN_APPEND_DATA_ATOMIC', 0x20 => 'Staatic\Vendor\NET_SFTP_OPEN_TEXT_MODE', 0x40 => 'Staatic\Vendor\NET_SFTP_OPEN_BLOCK_READ', 0x80 => 'Staatic\Vendor\NET_SFTP_OPEN_BLOCK_WRITE', 0x100 => 'Staatic\Vendor\NET_SFTP_OPEN_BLOCK_DELETE', 0x200 => 'Staatic\Vendor\NET_SFTP_OPEN_BLOCK_ADVISORY', 0x400 => 'Staatic\Vendor\NET_SFTP_OPEN_NOFOLLOW', 0x800 => 'Staatic\Vendor\NET_SFTP_OPEN_DELETE_ON_CLOSE', 0x1000 => 'Staatic\Vendor\NET_SFTP_OPEN_ACCESS_AUDIT_ALARM_INFO', 0x2000 => 'Staatic\Vendor\NET_SFTP_OPEN_ACCESS_BACKUP', 0x4000 => 'Staatic\Vendor\NET_SFTP_OPEN_BACKUP_STREAM', 0x8000 => 'Staatic\Vendor\NET_SFTP_OPEN_OVERRIDE_OWNER'];
             self::$file_types = [1 => 'Staatic\Vendor\NET_SFTP_TYPE_REGULAR', 2 => 'Staatic\Vendor\NET_SFTP_TYPE_DIRECTORY', 3 => 'Staatic\Vendor\NET_SFTP_TYPE_SYMLINK', 4 => 'Staatic\Vendor\NET_SFTP_TYPE_SPECIAL', 5 => 'Staatic\Vendor\NET_SFTP_TYPE_UNKNOWN', 6 => 'Staatic\Vendor\NET_SFTP_TYPE_SOCKET', 7 => 'Staatic\Vendor\NET_SFTP_TYPE_CHAR_DEVICE', 8 => 'Staatic\Vendor\NET_SFTP_TYPE_BLOCK_DEVICE', 9 => 'Staatic\Vendor\NET_SFTP_TYPE_FIFO'];
@@ -526,12 +526,12 @@ class SFTP extends SSH2
                 if ($a['filename'] === $b['filename']) {
                     return 0;
                 }
-                return ($a['filename'] === '.') ? -1 : 1;
+                return $a['filename'] === '.' ? -1 : 1;
             case $a['filename'] === '..' || $b['filename'] === '..':
                 if ($a['filename'] === $b['filename']) {
                     return 0;
                 }
-                return ($a['filename'] === '..') ? -1 : 1;
+                return $a['filename'] === '..' ? -1 : 1;
             case isset($a['type']) && $a['type'] === NET_SFTP_TYPE_DIRECTORY:
                 if (!isset($b['type'])) {
                     return 1;
@@ -557,7 +557,7 @@ class SFTP extends SSH2
                 case 'filename':
                     $result = strcasecmp($a['filename'], $b['filename']);
                     if ($result) {
-                        return ($order === \SORT_DESC) ? -$result : $result;
+                        return $order === \SORT_DESC ? -$result : $result;
                     }
                     break;
                 case 'mode':
@@ -567,7 +567,7 @@ class SFTP extends SSH2
                     if ($a[$sort] === $b[$sort]) {
                         break;
                     }
-                    return ($order === \SORT_ASC) ? $a[$sort] - $b[$sort] : ($b[$sort] - $a[$sort]);
+                    return $order === \SORT_ASC ? $a[$sort] - $b[$sort] : $b[$sort] - $a[$sort];
             }
         }
     }
@@ -767,9 +767,9 @@ class SFTP extends SSH2
         if (!isset($atime)) {
             $atime = $time;
         }
-        $attr = ($this->version < 4) ? pack('N3', NET_SFTP_ATTR_ACCESSTIME, $atime, $time) : Strings::packSSH2('NQ2', NET_SFTP_ATTR_ACCESSTIME | NET_SFTP_ATTR_MODIFYTIME, $atime, $time);
+        $attr = $this->version < 4 ? pack('N3', NET_SFTP_ATTR_ACCESSTIME, $atime, $time) : Strings::packSSH2('NQ2', NET_SFTP_ATTR_ACCESSTIME | NET_SFTP_ATTR_MODIFYTIME, $atime, $time);
         $packet = Strings::packSSH2('s', $filename);
-        $packet .= ($this->version >= 5) ? pack('N2', 0, NET_SFTP_OPEN_OPEN_EXISTING) : pack('N', NET_SFTP_OPEN_WRITE | NET_SFTP_OPEN_CREATE | NET_SFTP_OPEN_EXCL);
+        $packet .= $this->version >= 5 ? pack('N2', 0, NET_SFTP_OPEN_OPEN_EXISTING) : pack('N', NET_SFTP_OPEN_WRITE | NET_SFTP_OPEN_CREATE | NET_SFTP_OPEN_EXCL);
         $packet .= $attr;
         $this->send_sftp_packet(NET_SFTP_OPEN, $packet);
         $response = $this->get_sftp_packet();
@@ -786,12 +786,12 @@ class SFTP extends SSH2
     }
     public function chown($filename, $uid, $recursive = \false)
     {
-        $attr = ($this->version < 4) ? pack('N3', NET_SFTP_ATTR_UIDGID, $uid, -1) : Strings::packSSH2('Nss', NET_SFTP_ATTR_OWNERGROUP, $uid, '');
+        $attr = $this->version < 4 ? pack('N3', NET_SFTP_ATTR_UIDGID, $uid, -1) : Strings::packSSH2('Nss', NET_SFTP_ATTR_OWNERGROUP, $uid, '');
         return $this->setstat($filename, $attr, $recursive);
     }
     public function chgrp($filename, $gid, $recursive = \false)
     {
-        $attr = ($this->version < 4) ? pack('N3', NET_SFTP_ATTR_UIDGID, -1, $gid) : Strings::packSSH2('Nss', NET_SFTP_ATTR_OWNERGROUP, '', $gid);
+        $attr = $this->version < 4 ? pack('N3', NET_SFTP_ATTR_UIDGID, -1, $gid) : Strings::packSSH2('Nss', NET_SFTP_ATTR_OWNERGROUP, '', $gid);
         return $this->setstat($filename, $attr, $recursive);
     }
     public function chmod($mode, $filename, $recursive = \false)
@@ -839,7 +839,7 @@ class SFTP extends SSH2
             return $result;
         }
         $packet = Strings::packSSH2('s', $filename);
-        $packet .= ($this->version >= 4) ? pack('a*Ca*', substr($attr, 0, 4), NET_SFTP_TYPE_UNKNOWN, substr($attr, 4)) : $attr;
+        $packet .= $this->version >= 4 ? pack('a*Ca*', substr($attr, 0, 4), NET_SFTP_TYPE_UNKNOWN, substr($attr, 4)) : $attr;
         $this->send_sftp_packet(NET_SFTP_SETSTAT, $packet);
         $response = $this->get_sftp_packet();
         if ($this->packet_type != NET_SFTP_STATUS) {
@@ -877,7 +877,7 @@ class SFTP extends SSH2
                 }
             } else {
                 $packet = Strings::packSSH2('s', $temp);
-                $packet .= ($this->version >= 4) ? pack('Ca*', NET_SFTP_TYPE_UNKNOWN, $attr) : $attr;
+                $packet .= $this->version >= 4 ? pack('Ca*', NET_SFTP_TYPE_UNKNOWN, $attr) : $attr;
                 $this->send_sftp_packet(NET_SFTP_SETSTAT, $packet);
                 $i++;
                 if ($i >= NET_SFTP_QUEUE_SIZE) {
@@ -889,7 +889,7 @@ class SFTP extends SSH2
             }
         }
         $packet = Strings::packSSH2('s', $path);
-        $packet .= ($this->version >= 4) ? pack('Ca*', NET_SFTP_TYPE_UNKNOWN, $attr) : $attr;
+        $packet .= $this->version >= 4 ? pack('Ca*', NET_SFTP_TYPE_UNKNOWN, $attr) : $attr;
         $this->send_sftp_packet(NET_SFTP_SETSTAT, $packet);
         $i++;
         if ($i >= NET_SFTP_QUEUE_SIZE) {
@@ -935,7 +935,7 @@ class SFTP extends SSH2
             $packet = Strings::packSSH2('ssC', $link, $target, 1);
         } else {
             $type = NET_SFTP_SYMLINK;
-            $packet = (substr($this->server_identifier, 0, 15) == 'SSH-2.0-OpenSSH') ? Strings::packSSH2('ss', $target, $link) : Strings::packSSH2('ss', $link, $target);
+            $packet = substr($this->server_identifier, 0, 15) == 'SSH-2.0-OpenSSH' ? Strings::packSSH2('ss', $target, $link) : Strings::packSSH2('ss', $link, $target);
         }
         $this->send_sftp_packet($type, $packet);
         $response = $this->get_sftp_packet();
@@ -1028,7 +1028,7 @@ class SFTP extends SSH2
             $offset = $start;
         } elseif ($mode & (self::RESUME | self::RESUME_START)) {
             $stat = $this->stat($remote_file);
-            $offset = ($stat !== \false && $stat['size']) ? $stat['size'] : 0;
+            $offset = $stat !== \false && $stat['size'] ? $stat['size'] : 0;
         } else {
             $offset = 0;
             if ($this->version >= 5) {
@@ -1039,7 +1039,7 @@ class SFTP extends SSH2
         }
         $this->remove_from_stat_cache($remote_file);
         $packet = Strings::packSSH2('s', $remote_file);
-        $packet .= ($this->version >= 5) ? pack('N3', 0, $flags, 0) : pack('N2', $flags, 0);
+        $packet .= $this->version >= 5 ? pack('N3', 0, $flags, 0) : pack('N2', $flags, 0);
         $this->send_sftp_packet(NET_SFTP_OPEN, $packet);
         $response = $this->get_sftp_packet();
         switch ($this->packet_type) {
@@ -1082,7 +1082,7 @@ class SFTP extends SSH2
         }
         if (isset($fp)) {
             $stat = fstat($fp);
-            $size = (!empty($stat)) ? $stat['size'] : 0;
+            $size = !empty($stat) ? $stat['size'] : 0;
             if ($local_start >= 0) {
                 fseek($fp, $local_start);
                 $size -= $local_start;
@@ -1096,7 +1096,7 @@ class SFTP extends SSH2
             $size = strlen($data);
         }
         $sent = 0;
-        $size = ($size < 0) ? ($size & 0x7fffffff) + 0x80000000 : $size;
+        $size = $size < 0 ? ($size & 0x7fffffff) + 0x80000000 : $size;
         $sftp_packet_size = $this->max_sftp_packet;
         $sftp_packet_size -= strlen($handle) + 25;
         $i = $j = 0;
@@ -1150,7 +1150,7 @@ class SFTP extends SSH2
             }
             if ($this->preserveTime) {
                 $stat = stat($data);
-                $attr = ($this->version < 4) ? pack('N3', NET_SFTP_ATTR_ACCESSTIME, $stat['atime'], $stat['mtime']) : Strings::packSSH2('NQ2', NET_SFTP_ATTR_ACCESSTIME | NET_SFTP_ATTR_MODIFYTIME, $stat['atime'], $stat['mtime']);
+                $attr = $this->version < 4 ? pack('N3', NET_SFTP_ATTR_ACCESSTIME, $stat['atime'], $stat['mtime']) : Strings::packSSH2('NQ2', NET_SFTP_ATTR_ACCESSTIME | NET_SFTP_ATTR_MODIFYTIME, $stat['atime'], $stat['mtime']);
                 if (!$this->setstat($remote_file, $attr, \false)) {
                     throw new RuntimeException('Error setting file time');
                 }
@@ -1197,7 +1197,7 @@ class SFTP extends SSH2
             return \false;
         }
         $packet = Strings::packSSH2('s', $remote_file);
-        $packet .= ($this->version >= 5) ? pack('N3', 0, NET_SFTP_OPEN_OPEN_EXISTING, 0) : pack('N2', NET_SFTP_OPEN_READ, 0);
+        $packet .= $this->version >= 5 ? pack('N3', 0, NET_SFTP_OPEN_OPEN_EXISTING, 0) : pack('N2', NET_SFTP_OPEN_READ, 0);
         $this->send_sftp_packet(NET_SFTP_OPEN, $packet);
         $response = $this->get_sftp_packet();
         switch ($this->packet_type) {
@@ -1232,7 +1232,7 @@ class SFTP extends SSH2
             $i = 0;
             while ($i < NET_SFTP_QUEUE_SIZE && ($length < 0 || $read < $length)) {
                 $tempoffset = $start + $read;
-                $packet_size = ($length > 0) ? min($this->max_sftp_packet, $length - $read) : $this->max_sftp_packet;
+                $packet_size = $length > 0 ? min($this->max_sftp_packet, $length - $read) : $this->max_sftp_packet;
                 $packet = Strings::packSSH2('sN3', $handle, $tempoffset / 4294967296, $tempoffset, $packet_size);
                 try {
                     $this->send_sftp_packet(NET_SFTP_READ, $packet, $i);
@@ -1498,7 +1498,7 @@ class SFTP extends SSH2
     }
     public function filesize($path, $recursive = \false)
     {
-        return (!$recursive || $this->filetype($path) != 'dir') ? $this->get_stat_cache_prop($path, 'size') : self::recursiveFilesize($this->rawlist($path, \true));
+        return !$recursive || $this->filetype($path) != 'dir' ? $this->get_stat_cache_prop($path, 'size') : self::recursiveFilesize($this->rawlist($path, \true));
     }
     public function filetype($path)
     {

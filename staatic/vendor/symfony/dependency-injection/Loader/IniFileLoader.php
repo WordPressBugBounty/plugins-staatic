@@ -57,7 +57,7 @@ class IniFileLoader extends FileLoader
     private function phpize(string $value)
     {
         if ($value !== $v = rtrim($value)) {
-            $value = ('""' === substr_replace($v, '', 1, -1)) ? substr($v, 1, -1) : $v;
+            $value = '""' === substr_replace($v, '', 1, -1) ? substr($v, 1, -1) : $v;
         }
         $lowercaseValue = strtolower($value);
         switch (\true) {

@@ -25,9 +25,9 @@ abstract class MontgomeryMult extends Montgomery
         $a = [self::VALUE => self::array_repeat(0, $n + 1)];
         for ($i = 0; $i < $n; ++$i) {
             $temp = $a[self::VALUE][0] + $x[$i] * $y[0];
-            $temp = $temp - $class::BASE_FULL * (($class::BASE === 26) ? intval($temp / 0x4000000) : ($temp >> 31));
+            $temp = $temp - $class::BASE_FULL * ($class::BASE === 26 ? intval($temp / 0x4000000) : $temp >> 31);
             $temp = $temp * $cache[self::DATA][$key];
-            $temp = $temp - $class::BASE_FULL * (($class::BASE === 26) ? intval($temp / 0x4000000) : ($temp >> 31));
+            $temp = $temp - $class::BASE_FULL * ($class::BASE === 26 ? intval($temp / 0x4000000) : $temp >> 31);
             $temp = $class::addHelper($class::regularMultiply([$x[$i]], $y), \false, $class::regularMultiply([$temp], $m), \false);
             $a = $class::addHelper($a[self::VALUE], \false, $temp[self::VALUE], \false);
             $a[self::VALUE] = array_slice($a[self::VALUE], 1);

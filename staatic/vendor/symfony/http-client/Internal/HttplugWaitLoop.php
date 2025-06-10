@@ -95,7 +95,7 @@ final class HttplugWaitLoop
         } while (null === $maxDuration || 0 < $remainingDuration);
         return $count;
     }
-    public function createPsr7Response(ResponseInterface $response, bool $buffer = \false)
+    public function createPsr7Response(ResponseInterface $response, bool $buffer = \false): Psr7ResponseInterface
     {
         $psrResponse = $this->responseFactory->createResponse($response->getStatusCode());
         foreach ($response->getHeaders(\false) as $name => $values) {

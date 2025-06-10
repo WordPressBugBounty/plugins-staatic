@@ -309,7 +309,7 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
      */
     public function find($nodePath): NodeDefinition
     {
-        $firstPathSegment = (\false === $pathSeparatorPos = strpos($nodePath, $this->pathSeparator)) ? $nodePath : substr($nodePath, 0, $pathSeparatorPos);
+        $firstPathSegment = \false === ($pathSeparatorPos = strpos($nodePath, $this->pathSeparator)) ? $nodePath : substr($nodePath, 0, $pathSeparatorPos);
         if (null === $node = $this->children[$firstPathSegment] ?? null) {
             throw new RuntimeException(sprintf('Node with name "%s" does not exist in the current node "%s".', $firstPathSegment, $this->name));
         }

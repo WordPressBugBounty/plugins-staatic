@@ -18,7 +18,7 @@ class PhpToken
     public function getTokenName(): ?string
     {
         if ('UNKNOWN' === $name = token_name($this->id)) {
-            $name = (\strlen($this->text) > 1 || \ord($this->text) < 32) ? null : $this->text;
+            $name = \strlen($this->text) > 1 || \ord($this->text) < 32 ? null : $this->text;
         }
         return $name;
     }

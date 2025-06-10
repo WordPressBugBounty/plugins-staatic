@@ -52,7 +52,7 @@ class Montgomery extends Base
         if (!isset($this->factory)) {
             throw new RuntimeException('setModulo needs to be called before this method');
         }
-        $this->p = [($x instanceof BigInteger) ? $this->factory->newInteger($x) : $x, ($y instanceof BigInteger) ? $this->factory->newInteger($y) : $y];
+        $this->p = [$x instanceof BigInteger ? $this->factory->newInteger($x) : $x, $y instanceof BigInteger ? $this->factory->newInteger($y) : $y];
     }
     public function getBasePoint()
     {
@@ -61,10 +61,7 @@ class Montgomery extends Base
         }
         return $this->p;
     }
-    /**
-     * @param mixed $x1
-     */
-    private function doubleAndAddPoint(array $p, array $q, $x1)
+    private function doubleAndAddPoint(array $p, array $q, PrimeInteger $x1)
     {
         if (!isset($this->factory)) {
             throw new RuntimeException('setModulo needs to be called before this method');
@@ -91,7 +88,7 @@ class Montgomery extends Base
         $temp = $da->subtract($cb);
         $z5 = $x1->multiply($temp->multiply($temp));
         $x4 = $aa->multiply($bb);
-        $temp = (static::class == Curve25519::class) ? $bb : $aa;
+        $temp = static::class == Curve25519::class ? $bb : $aa;
         $z4 = $e->multiply($temp->add($this->a24->multiply($e)));
         return [[$x4, $z4], [$x5, $z5]];
     }

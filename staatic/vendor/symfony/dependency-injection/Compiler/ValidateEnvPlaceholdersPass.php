@@ -35,7 +35,7 @@ class ValidateEnvPlaceholdersPass implements CompilerPassInterface
             $values = [];
             if (\false === $i = strpos($env, ':')) {
                 $default = $defaultBag->has("env({$env})") ? $defaultBag->get("env({$env})") : self::TYPE_FIXTURES['string'];
-                $defaultType = (null !== $default) ? get_debug_type($default) : 'string';
+                $defaultType = null !== $default ? get_debug_type($default) : 'string';
                 $values[$defaultType] = $default;
             } else {
                 $prefix = substr($env, 0, $i);

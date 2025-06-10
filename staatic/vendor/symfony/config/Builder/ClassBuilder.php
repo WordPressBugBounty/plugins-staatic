@@ -68,7 +68,7 @@ class ClassBuilder
         foreach (array_keys($this->use) as $statement) {
             $use .= sprintf('use %s;', $statement) . "\n";
         }
-        $implements = ([] === $this->implements) ? '' : ('implements ' . implode(', ', $this->implements));
+        $implements = [] === $this->implements ? '' : 'implements ' . implode(', ', $this->implements);
         $body = '';
         foreach ($this->properties as $property) {
             $body .= '    ' . $property->getContent() . "\n";
@@ -131,12 +131,12 @@ BODY
      */
     public function addProperty($name, $classType = null, $defaultValue = null): Property
     {
-        $property = new Property($name, ('_' !== $name[0]) ? $this->camelCase($name) : $name);
+        $property = new Property($name, '_' !== $name[0] ? $this->camelCase($name) : $name);
         if (null !== $classType) {
             $property->setType($classType);
         }
         $this->properties[] = $property;
-        $defaultValue = (null !== $defaultValue) ? sprintf(' = %s', $defaultValue) : '';
+        $defaultValue = null !== $defaultValue ? sprintf(' = %s', $defaultValue) : '';
         $property->setContent(sprintf('private $%s%s;', $property->getName(), $defaultValue));
         return $property;
     }

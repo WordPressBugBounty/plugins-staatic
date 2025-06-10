@@ -5,6 +5,7 @@ namespace Staatic\Vendor\voku\helper;
 
 use InvalidArgumentException;
 use ArrayIterator;
+
 class SimpleHtmlAttributes implements SimpleHtmlAttributesInterface
 {
     private $attributeName;
