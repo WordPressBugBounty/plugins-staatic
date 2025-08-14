@@ -1,8 +1,8 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.11.3
-Tested up to: 6.8.1
+Stable tag: 1.11.4
+Tested up to: 6.8.2
 Requires at least: 5.0
 Requires PHP: 7.1
 License: BSD-3-Clause
@@ -95,6 +95,20 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 1. Use your WordPress installation as a private staging environment and make all of the modifications you need. Then publish these changes to your highly optimized and consumer facing static site with the click of a button.
 2. Monitor the status of your publications while they happen and review details of past publications to easily troubleshoot any issues.
 3. Configure and fine tune the way Staatic processes your site to suit your specific needs.
+
+== Changelog ==
+
+= 1.11.4 =
+
+Release date: August 14th, 2025.
+
+**Improvements**
+
+* Updates external dependencies.
+
+**Bug Fixes**
+
+* Fixes an issue causing Safe Redirect Manager integration to not be activated.
 
 == Changelog ==
 

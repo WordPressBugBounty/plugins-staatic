@@ -6,7 +6,7 @@
  * Plugin Name:       Staatic - Static Site Generator
  * Plugin URI:        https://staatic.com/wordpress
  * Description:       Staatic for WordPress allows you to generate a highly optimized static version of your WordPress site.
- * Version:           1.11.3
+ * Version:           1.11.4
  * Requires at least: 5.0
  * Requires PHP:      7.1
  * Author:            Team Staatic
@@ -24,7 +24,7 @@ if (defined('STAATIC_VERSION')) {
     return;
 }
 
-define('STAATIC_VERSION', '1.11.3');
+define('STAATIC_VERSION', '1.11.4');
 
 define('STAATIC_FILE', __FILE__);
 define('STAATIC_PATH', dirname(__FILE__));

@@ -70,10 +70,10 @@ final class SafeRedirectManagerPlugin implements ModuleInterface
         if (!class_exists(SRM_Redirect::class)) {
             return \false;
         }
-        if (!function_exists('Staatic\Vendor\srm_get_redirects')) {
+        if (!function_exists('srm_get_redirects')) {
             return \false;
         }
-        if (!function_exists('Staatic\Vendor\srm_get_max_redirects')) {
+        if (!function_exists('srm_get_max_redirects')) {
             return \false;
         }
 
