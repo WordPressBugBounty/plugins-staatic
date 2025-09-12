@@ -30,18 +30,29 @@ final class CrawlProfileFactory
      */
     private $excludeUrls;
 
-    public function __construct(SiteUrlProvider $siteUrlProvider, ExcludeUrlsSetting $excludeUrls)
+    /**
+     * @var UrlTransformerFactory
+     */
+    private $urlTransformerFactory;
+
+    public function __construct(
+        SiteUrlProvider $siteUrlProvider,
+        ExcludeUrlsSetting $excludeUrls,
+        UrlTransformerFactory $urlTransformerFactory
+    )
     {
         $this->siteUrlProvider = $siteUrlProvider;
         $this->excludeUrls = $excludeUrls;
+        $this->urlTransformerFactory = $urlTransformerFactory;
     }
 
     public function __invoke(UriInterface $baseUrl, UriInterface $destinationUrl): CrawlProfileInterface
     {
         $lowercaseUrls = (bool) get_option('staatic_crawler_lowercase_urls');
         $urlEvaluator = $this->createUrlEvaluator($baseUrl);
+        $urlTransformer = ($this->urlTransformerFactory)($baseUrl, $destinationUrl);
 
-        return new CrawlProfile($baseUrl, $destinationUrl, $lowercaseUrls, $urlEvaluator);
+        return new CrawlProfile($baseUrl, $destinationUrl, $lowercaseUrls, $urlEvaluator, $urlTransformer);
     }
 
     private function createUrlEvaluator(UriInterface $baseUrl): UrlEvaluatorInterface

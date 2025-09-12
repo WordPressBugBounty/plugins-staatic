@@ -166,7 +166,7 @@ final class HtmlUrlExtractor implements UrlExtractorInterface, FilterableInterfa
                 }
                 $context = ['extractor' => self::class, 'htmlTagName' => $element->tagName, 'htmlAttributeName' => $attributeName];
                 if ($this->extendedUrlContext) {
-                    $context['htmlElement'] = (string) $element;
+                    $context['htmlElement'] = $this->domParser->getOuterHtml($element);
                 }
                 if ($this->filterCallback && ($this->filterCallback)($resolvedUrl, $context)) {
                     $finalAttributeValue = str_replace($extractedUrl, (string) $resolvedUrl . ($preserveEmptyFragment ? '#' : ''), $finalAttributeValue);

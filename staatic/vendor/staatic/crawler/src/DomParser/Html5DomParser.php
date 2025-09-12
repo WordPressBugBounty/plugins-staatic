@@ -57,4 +57,8 @@ final class Html5DomParser implements DomParserInterface
     {
         $element->textContent = $value;
     }
+    public function getOuterHtml($element): string
+    {
+        return $element->ownerDocument->saveHTML($element);
+    }
 }

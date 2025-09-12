@@ -64,4 +64,8 @@ final class DomWrapDomParser implements DomParserInterface
     {
         $element->textContent = $value;
     }
+    public function getOuterHtml($element): string
+    {
+        return (string) $element;
+    }
 }

@@ -33,4 +33,5 @@ interface DomParserInterface
      * @param string $value
      */
     public function setText($element, $value): void;
+    public function getOuterHtml($element): string;
 }

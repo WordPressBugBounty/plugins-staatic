@@ -8,8 +8,7 @@ use Staatic\Crawler\CrawlProfile\AbstractCrawlProfile;
 use Staatic\Crawler\UrlEvaluator\UrlEvaluatorInterface;
 use Staatic\Crawler\UrlNormalizer\InternalUrlNormalizer;
 use Staatic\Crawler\UrlTransformer\CallbackUrlTransformer;
-use Staatic\Crawler\UrlTransformer\OfflineUrlTransformer;
-use Staatic\Crawler\UrlTransformer\StandardUrlTransformer;
+use Staatic\Crawler\UrlTransformer\UrlTransformerInterface;
 use Staatic\Crawler\UrlTransformer\UrlTransformation;
 
 final class CrawlProfile extends AbstractCrawlProfile
@@ -18,21 +17,17 @@ final class CrawlProfile extends AbstractCrawlProfile
         UriInterface $baseUrl,
         UriInterface $destinationUrl,
         bool $lowercaseUrls,
-        UrlEvaluatorInterface $urlEvaluator
+        UrlEvaluatorInterface $urlEvaluator,
+        UrlTransformerInterface $urlTransformer
     )
     {
         $this->baseUrl = $baseUrl;
         $this->destinationUrl = $destinationUrl;
         $this->urlEvaluator = $urlEvaluator;
+        $this->urlTransformer = $urlTransformer;
         $this->urlNormalizer = new InternalUrlNormalizer([
             'lowercase' => $lowercaseUrls
         ]);
-        $destinationUrlStr = (string) $destinationUrl;
-        if ($destinationUrlStr === '' || $destinationUrlStr === '#no-index') {
-            $this->urlTransformer = new OfflineUrlTransformer($destinationUrlStr === '');
-        } else {
-            $this->urlTransformer = new StandardUrlTransformer($baseUrl, $destinationUrl);
-        }
         if ($lowercaseUrls) {
             $originalTransformer = clone $this->urlTransformer;
             $this->urlTransformer = new CallbackUrlTransformer(function (

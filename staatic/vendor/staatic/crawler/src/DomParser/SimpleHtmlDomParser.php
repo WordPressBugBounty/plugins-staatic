@@ -57,6 +57,10 @@ final class SimpleHtmlDomParser implements DomParserInterface
     {
         $element->textContent = $this->encodeSpecialChars($value);
     }
+    public function getOuterHtml($element): string
+    {
+        return $element->outerHtml();
+    }
     private function decodeHtmlEntities(string $input): string
     {
         return html_entity_decode($input, \ENT_QUOTES | \ENT_SUBSTITUTE | \ENT_HTML5, 'UTF-8');

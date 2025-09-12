@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.11.4
+Stable tag: 1.12.0
 Tested up to: 6.8.2
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -98,6 +98,21 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 
 == Changelog ==
 
+= 1.12.0 =
+
+Release date: September 12th, 2025.
+
+**Features**
+
+* Adds `staatic_should_transform_url` filter for independent URL transformation control.
+
+**Bug Fixes**
+
+* Fixes SVG data URL fragment references being incorrectly extracted.
+* Fixes Html5DomParser compatibility with extended URL context.
+* Fixes URL extraction overlap bug when extended URL context is enabled.
+* Fixes malformed URL rewriting when extended context captures partial protocols.
+
 = 1.11.4 =
 
 Release date: August 14th, 2025.
@@ -109,8 +124,6 @@ Release date: August 14th, 2025.
 **Bug Fixes**
 
 * Fixes an issue causing Safe Redirect Manager integration to not be activated.
-
-== Changelog ==
 
 = 1.11.3 =
 
@@ -125,6 +138,20 @@ Release date: June 10th, 2025.
 
 * Fixes a warning on recent WordPress versions caused by translations being loaded too early.
 
+= 1.11.2 =
+
+Release date: April 3rd, 2025.
+
+**Bug Fixes**
+
+
+= 1.11.1 =
+
+Release date: March 25th, 2025.
+
+**Bug Fixes**
+
+
 = 1.11.0 =
 
 Release date: March 24th, 2025.
@@ -136,43 +163,6 @@ Release date: March 24th, 2025.
 **Fixes**
 
 * Canonicalized URLs with empty paths to ensure consistent behaviour.
-
-= 1.10.9 =
-
-Release date: February 10th, 2025.
-
-**Improvements**
-
-* Adds support for AWS S3 regions `ap-southeast-7` (Thailand) and `mx-central-1` (Mexico).
-* Updates external dependencies.
-
-**Fixes**
-
-* Fixes SFTP deployments SSH key authentication.
-
-= 1.10.8 =
-
-Release date: December 30th, 2024.
-
-**Improvements**
-
-* Adds ability to override various settings via environment variables.
-* Automatically excludes .htaccess files during crawling.
-* Updates external dependencies.
-
-= 1.10.7 =
-
-Release date: November 19th, 2024.
-
-**Improvements**
-
-* Adds `staatic delete` WP-CLI command to allow publications to be deleted.
-* Adds `staatic_publication_cleanup_num_days` filter hook to control when publications are cleaned up.
-* Adds `staatic_log_cleanup_num_days` filter hook to control when log entries are cleaned up.
-* Adds option to disable `/index.html` suffix on directory URLs for offline usage.
-* Adds support for “ap-southeast-5” region to AWS deployment method.
-* Improves XML sitemap handling by adding support for URLs wrapped in CDATA sections.
-* Updates external dependencies.
 
 = Earlier releases =
 
