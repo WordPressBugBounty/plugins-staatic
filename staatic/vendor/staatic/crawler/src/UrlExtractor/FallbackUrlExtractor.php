@@ -3,6 +3,12 @@
 namespace Staatic\Crawler\UrlExtractor;
 
 use Generator;
+use Staatic\Vendor\GuzzleHttp\Psr7\Uri;
+use Staatic\Vendor\GuzzleHttp\Psr7\UriResolver;
+use InvalidArgumentException;
+use Staatic\Vendor\Psr\Http\Message\UriInterface;
+use Staatic\Crawler\UriHelper;
+use Staatic\Crawler\UrlTransformer\UrlTransformation;
 final class FallbackUrlExtractor extends AbstractPatternUrlExtractor
 {
     private const CONTEXT_SIZE = 100;
