@@ -47,12 +47,10 @@ return new class extends AbstractMigration {
             "\n            CREATE TABLE {$wpdb->prefix}staatic_results_deployment (\n                result_uuid binary(16) NOT NULL,\n                deployment_uuid binary(16) NOT NULL,\n                date_created datetime NOT NULL,\n                date_deployed datetime,\n                PRIMARY KEY  (result_uuid, deployment_uuid)\n            ) {$wpdb->get_charset_collate()};\n        "
         );
         // Capabilities
-        $administrator = \get_role('administrator');
-        $administrator->add_cap('staatic_manage_settings', \true);
-        $administrator->add_cap('staatic_publish_subset', \true);
-        $administrator->add_cap('staatic_publish', \true);
-        $editor = \get_role('editor');
-        $editor->add_cap('staatic_publish', \true);
+        $this->addCapabilityToRole('administrator', 'staatic_manage_settings');
+        $this->addCapabilityToRole('administrator', 'staatic_publish_subset');
+        $this->addCapabilityToRole('administrator', 'staatic_publish');
+        $this->addCapabilityToRole('editor', 'staatic_publish');
     }
 
     /**
@@ -61,14 +59,10 @@ return new class extends AbstractMigration {
     public function down($wpdb): void
     {
         // Capabilities
-        if ($administrator = \get_role('administrator')) {
-            $administrator->remove_cap('staatic_manage_settings');
-            $administrator->remove_cap('staatic_publish_subset');
-            $administrator->remove_cap('staatic_publish');
-        }
-        if ($editor = \get_role('editor')) {
-            $editor->remove_cap('staatic_publish');
-        }
+        $this->removeCapabilityFromRole('administrator', 'staatic_manage_settings');
+        $this->removeCapabilityFromRole('administrator', 'staatic_publish_subset');
+        $this->removeCapabilityFromRole('administrator', 'staatic_publish');
+        $this->removeCapabilityFromRole('editor', 'staatic_publish');
         // Tables
         $this->query($wpdb, "DROP TABLE IF EXISTS {$wpdb->prefix}staatic_builds");
         $this->query($wpdb, "DROP TABLE IF EXISTS {$wpdb->prefix}staatic_crawl_queue");

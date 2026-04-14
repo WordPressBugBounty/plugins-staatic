@@ -146,6 +146,9 @@ final class Migrator implements LoggerAwareInterface
     private function setupMigration(): array
     {
         $instance = require "{$this->migrationsDir}/setup.php";
+        if (!$instance instanceof MigrationInterface) {
+            throw new RuntimeException('Setup migration does not implement MigrationInterface.');
+        }
 
         return [
             'version' => null,

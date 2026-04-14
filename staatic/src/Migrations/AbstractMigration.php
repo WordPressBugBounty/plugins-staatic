@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Staatic\WordPress\Migrations;
 
 use RuntimeException;
+use WP_Role;
 use wpdb;
 
 abstract class AbstractMigration implements MigrationInterface
@@ -35,5 +36,41 @@ abstract class AbstractMigration implements MigrationInterface
         }
         update_option($newName, $value);
         delete_option($oldName);
+    }
+
+    /**
+     * @param string $roleName
+     * @param string $capability
+     */
+    protected function addCapabilityToRole($roleName, $capability): void
+    {
+        $role = $this->role($roleName);
+        if (!$role) {
+            return;
+        }
+        $role->add_cap($capability, \true);
+    }
+
+    /**
+     * @param string $roleName
+     * @param string $capability
+     */
+    protected function removeCapabilityFromRole($roleName, $capability): void
+    {
+        $role = $this->role($roleName);
+        if (!$role) {
+            return;
+        }
+        $role->remove_cap($capability);
+    }
+
+    private function role(string $roleName): ?WP_Role
+    {
+        $role = get_role($roleName);
+        if (!$role instanceof WP_Role) {
+            return null;
+        }
+
+        return $role;
     }
 }

@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Staatic\Vendor;
 
 use wpdb;
-use Staatic\WordPress\Migrations\MigrationInterface;
+use Staatic\WordPress\Migrations\AbstractMigration;
 
-return new class implements MigrationInterface {
+return new class extends AbstractMigration {
     /**
      * @param wpdb $wpdb
      */
     public function up($wpdb): void
     {
-        $role = \get_role('administrator');
-        $role->add_cap('staatic_manage_settings', \true);
+        $this->addCapabilityToRole('administrator', 'staatic_manage_settings');
     }
 
     /**
@@ -22,7 +21,6 @@ return new class implements MigrationInterface {
      */
     public function down($wpdb): void
     {
-        $role = \get_role('administrator');
-        $role->remove_cap('staatic_manage_settings');
+        $this->removeCapabilityFromRole('administrator', 'staatic_manage_settings');
     }
 };

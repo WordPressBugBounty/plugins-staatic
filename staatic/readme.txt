@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.12.1
+Stable tag: 1.12.2
 Tested up to: 6.9
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -98,6 +98,14 @@ Want to get in touch directly? Please feel free to [contact us](https://staatic.
 
 == Changelog ==
 
+= 1.12.2 =
+
+Release date: April 14th, 2026.
+
+**Bug Fixes**
+
+* Fixes fatal errors in capability migrations when expected WordPress roles are unavailable.
+
 = 1.12.1 =
 
 Release date: January 12th, 2026.
@@ -145,6 +153,20 @@ Release date: June 10th, 2025.
 **Bug Fixes**
 
 * Fixes a warning on recent WordPress versions caused by translations being loaded too early.
+
+= 1.11.2 =
+
+Release date: April 3rd, 2025.
+
+**Bug Fixes**
+
+
+= 1.11.1 =
+
+Release date: March 25th, 2025.
+
+**Bug Fixes**
+
 
 = 1.11.0 =
 

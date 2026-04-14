@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Staatic\Vendor;
 
 use wpdb;
-use Staatic\WordPress\Migrations\MigrationInterface;
+use Staatic\WordPress\Migrations\AbstractMigration;
 
-return new class implements MigrationInterface {
+return new class extends AbstractMigration {
     /**
      * @param wpdb $wpdb
      */
     public function up($wpdb): void
     {
-        $administrator = \get_role('administrator');
-        $administrator->add_cap('staatic_publish_subset', \true);
-        $administrator->add_cap('staatic_publish', \true);
-        $editor = \get_role('editor');
-        $editor->add_cap('staatic_publish', \true);
+        $this->addCapabilityToRole('administrator', 'staatic_publish_subset');
+        $this->addCapabilityToRole('administrator', 'staatic_publish');
+        $this->addCapabilityToRole('editor', 'staatic_publish');
     }
 
     /**
@@ -25,10 +23,8 @@ return new class implements MigrationInterface {
      */
     public function down($wpdb): void
     {
-        $editor = \get_role('editor');
-        $editor->remove_cap('staatic_publish');
-        $administrator = \get_role('administrator');
-        $administrator->remove_cap('staatic_publish');
-        $administrator->remove_cap('staatic_publish_subset');
+        $this->removeCapabilityFromRole('editor', 'staatic_publish');
+        $this->removeCapabilityFromRole('administrator', 'staatic_publish');
+        $this->removeCapabilityFromRole('administrator', 'staatic_publish_subset');
     }
 };
