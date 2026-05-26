@@ -33,7 +33,11 @@ if ($publication->isPreview()) {
     </h1>
 
     <a href="<?php 
-echo \admin_url(\sprintf('admin.php?page=%s&id=%s', PublicationDownloadPage::PAGE_SLUG, $publication->id()));
+echo \esc_url(
+    \wp_nonce_url(\admin_url(
+        \sprintf('admin.php?page=%s&id=%s', PublicationDownloadPage::PAGE_SLUG, $publication->id())
+    ), 'staatic-publication-download_' . $publication->id())
+);
 ?>" class="page-title-action"><?php 
 \_e('Download', 'staatic');
 ?></a>
