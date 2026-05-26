@@ -32,4 +32,9 @@ final class SymlinkUploadsDirectorySetting extends AbstractSetting
     {
         return __('This makes sure every upload is available and greatly improves build time as well.', 'staatic');
     }
+
+    public function defaultValue()
+    {
+        return \false;
+    }
 }

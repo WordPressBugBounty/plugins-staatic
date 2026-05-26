@@ -42,10 +42,16 @@ final class BuildResultPage implements ModuleInterface
         if (!isset($_REQUEST['staatic']) || $_REQUEST['staatic'] !== 'result-download') {
             return;
         }
+        if (!current_user_can('staatic_publish')) {
+            wp_die(__('Sorry, you are not allowed to download this resource.', 'staatic'), '', [
+                'response' => 403
+            ]);
+        }
         $resultId = isset($_REQUEST['resultId']) ? sanitize_key($_REQUEST['resultId']) : null;
         if (!$resultId) {
             wp_die(__('Missing result id.', 'staatic'));
         }
+        check_admin_referer('staatic-result-download_' . $resultId);
         if (!$result = $this->resultRepository->find($resultId)) {
             wp_die(__('Invalid result.', 'staatic'));
         }

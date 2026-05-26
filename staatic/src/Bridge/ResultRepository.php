@@ -114,7 +114,7 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
             'buildId' => $targetBuildId
         ]);
         $statement = $this->wpdb->prepare(
-            "\n            SELECT\n                s.url, s.url_hash, s.status_code, s.md5, s.sha1, s.size, s.mime_type, s.charset,\n                s.redirect_url, s.original_url, s.original_found_on_url, s.date_created\n            FROM {$this->tableName} s\n                LEFT JOIN {$this->tableName} t ON\n                    t.build_uuid = UNHEX(REPLACE(%s, '-', '')) AND\n                    t.url_hash = s.url_hash\n            WHERE s.build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                AND t.uuid IS NULL",
+            "\n            SELECT\n                s.url, s.url_hash, s.status_code, s.md5, s.sha1, s.size, s.mime_type, s.charset,\n                s.redirect_url, s.original_url, s.original_found_on_url, s.date_created\n            FROM {$this->tableName} s\n                LEFT JOIN {$this->tableName} t ON\n                    t.build_uuid = UNHEX(REPLACE(%s, '-', '')) AND\n                    t.url = s.url\n            WHERE s.build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                AND t.uuid IS NULL",
             $targetBuildId,
             $sourceBuildId
         );

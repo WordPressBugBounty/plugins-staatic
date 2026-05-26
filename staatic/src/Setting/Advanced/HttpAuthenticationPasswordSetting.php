@@ -33,6 +33,11 @@ final class HttpAuthenticationPasswordSetting extends AbstractSetting implements
         return __('Password', 'staatic');
     }
 
+    public function defaultValue()
+    {
+        return '';
+    }
+
     /**
      * @param mixed[] $attributes
      */

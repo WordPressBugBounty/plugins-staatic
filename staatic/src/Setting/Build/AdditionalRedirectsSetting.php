@@ -35,6 +35,11 @@ final class AdditionalRedirectsSetting extends AbstractSetting
         );
     }
 
+    public function defaultValue()
+    {
+        return '';
+    }
+
     /**
      * @param mixed[] $attributes
      */

@@ -27,6 +27,11 @@ final class HttpAuthenticationUsernameSetting extends AbstractSetting implements
         return __('Username', 'staatic');
     }
 
+    public function defaultValue()
+    {
+        return '';
+    }
+
     public function envName(): string
     {
         return 'STAATIC_HTTP_AUTH_USERNAME';

@@ -67,6 +67,7 @@ final class PublicationDownloadPage implements ModuleInterface
         if (!$publicationId) {
             wp_die(__('Missing publication id.', 'staatic'));
         }
+        check_admin_referer('staatic-publication-download_' . $publicationId);
         if (!$this->publicationRepository->find($publicationId)) {
             wp_die(__('Invalid publication.', 'staatic'));
         }

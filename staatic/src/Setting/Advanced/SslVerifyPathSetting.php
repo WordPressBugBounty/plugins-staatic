@@ -28,6 +28,11 @@ final class SslVerifyPathSetting extends AbstractSetting
         return __('In case "Verification" is set to "Enabled using custom certificate" this should be the path to the certificate, e.g. "/path/to/cert.pem".', 'staatic');
     }
 
+    public function defaultValue()
+    {
+        return '';
+    }
+
     public function sanitizeValue($value)
     {
         if ($value && !realpath($value)) {

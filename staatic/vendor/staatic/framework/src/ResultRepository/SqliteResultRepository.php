@@ -143,7 +143,7 @@ final class SqliteResultRepository implements ResultRepositoryInterface, LoggerA
     }
     private function doMergeBuildResults(string $sourceBuildId, string $targetBuildId): void
     {
-        $statement = $this->sqlite->prepare("\n            SELECT\n                s.url, s.url_hash, s.status_code, s.md5, s.sha1, s.size, s.mime_type, s.charset,\n                s.redirect_url, s.original_url, s.original_found_on_url, s.date_created\n            FROM {$this->tableName} s\n                LEFT JOIN {$this->tableName} t ON\n                    t.build_id = :targetBuildId AND\n                    t.url_hash = s.url_hash\n            WHERE s.build_id = :sourceBuildId\n                AND t.id IS NULL\n        ");
+        $statement = $this->sqlite->prepare("\n            SELECT\n                s.url, s.url_hash, s.status_code, s.md5, s.sha1, s.size, s.mime_type, s.charset,\n                s.redirect_url, s.original_url, s.original_found_on_url, s.date_created\n            FROM {$this->tableName} s\n                LEFT JOIN {$this->tableName} t ON\n                    t.build_id = :targetBuildId AND\n                    t.url = s.url\n            WHERE s.build_id = :sourceBuildId\n                AND t.id IS NULL\n        ");
         $statement->bindValue(':sourceBuildId', $sourceBuildId, \SQLITE3_TEXT);
         $statement->bindValue(':targetBuildId', $targetBuildId, \SQLITE3_TEXT);
         $result = $statement->execute();

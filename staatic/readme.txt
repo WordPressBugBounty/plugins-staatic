@@ -1,31 +1,36 @@
-=== Staatic - Static Site Generator ===
+=== Staatic - Static Site Generator for WordPress ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.12.2
-Tested up to: 6.9
+Stable tag: 1.12.3
+Tested up to: 7.0
 Requires at least: 5.0
 Requires PHP: 7.1
 License: BSD-3-Clause
 
-Staatic lets you create and deploy a streamlined static version of your WordPress site.
+Use WordPress as your CMS, then publish a fast, lower-exposure static version of your site.
 
 == Description ==
 
-Staatic lets you create and deploy a streamlined static version of your WordPress site, enhancing performance, SEO, and security simultaneously.
+Staatic turns WordPress into a practical static site generator. Keep editing posts, pages, menus, media, and settings in WordPress, then publish a static copy made of HTML, images, CSS, JavaScript, and other assets.
+
+The public site can be served without WordPress, PHP, or a database in the visitor request path. That can improve performance, reduce origin load, and shrink the public attack surface while preserving the familiar WordPress editing workflow.
+
+This is especially useful for a private-origin, public-static setup: WordPress remains available for editors and publication work, while visitors receive prebuilt files from your chosen hosting target.
+
+Staatic includes the publication workflow and deployment methods needed to run a self-hosted static WordPress site.
 
 Features of Staatic include:
 
-* Powerful Crawler to transform your WordPress site quickly.
-* Supports multiple deployment methods, e.g. GitHub, Netlify, AWS (Amazon Web Services) S3 or S3-compatible providers + CloudFront integration, or even your local server (dedicated or shared hosting).
-* Very flexible out of the box (allows for additional urls, paths, redirects, exclude rules, etc.).
-* Supports HTTP (301, 302, 307, 308) redirects, custom “404 not found” page and other HTTP headers.
-* CLI command to publish from the command line.
-* Compatible with WordPress MultiSite installations.
-* Compatible with WPML (multilingual) installations.
-* Supports HTTP basic auth protected WordPress installations.
-* Various integrations to improve compatibility with popular WordPress plugins.
+* Crawls your WordPress site and builds a static publication from the pages and assets it discovers.
+* Publishes from WordPress Admin, with publication status, logs, resource details, and downloadable output.
+* Deploys to Local Directory, Amazon S3 or S3-compatible storage, GitHub, Netlify, SFTP, or a zip archive.
+* Supports redirects, custom 404 pages, additional URLs and paths, exclude rules, and HTTP headers.
+* Includes a WP-CLI command for command-line publication workflows.
+* Works with WordPress Multisite, WPML, and HTTP Basic Auth protected WordPress origins.
+* Helps separate the public site from WordPress admin, plugin runtime, and database-backed page generation.
+* Provides integration hooks and compatibility improvements for common WordPress setups.
 
-Depending on the chosen deployment method, additional features may be available.
+Staatic Premium and Staatic Cloud add features such as forms integration, search integration, scheduled publications, change-based publications, and managed static WordPress hosting. The Community edition remains suitable when you want to generate and deploy a static version of a WordPress site yourself.
 
 == Installation ==
 
@@ -54,49 +59,71 @@ Installing Staatic is simple!
 
 = How will Staatic improve the performance of my site? =
 
-Staatic transforms your dynamic WordPress site into a streamlined static site. Starting at the homepage or a designated URL, Staatic uses a web crawler to methodically navigate through every link, post, and page. As it moves through the site, dynamically generated content is captured and converted into static HTML files, while simultaneously fetching related assets like images and scripts.
+Staatic crawls your WordPress site like a visitor, starting from the site's front page or configured Custom Origin URL, plus any additional URLs or paths you provide. It captures the generated HTML and related assets, then stores them as a static publication.
 
-By eliminating both WordPress and PHP from the delivery process, pages from your site are served instantly, bypassing the delay of on-the-fly generation. This guarantees the quickest possible load times and significantly reduces the time to first byte (TTFB), offering an unparalleled browsing experience for your visitors and enhancing your site’s SEO positioning.
+When that publication is deployed, visitors receive prebuilt files instead of waiting for WordPress, PHP, plugins, and the database to build each page on demand. This usually improves time to first byte, reduces server load, and gives you a simpler public delivery path.
 
 = Why not use a caching plugin? =
 
-Caching plugins boost site performance by storing data for quicker access, yet they don’t fully bypass WordPress, introducing some latency. Additionally, after every update, these plugins need cache prewarming to serve the first requests quickly. In contrast, static sites are always ‘warmed up’, ensuring consistently rapid load times.
+Caching plugins can be useful, but the public request still usually reaches WordPress infrastructure. Cache misses, cache purges, plugin behavior, and origin capacity can still affect visitors.
 
-Furthermore, with Staatic, you gain the flexibility to host your site on any platform of your choice. This means you could opt for an ultra-fast cloud provider or a robust content delivery network, further amplifying your site’s performance and ensuring optimal user experience.
+Staatic changes the architecture: the public site is a deployed set of static files. You can host those files on your own server, object storage, a static hosting provider, or a CDN-backed setup, depending on the deployment method you choose.
 
 = Will the appearance of my site change? =
 
-No, it shouldn’t. However, if there is a difference in the static version of your site, it might be due to invalid HTML in your original WordPress site that couldn’t be accurately converted. In such instances, consider checking your HTML’s validity using services like the [W3C Markup Validation Service](https://validator.w3.org/).
+No, it should not. Staatic publishes the output that WordPress already renders for visitors.
+
+If the static version differs, the cause is usually frontend behavior that depends on server-side requests, invalid HTML, blocked assets, authentication, or plugin/theme output that behaves differently while being crawled. The publication resources and logs can help identify what was captured and what failed.
 
 = How will Staatic improve the security of my site? =
 
-By converting your site into static HTML pages, you substantially minimize the potential attack surface. This strengthens your website’s security and reduces the ongoing need to update WordPress, its plugins, and themes constantly. As a result, you can enjoy greater peace of mind, knowing your site is resilient to most threats.
+Static delivery reduces the amount of WordPress infrastructure exposed to public visitors. Your public site can be served as files, while WordPress remains the authoring environment behind the publication workflow.
+
+In a private-origin, public-static setup, visitors do not hit `wp-login.php`, plugin PHP code, or database-backed page generation on the public site. This reduces the blast radius of many common WordPress risks, including plugin runtime vulnerabilities, automated login probing, and server-side behavior that only exists while WordPress is serving each request.
+
+You still need to maintain your WordPress origin, themes, plugins, accounts, and deployment credentials. The main security benefit is architectural: fewer dynamic systems are involved in serving anonymous public traffic.
 
 = Is Staatic compatible with all plugins? =
 
-Not entirely. When your site undergoes conversion to a static format, dynamic server-side functionalities become unavailable. As a result, plugins relying on these features – such as those processing forms or fetching external data – might not function immediately or might be unsupported altogether.
+Not entirely. Static sites do not run WordPress, PHP, or database queries for each visitor request. Plugins that depend on server-side processing on the public site may need changes or alternatives.
 
-To accommodate such features, adjustments or alternatives may be necessary. Alternatively, you can opt for Staatic Premium, which seamlessly integrates some of these functionalities. For detailed insights, visit [staatic.com](https://staatic.com/wordpress/).
+Common examples include native comments, some search implementations, forms that post back to WordPress, eCommerce flows, membership areas, and plugins that fetch personalized server-side data.
+
+For forms and search, Staatic Premium provides ready-made integrations. For other dynamic features, use a static-compatible service, client-side integration, or a hybrid architecture where needed.
 
 = Will Staatic function on shared or heavily restricted servers? =
 
-Staatic offers broad compatibility, only requiring the permissions to write to the working directory and to initiate an HTTP connection with your dynamic WordPress installation.
+Staatic is designed to work on typical WordPress hosting, including many shared hosting environments. The server must be able to write to the configured work directory and make HTTP requests to the WordPress site being published.
+
+Large sites, slow origins, strict firewalls, disabled loopback requests, or very limited PHP execution time can require tuning. The Site Health checks, publication logs, and advanced settings are the best starting points if a publication does not start or takes too long.
 
 = Where can I get help? =
 
-If you have any questions or issues, please have a look at our [documentation](https://staatic.com/wordpress/documentation/) and [FAQ](https://staatic.com/wordpress/faq/) first.
+If you have any questions or issues, please start with the [documentation](https://staatic.com/wordpress/documentation/) and [FAQ](https://staatic.com/wordpress/faq/).
 
 If you cannot find an answer there, feel free to open a topic on our [Support Forums](https://wordpress.org/support/plugin/staatic/).
 
-Want to get in touch directly? Please feel free to [contact us](https://staatic.com/wordpress/contact/). We will get back to you as soon as possible.
+For commercial support, Staatic Premium, or Staatic Cloud questions, you can also [contact us](https://staatic.com/wordpress/contact/).
 
 == Screenshots ==
 
-1. Use your WordPress installation as a private staging environment and make all of the modifications you need. Then publish these changes to your highly optimized and consumer facing static site with the click of a button.
-2. Monitor the status of your publications while they happen and review details of past publications to easily troubleshoot any issues.
-3. Configure and fine tune the way Staatic processes your site to suit your specific needs.
+1. Use WordPress as your authoring environment, then publish a static version of the site when you are ready.
+2. Monitor running publications and review past publication details, resources, and logs.
+3. Configure build, deployment, and advanced publication settings for your site.
 
 == Changelog ==
+
+= 1.12.3 =
+
+Release date: May 26th, 2026.
+
+**Bug Fixes**
+
+* Fixes partial publications incorrectly deleting canonical page output when slash and non-slash URL variants are merged.
+* Fixes SFTP deployments ignoring the configured port and always using the default port.
+* Fixes compatibility issues on fresh installations where unset default settings could trigger errors.
+* Fixes security hardening for admin actions and exports.
+* Fixes protocol-relative external URLs being rewritten to HTTP.
 
 = 1.12.2 =
 
@@ -129,71 +156,14 @@ Release date: September 12th, 2025.
 * Fixes URL extraction overlap bug when extended URL context is enabled.
 * Fixes malformed URL rewriting when extended context captures partial protocols.
 
-= 1.11.4 =
-
-Release date: August 14th, 2025.
-
-**Improvements**
-
-* Updates external dependencies.
-
-**Bug Fixes**
-
-* Fixes an issue causing Safe Redirect Manager integration to not be activated.
-
-= 1.11.3 =
-
-Release date: June 10th, 2025.
-
-**Improvements**
-
-* Improves default URL exclusion rules for query parameters.
-* Updates external dependencies.
-
-**Bug Fixes**
-
-* Fixes a warning on recent WordPress versions caused by translations being loaded too early.
-
-= 1.11.2 =
-
-Release date: April 3rd, 2025.
-
-**Bug Fixes**
-
-
-= 1.11.1 =
-
-Release date: March 25th, 2025.
-
-**Bug Fixes**
-
-
-= 1.11.0 =
-
-Release date: March 24th, 2025.
-
-**Improvements**
-
-* Updates external dependencies.
-
-**Fixes**
-
-* Canonicalized URLs with empty paths to ensure consistent behaviour.
-
 = Earlier releases =
 
 For the changelog of earlier releases, please refer to [the changelog on staatic.com](https://staatic.com/wordpress/changelog/).
 
-== Upgrade Notice ==
-
-= 1.8.2 =
-Emergency patch to disable compression of publication resource files due to reliability issue.
-
-= 1.8.0 =
-Type definitions for `staatic_additional_paths` and `staatic_additional_redirects` filter hooks have changed.
-
 == Staatic Premium ==
 
-In order to support ongoing development of Staatic, please consider going Premium. In addition to helping the authors maintain Staatic, Staatic Premium adds additional functionality.
+Staatic Premium supports ongoing development and adds functionality for teams that need more than the Community edition.
 
-For more information visit [Staatic](https://staatic.com/wordpress/).
+Premium features include forms integration, search integration, scheduled publications, change-based publications, additional automation, and Staatic Cloud deployment options.
+
+For more information, visit [Staatic](https://staatic.com/wordpress/).

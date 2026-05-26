@@ -32,4 +32,9 @@ final class HttpToHttpsSetting extends AbstractSetting
     {
         return __('This option can be enabled in cases where WordPress is behind a HTTPS terminating load balancer preventing crawling to succeed otherwise.', 'staatic');
     }
+
+    public function defaultValue()
+    {
+        return \false;
+    }
 }

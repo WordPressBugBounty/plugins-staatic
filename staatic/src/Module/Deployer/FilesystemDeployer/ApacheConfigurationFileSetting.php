@@ -32,4 +32,9 @@ final class ApacheConfigurationFileSetting extends AbstractSetting
     {
         return __('Enable this option if you\'re on an Apache webserver with AllowOverride enabled.', 'staatic');
     }
+
+    public function defaultValue()
+    {
+        return \false;
+    }
 }

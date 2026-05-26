@@ -81,6 +81,7 @@ final class SftpDeployStrategyFactory
         return array_merge([
             'basePath' => $publication->build()->destinationUrl()->getPath(),
             'host' => $host,
+            'port' => (int) (get_option('staatic_sftp_port', 22) ?: 22),
             'username' => $username,
             'targetDirectory' => $targetDirectory,
             'timeout' => get_option('staatic_sftp_timeout')

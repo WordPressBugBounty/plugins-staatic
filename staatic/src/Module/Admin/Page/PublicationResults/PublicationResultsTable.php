@@ -79,7 +79,10 @@ class PublicationResultsTable extends AbstractListTable
             __('Mime Type', 'staatic')
         ), new BytesColumn($this->formatter, 'size', __('Size', 'staatic'), [
             'decorators' => [new LinkDecorator(function (Result $item) {
-                        return admin_url("admin.php?staatic=result-download&resultId={$item->id()}");
+                        return wp_nonce_url(
+                            admin_url("admin.php?staatic=result-download&resultId={$item->id()}"),
+                            "staatic-result-download_{$item->id()}"
+                        );
                     })]
         ]), new TextColumn('original_found_on_url', __('Found On URL', 'staatic'), [
             'decorators' => [new CallbackDecorator(function (string $input, Result $item) {

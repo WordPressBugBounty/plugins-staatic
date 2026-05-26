@@ -107,6 +107,9 @@ abstract class AbstractPatternUrlExtractor implements UrlExtractorInterface, Fil
         }
         $context['extractor'] = static::class;
         if ($this->filterCallback && ($this->filterCallback)($resolvedUrl, $context)) {
+            if (UriHelper::isProtocolRelativeUrl($decodedUrl)) {
+                return $fullMatch;
+            }
             return str_replace($matchedUrl, $this->encode((string) $resolvedUrl), $fullMatch);
         }
         $urlTransformation = $this->transformCallback ? ($this->transformCallback)($resolvedUrl, $this->baseUrl, $context) : new UrlTransformation($resolvedUrl);

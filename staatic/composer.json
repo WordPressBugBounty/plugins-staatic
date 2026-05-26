@@ -1,10 +1,14 @@
 {
     "name": "wordpress-plugin/staatic",
     "type": "wordpress-plugin",
-    "description": "Staatic for WordPress allows you to generate a highly optimized static version of your WordPress site improving performance as well as security",
+    "description": "Use WordPress as your CMS, then publish a fast, lower-exposure static version of your site.",
     "keywords": [
         "wordpress",
-        "static site"
+        "static site",
+        "static wordpress",
+        "static site generator",
+        "performance",
+        "security"
     ],
     "homepage": "https://staatic.com/wordpress",
     "license": "BSD-3-Clause",

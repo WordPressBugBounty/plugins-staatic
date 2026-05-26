@@ -100,8 +100,9 @@ class PublicationsTable extends AbstractListTable
                             sprintf('admin.php?page=%s&id=%s', PublicationSummaryPage::PAGE_SLUG, $itemId)
                         );
                     }), new RowAction('download', __('Download', 'staatic'), function ($itemId) {
-                        return admin_url(
-                            sprintf('admin.php?page=%s&id=%s', PublicationDownloadPage::PAGE_SLUG, $itemId)
+                        return wp_nonce_url(
+                            admin_url(sprintf('admin.php?page=%s&id=%s', PublicationDownloadPage::PAGE_SLUG, $itemId)),
+                            "staatic-publication-download_{$itemId}"
                         );
                     }), new RowAction('redeploy', __('(Re)deploy', 'staatic'), function ($itemId) {
                         return wp_nonce_url(

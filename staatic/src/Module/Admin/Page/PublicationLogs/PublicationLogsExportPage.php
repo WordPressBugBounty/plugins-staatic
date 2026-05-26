@@ -56,7 +56,7 @@ final class PublicationLogsExportPage implements ModuleInterface
             __('Export Publication Logs', 'staatic'),
             self::PAGE_SLUG,
             [$this, 'render'],
-            'staatic_publish',
+            'staatic_manage_settings',
             PublicationsPage::PAGE_SLUG,
             [$this, 'load']
         );
@@ -68,6 +68,7 @@ final class PublicationLogsExportPage implements ModuleInterface
         if (!$publicationId) {
             wp_die(__('Missing publication id.', 'staatic'));
         }
+        check_admin_referer('staatic-publication-logs-export_' . $publicationId);
         if (!$this->publicationRepository->find($publicationId)) {
             wp_die(__('Invalid publication.', 'staatic'));
         }

@@ -32,11 +32,21 @@ if ($publication->isPreview()) {
 ?>
     </h1>
 
-    <a href="<?php 
-echo \admin_url(\sprintf('admin.php?page=%s&id=%s', PublicationLogsExportPage::PAGE_SLUG, $publication->id()));
-?>" class="page-title-action"><?php 
-\_e('Export', 'staatic');
-?></a>
+    <?php 
+if (\current_user_can('staatic_manage_settings')) {
+    ?>
+        <a href="<?php 
+    echo \esc_url(
+        \wp_nonce_url(\admin_url(
+            \sprintf('admin.php?page=%s&id=%s', PublicationLogsExportPage::PAGE_SLUG, $publication->id())
+        ), 'staatic-publication-logs-export_' . $publication->id())
+    );
+    ?>" class="page-title-action"><?php 
+    \_e('Export', 'staatic');
+    ?></a>
+    <?php 
+}
+?>
 
     <hr class="wp-header-end">
 

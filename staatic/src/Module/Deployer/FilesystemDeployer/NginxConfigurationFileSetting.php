@@ -32,4 +32,9 @@ final class NginxConfigurationFileSetting extends AbstractSetting
     {
         return __('Enable this option if you\'re on a Nginx webserver which imports this configuration file.', 'staatic');
     }
+
+    public function defaultValue()
+    {
+        return \false;
+    }
 }
