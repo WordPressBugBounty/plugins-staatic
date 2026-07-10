@@ -32,6 +32,9 @@ final class PublicationCleanup
     {
         $numDays = (int) apply_filters('staatic_publication_cleanup_num_days', self::DEFAULT_NUM_DAYS);
         $now = new DateTimeImmutable();
+        // Bypass a possibly stale autoloaded-options cache entry; a stale
+        // publication id here could shield the wrong publications from cleanup.
+        wp_cache_delete('alloptions', 'options');
         foreach ($this->repository->findAll() as $publication) {
             if (in_array(
                 $publication->id(),

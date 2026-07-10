@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Staatic\WordPress\Service;
 
+use Staatic\Vendor\GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Staatic\Vendor\GuzzleHttp\Psr7\Uri;
 use Staatic\Vendor\GuzzleHttp\Psr7\UriResolver;
 use Staatic\Vendor\Psr\Http\Message\UriInterface;
@@ -30,7 +31,19 @@ class AdditionalUrls
             if (!$url) {
                 continue;
             }
-            $authority = (new Uri($url))->getAuthority();
+
+            try {
+                $authority = (new Uri($url))->getAuthority();
+            } catch (MalformedUriException $exception) {
+                $errors->add('invalid_additional_url', sprintf(
+                    /* translators: 1: URL. */
+                    __('URL "%1$s" is malformed.', 'staatic'),
+                    esc_html($url)
+                ));
+                $newValue[] = "# {$line}";
+
+                continue;
+            }
             if ($authority && $authority !== $baseUrl->getAuthority()) {
                 $errors->add('invalid_additional_url', sprintf(
                     /* translators: 1: URL. */

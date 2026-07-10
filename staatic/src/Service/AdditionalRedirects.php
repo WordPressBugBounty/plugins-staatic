@@ -61,6 +61,16 @@ class AdditionalRedirects
 
                 continue;
             }
+            if (!$redirectUrl) {
+                $errors->add('invalid_additional_redirect', sprintf(
+                    /* translators: 1: Redirect origin. */
+                    __('Redirect "%1$s" is missing a redirect URL.', 'staatic'),
+                    esc_html($origin)
+                ));
+                $newValue[] = "# {$line}";
+
+                continue;
+            }
 
             try {
                 $redirectUrl = new Uri($redirectUrl);

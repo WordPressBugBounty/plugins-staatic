@@ -108,8 +108,12 @@ class PublishCommand
         }
         if ($this->publicationManager->isPublicationInProgress()) {
             if ($force) {
-                $publication = $this->publicationRepository->find(get_option('staatic_current_publication_id'));
-                $this->publicationManager->cancelPublication($publication);
+                $publication = $this->publicationRepository->find(
+                    (string) get_option('staatic_current_publication_id')
+                );
+                if ($publication) {
+                    $this->publicationManager->cancelPublication($publication);
+                }
                 update_option('staatic_current_publication_id', null);
             } else {
                 WP_CLI::error(__('Unable to publish; another publication is pending', 'staatic'));

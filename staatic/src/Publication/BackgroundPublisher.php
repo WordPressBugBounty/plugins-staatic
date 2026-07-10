@@ -113,6 +113,9 @@ final class BackgroundPublisher extends WP_Background_Process
      */
     public function cancelPublication($publication)
     {
+        // Bypass a possibly stale autoloaded-options cache entry; this runs in
+        // a different process than the one progressing the publication.
+        wp_cache_delete('alloptions', 'options');
         $currentPublicationId = get_option('staatic_current_publication_id');
         if (!$currentPublicationId || $currentPublicationId !== $publication->id()) {
             $this->logger->warning(__('Cannot cancel publication; publication has already finished', 'staatic'));
