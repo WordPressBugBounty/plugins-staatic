@@ -35,6 +35,7 @@ use Staatic\WordPress\Publication\Publication;
 use Staatic\WordPress\Service\AdditionalPaths;
 use Staatic\WordPress\Service\AdditionalRedirects;
 use Staatic\WordPress\Service\AdditionalUrls;
+use Staatic\WordPress\Setting\Advanced\HttpConcurrencySetting;
 use Staatic\WordPress\Util\WordpressEnv;
 
 final class StaticGeneratorFactory
@@ -210,7 +211,13 @@ final class StaticGeneratorFactory
         $this->urlTransformer = ($this->urlTransformerFactory)($this->build->entryUrl(), $this->build->destinationUrl());
         $domParser = get_option('staatic_crawler_dom_parser') ?: null;
         $processNotFound = (bool) get_option('staatic_crawler_process_not_found');
-        $httpConcurrency = (int) get_option('staatic_http_concurrency');
+        // The setting clamps on write, but the option can also reach the database without passing
+        // through the settings screen. A stored 0 zeroes the constrained batch size and the crawl
+        // then makes no progress at all, so the read side holds the same floor.
+        $httpConcurrency = max(
+            HttpConcurrencySetting::MINIMUM_CONCURRENCY,
+            (int) get_option('staatic_http_concurrency')
+        );
         $this->extendedUrlContext = (bool) apply_filters('staatic_extended_url_context', \false);
         $forcedFileExtensions = apply_filters('staatic_forced_file_extensions', self::DEFAULT_FORCED_FILE_EXTENSIONS);
         $forcedFileExtensions = array_map(function ($extension) {
@@ -313,7 +320,11 @@ final class StaticGeneratorFactory
                 $this->transformers
             );
         }
-        $postProcessors[] = new DuplicatesRemoverPostProcessor($this->resultRepository);
+        $postProcessors[] = new DuplicatesRemoverPostProcessor(
+            $this->resultRepository,
+            $additionalRedirects,
+            $this->crawlProfile
+        );
         $postProcessors = apply_filters('staatic_post_processors', $postProcessors, $this->publication);
         foreach ($postProcessors as $postProcessor) {
             if ($postProcessor instanceof LoggerAwareInterface) {

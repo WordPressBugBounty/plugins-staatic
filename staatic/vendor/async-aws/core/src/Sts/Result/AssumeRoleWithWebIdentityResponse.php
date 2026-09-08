@@ -2,8 +2,6 @@
 
 namespace Staatic\Vendor\AsyncAws\Core\Sts\Result;
 
-use SimpleXMLElement;
-use DateTimeImmutable;
 use Staatic\Vendor\AsyncAws\Core\Response;
 use Staatic\Vendor\AsyncAws\Core\Result;
 use Staatic\Vendor\AsyncAws\Core\Sts\ValueObject\AssumedRoleUser;
@@ -52,12 +50,9 @@ class AssumeRoleWithWebIdentityResponse extends Result
         $this->initialize();
         return $this->subjectFromWebIdentityToken;
     }
-    /**
-     * @param Response $response
-     */
-    protected function populateResult($response): void
+    protected function populateResult(Response $response): void
     {
-        $data = new SimpleXMLElement($response->getContent());
+        $data = new \SimpleXMLElement($response->getContent());
         $data = $data->AssumeRoleWithWebIdentityResult;
         $this->credentials = 0 === $data->Credentials->count() ? null : $this->populateResultCredentials($data->Credentials);
         $this->subjectFromWebIdentityToken = null !== ($v = $data->SubjectFromWebIdentityToken[0]) ? (string) $v : null;
@@ -67,12 +62,12 @@ class AssumeRoleWithWebIdentityResponse extends Result
         $this->audience = null !== ($v = $data->Audience[0]) ? (string) $v : null;
         $this->sourceIdentity = null !== ($v = $data->SourceIdentity[0]) ? (string) $v : null;
     }
-    private function populateResultAssumedRoleUser(SimpleXMLElement $xml): AssumedRoleUser
+    private function populateResultAssumedRoleUser(\SimpleXMLElement $xml): AssumedRoleUser
     {
         return new AssumedRoleUser(['AssumedRoleId' => (string) $xml->AssumedRoleId, 'Arn' => (string) $xml->Arn]);
     }
-    private function populateResultCredentials(SimpleXMLElement $xml): Credentials
+    private function populateResultCredentials(\SimpleXMLElement $xml): Credentials
     {
-        return new Credentials(['AccessKeyId' => (string) $xml->AccessKeyId, 'SecretAccessKey' => (string) $xml->SecretAccessKey, 'SessionToken' => (string) $xml->SessionToken, 'Expiration' => new DateTimeImmutable((string) $xml->Expiration)]);
+        return new Credentials(['AccessKeyId' => (string) $xml->AccessKeyId, 'SecretAccessKey' => (string) $xml->SecretAccessKey, 'SessionToken' => (string) $xml->SessionToken, 'Expiration' => new \DateTimeImmutable((string) $xml->Expiration)]);
     }
 }

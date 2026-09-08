@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Staatic\WordPress\Module;
 
+use Closure;
 use Staatic\WordPress\Request\TestRequest;
 use Staatic\WordPress\Service\Scheduler;
 
@@ -20,14 +21,25 @@ final class ScheduleTestRequest implements ModuleInterface
     /** @var string */
     public const SCHEDULE = 'staatic_maintenance_cron_interval';
 
+    /** @var int */
+    public const INTERVAL = 43200;
+
     /**
      * @var TestRequest
      */
     public $testRequest;
 
-    public function __construct(Scheduler $scheduler)
+    /**
+     * @var Closure
+     */
+    private $clock;
+
+    public function __construct(Scheduler $scheduler, ?Closure $clock = null)
     {
         $this->scheduler = $scheduler;
+        $this->clock = $clock ?? static function () : int {
+            return time();
+        };
     }
 
     public function hooks(): void
@@ -39,10 +51,19 @@ final class ScheduleTestRequest implements ModuleInterface
 
     public function setupSchedule(): void
     {
-        if ($this->scheduler->isScheduled(self::HOOK) || !$this->scheduler->scheduleExists(self::SCHEDULE)) {
+        $isScheduled = $this->scheduler->isScheduled(self::HOOK);
+        if (!TestRequest::isEnabled()) {
+            if ($isScheduled) {
+                $this->scheduler->clear(self::HOOK);
+            }
+
             return;
         }
-        $this->testRequest->dispatch();
-        $this->scheduler->schedule(self::HOOK, self::SCHEDULE);
+        if ($isScheduled || !$this->scheduler->scheduleExists(self::SCHEDULE)) {
+            return;
+        }
+        if ($this->scheduler->schedule(self::HOOK, self::SCHEDULE, ($this->clock)() + self::INTERVAL)) {
+            $this->testRequest->dispatch();
+        }
     }
 }

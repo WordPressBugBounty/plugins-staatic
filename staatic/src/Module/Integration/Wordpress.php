@@ -10,6 +10,25 @@ use Staatic\WordPress\Util\WordpressEnv;
 
 final class Wordpress implements ModuleInterface
 {
+    public const UPLOADS_JUNK_DIRECTORIES = [
+        'et_temp',
+        'exported_html_files',
+        'file-manager',
+        'ithemes-security',
+        'simply-static',
+        'sucuri',
+        'wc-logs',
+        'wp-activity-log',
+        'wp-file-manager-pro',
+        'wp-security-audit-log',
+        'wp2static-crawled-site',
+        'wpallexport',
+        'wpallimport',
+        'wpcf7_uploads',
+        'wpcode',
+        'wpfc-backup'
+    ];
+
     public function hooks(): void
     {
         add_action('wp_loaded', [$this, 'setupIntegration']);
@@ -53,24 +72,6 @@ final class Wordpress implements ModuleInterface
 
     private function determineExcludeRules(): array
     {
-        $uploadsDirectories = [
-            'et_temp',
-            'exported_html_files',
-            'file-manager',
-            'ithemes-security',
-            'simply-static',
-            'sucuri',
-            'wc-logs',
-            'wp-activity-log',
-            'wp-file-manager-pro',
-            'wp-security-audit-log',
-            'wp2static-crawled-site',
-            'wpallexport',
-            'wpallimport',
-            'wpcf7_uploads',
-            'wpcode',
-            'wpfc-backup'
-        ];
         $uploadsPaths = [$uploadsPath = WordpressEnv::getUploadsPath()];
         $realUploadsPath = realpath($uploadsPath);
         $realUploadsPath = $realUploadsPath ? wp_normalize_path($realUploadsPath) : null;
@@ -78,7 +79,7 @@ final class Wordpress implements ModuleInterface
             $uploadsPaths[] = $realUploadsPath;
         }
         $candidatePaths = [];
-        foreach ($uploadsDirectories as $directory) {
+        foreach (self::UPLOADS_JUNK_DIRECTORIES as $directory) {
             foreach ($uploadsPaths as $uploadsPath) {
                 $candidatePaths[] = "{$uploadsPath}/{$directory}";
             }

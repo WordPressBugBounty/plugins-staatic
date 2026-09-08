@@ -10,7 +10,7 @@ use Staatic\Vendor\Psr\Log\LoggerInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Staatic\WordPress\Bridge\ResultRepository;
-use Staatic\WordPress\Setting\Advanced\WorkDirectorySetting;
+use Staatic\WordPress\Factory\ResourceRepositoryFactory;
 
 final class ResourceCleanup
 {
@@ -20,9 +20,9 @@ final class ResourceCleanup
     private $resultRepository;
 
     /**
-     * @var WorkDirectorySetting
+     * @var ResourceRepositoryFactory
      */
-    private $workDirectory;
+    private $resourceRepositoryFactory;
 
     /**
      * @var LoggerInterface
@@ -38,18 +38,22 @@ final class ResourceCleanup
 
     public function __construct(
         ResultRepository $resultRepository,
-        WorkDirectorySetting $workDirectory,
+        ResourceRepositoryFactory $resourceRepositoryFactory,
         LoggerInterface $logger
     )
     {
         $this->resultRepository = $resultRepository;
-        $this->workDirectory = $workDirectory;
+        $this->resourceRepositoryFactory = $resourceRepositoryFactory;
         $this->logger = $logger;
     }
 
     public function cleanup(): void
     {
-        $this->resourceDirectory = untrailingslashit($this->workDirectory->value()) . '/resources/';
+        // Asked of the factory that owns the store rather than recomputed from the work
+        // directory, so the two cannot drift. The accessor returns the directory without a
+        // trailing slash; the separator is added once, here, because the hash is recovered by
+        // stripping this prefix off an iterated path.
+        $this->resourceDirectory = $this->resourceRepositoryFactory->resourceDirectory() . '/';
         if (!is_dir($this->resourceDirectory)) {
             return;
         }
@@ -116,7 +120,7 @@ final class ResourceCleanup
     {
         $knownHashes = $this->resultRepository->getKnownSha1Hashes($chunk);
         foreach ($chunk as $path => $hash) {
-            if (!in_array($hash, $knownHashes)) {
+            if (!in_array($hash, $knownHashes, \true)) {
                 yield $hash => $path;
             }
         }

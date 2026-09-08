@@ -76,8 +76,6 @@ final class PublicationStatusEndpoint implements ModuleInterface
         if (!$publication) {
             wp_send_json_error();
         }
-        $build = $publication->build();
-        $deployment = $publication->deployment();
         $currentTask = $publication->currentTask() ? $this->publicationTaskProvider->getTask(
             $publication->currentTask()
         ) : null;
@@ -94,26 +92,78 @@ final class PublicationStatusEndpoint implements ModuleInterface
                 ] : null,
                 'publisher' => $publication->publisher() ? $publication->publisher()->data->display_name : null
             ],
-            'progress' => [
-                'numUrlsCrawlable' => $this->formatter->number($build->numUrlsCrawlable()),
-                'numUrlsCrawled' => $this->formatter->number($build->numUrlsCrawled()),
-                'crawlPercent' => $build->numUrlsCrawlable() ? round(
-                    $build->numUrlsCrawled() / $build->numUrlsCrawlable() * 100,
-                    2
-                ) : 0,
-                'numResultsDeployable' => $this->formatter->number($deployment->numResultsDeployable()),
-                'numResultsDeployed' => $this->formatter->number($deployment->numResultsDeployed()),
-                'deployPercent' => $deployment->numResultsDeployable() ? round(
-                    $deployment->numResultsDeployed() / $deployment->numResultsDeployable() * 100,
-                    2
-                ) : 0,
-                'dateDeploymentFinished' => $this->formatter->shortDate($deployment->dateFinished()),
-                'timeTaken' => $publication->status()->isFinished() ? $this->formatter->difference(
-                    $build->dateCrawlStarted(),
-                    $deployment->dateFinished()
-                ) : null
-            ]
+            'progress' => $this->progress($publication)
         ]);
+    }
+
+    /** @return array<string, mixed>
+     * @param Publication $publication */
+    public function progress($publication): array
+    {
+        $build = $publication->build();
+        $deployment = $publication->deployment();
+
+        return [
+            'numUrlsCrawlable' => $this->formatter->number($build->numUrlsCrawlable()),
+            'numUrlsCrawled' => $this->formatter->number($build->numUrlsCrawled()),
+            'crawlPercent' => $this->percentage($build->numUrlsCrawled(), $build->numUrlsCrawlable()),
+            'numFilesRegistered' => $this->numFilesRegistered($publication),
+            'numFilesRegisteredCount' => $this->numFilesRegisteredCount($publication),
+            'numResultsDeployable' => $this->formatter->number($deployment->numResultsDeployable()),
+            'numResultsDeployed' => $this->formatter->number($deployment->numResultsDeployed()),
+            'deployPercent' => $this->percentage(
+                $deployment->numResultsDeployed(),
+                $deployment->numResultsDeployable()
+            ),
+            'dateDeploymentFinished' => $this->formatter->shortDate($deployment->dateFinished()),
+            'timeTaken' => $publication->status()->isFinished() ? $this->formatter->difference(
+                $build->dateCrawlStarted(),
+                $deployment->dateFinished()
+            ) : null
+        ];
+    }
+
+    /**
+     * The crawl and deploy totals are sampled while the work they describe is still running, so
+     * a counter can briefly read past its total. Clamping here keeps the progress bar inside its
+     * track rather than letting it render wider than 100%.
+     */
+    private function percentage(int $done, int $total): float
+    {
+        if ($total <= 0) {
+            return 0.0;
+        }
+
+        return round(min($done / $total, 1) * 100, 2);
+    }
+
+    /**
+     * The number of media files Uploads Sync registered straight from the uploads directory.
+     * They are published without ever being crawled, so they are reported next to the crawl
+     * progress rather than counted in it. Null whenever the option is off, which is what keeps
+     * the status area unchanged for every publication that does not use it.
+     */
+    private function numFilesRegistered(Publication $publication): ?string
+    {
+        $count = $this->numFilesRegisteredCount($publication);
+
+        return $count === null ? null : $this->formatter->number($count);
+    }
+
+    /**
+     * The same figure unformatted. The status bar needs a number rather than a display string:
+     * it decides whether to render the line at all, and picks singular or plural, and "0" is a
+     * truthy string while a thousands separator makes the value unparseable in the browser's
+     * locale-independent way.
+     */
+    private function numFilesRegisteredCount(Publication $publication): ?int
+    {
+        $state = $publication->metadataByKey('uploadsIndexState');
+        if (!is_array($state) || !isset($state['filesRegistered'])) {
+            return null;
+        }
+
+        return (int) $state['filesRegistered'];
     }
 
     private function determineIfMaybeStuck(Publication $publication): bool

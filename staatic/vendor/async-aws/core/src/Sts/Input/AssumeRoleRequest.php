@@ -99,98 +99,62 @@ final class AssumeRoleRequest extends Input
         $body = http_build_query(['Action' => 'AssumeRole', 'Version' => '2011-06-15'] + $this->requestBody(), '', '&', \PHP_QUERY_RFC1738);
         return new Request('POST', $uriString, $query, $headers, StreamFactory::create($body));
     }
-    /**
-     * @param int|null $value
-     */
-    public function setDurationSeconds($value): self
+    public function setDurationSeconds(?int $value): self
     {
         $this->durationSeconds = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setExternalId($value): self
+    public function setExternalId(?string $value): self
     {
         $this->externalId = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setPolicy($value): self
+    public function setPolicy(?string $value): self
     {
         $this->policy = $value;
         return $this;
     }
-    /**
-     * @param mixed[] $value
-     */
-    public function setPolicyArns($value): self
+    public function setPolicyArns(array $value): self
     {
         $this->policyArns = $value;
         return $this;
     }
-    /**
-     * @param mixed[] $value
-     */
-    public function setProvidedContexts($value): self
+    public function setProvidedContexts(array $value): self
     {
         $this->providedContexts = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setRoleArn($value): self
+    public function setRoleArn(?string $value): self
     {
         $this->roleArn = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setRoleSessionName($value): self
+    public function setRoleSessionName(?string $value): self
     {
         $this->roleSessionName = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setSerialNumber($value): self
+    public function setSerialNumber(?string $value): self
     {
         $this->serialNumber = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setSourceIdentity($value): self
+    public function setSourceIdentity(?string $value): self
     {
         $this->sourceIdentity = $value;
         return $this;
     }
-    /**
-     * @param mixed[] $value
-     */
-    public function setTags($value): self
+    public function setTags(array $value): self
     {
         $this->tags = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setTokenCode($value): self
+    public function setTokenCode(?string $value): self
     {
         $this->tokenCode = $value;
         return $this;
     }
-    /**
-     * @param mixed[] $value
-     */
-    public function setTransitiveTagKeys($value): self
+    public function setTransitiveTagKeys(array $value): self
     {
         $this->transitiveTagKeys = $value;
         return $this;

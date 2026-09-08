@@ -47,6 +47,10 @@ final class AdditionalRedirectsPostProcessor implements PostProcessorInterface, 
      * @var Build
      */
     private $build;
+    /**
+     * @var mixed[]
+     */
+    private $createdResultUrls = [];
     public function __construct(ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository, iterable $additionalRedirects, CrawlProfileInterface $crawlProfile, ?TransformerCollection $transformers = null, ?string $template = null)
     {
         $this->resultRepository = $resultRepository;
@@ -68,6 +72,7 @@ final class AdditionalRedirectsPostProcessor implements PostProcessorInterface, 
     {
         $this->logger->info("Applying additional redirects post processor", ['buildId' => $build->id()]);
         $this->build = $build;
+        $this->createdResultUrls = [];
         $numApplied = 0;
         foreach ($this->additionalRedirects as $additionalRedirect) {
             $this->createRedirectResult($additionalRedirect->origin(), $additionalRedirect->redirectUrl(), $additionalRedirect->statusCode());
@@ -78,12 +83,26 @@ final class AdditionalRedirectsPostProcessor implements PostProcessorInterface, 
     private function createRedirectResult(string $origin, UriInterface $redirectUrl, int $statusCode): void
     {
         $resultUrl = $this->determineResultUrl($origin);
-        $existingResult = $this->resultRepository->findOneByBuildIdAndUrl($this->build->id(), $resultUrl);
-        if ($existingResult) {
-            $this->logger->warning("Skipping additional redirect with URL '{$resultUrl}'; a result with the same URL already exists", ['buildId' => $this->build->id()]);
+        $redirectUrl = $this->determineRedirectUrl($redirectUrl, $resultUrl);
+        $resultUrlString = (string) $resultUrl;
+        if (isset($this->createdResultUrls[$resultUrlString])) {
+            $this->logger->warning(sprintf("Additional redirect '%s' to '%s' (%d) was ignored; an earlier setting line already created URL '%s'", $origin, (string) $redirectUrl, $statusCode, (string) $resultUrl), ['buildId' => $this->build->id()]);
             return;
         }
-        $redirectUrl = $this->determineRedirectUrl($redirectUrl, $resultUrl);
+        $existingResult = $this->resultRepository->findOneByBuildIdAndUrl($this->build->id(), $resultUrl);
+        if ($existingResult !== null && $existingResult->redirectUrl() !== null && $existingResult->originalUrl() === null) {
+            if ($existingResult->statusCode() === $statusCode && (string) $existingResult->redirectUrl() === (string) $redirectUrl) {
+                $this->logger->debug("Additional redirect with URL '{$resultUrl}' already exists; leaving it", ['buildId' => $this->build->id()]);
+                $this->createdResultUrls[$resultUrlString] = \true;
+                return;
+            }
+            $this->logger->debug("Additional redirect with URL '{$resultUrl}' is stale; replacing it", ['buildId' => $this->build->id()]);
+            $this->resultRepository->delete($existingResult);
+            $existingResult = null;
+        }
+        if ($existingResult !== null) {
+            $this->logger->info("A generated result exists for '{$resultUrl}'; the additional redirect takes precedence and the generated result will be removed during duplicate removal", ['buildId' => $this->build->id()]);
+        }
         $this->logger->debug("Adding result for redirect with URL '{$resultUrl}', redirecting to '{$redirectUrl}'", ['buildId' => $this->build->id()]);
         $resource = Resource::create(sprintf($this->template, $redirectUrl));
         $result = Result::create($this->resultRepository->nextId(), $this->build->id(), $resultUrl, UrlHasher::hash($resultUrl), $resource, ['statusCode' => $statusCode, 'redirectUrl' => $redirectUrl]);
@@ -91,10 +110,19 @@ final class AdditionalRedirectsPostProcessor implements PostProcessorInterface, 
         $result->syncResource($resource);
         $this->resourceRepository->write($resource);
         $this->resultRepository->add($result);
+        $this->createdResultUrls[$resultUrlString] = \true;
     }
     private function determineResultUrl(string $origin): UriInterface
     {
-        return $this->crawlProfile->transformUrl(new Uri($origin))->transformedUrl();
+        return self::resultUrl($this->crawlProfile, $origin);
+    }
+    /**
+     * @param CrawlProfileInterface $crawlProfile
+     * @param string $origin
+     */
+    public static function resultUrl($crawlProfile, $origin): UriInterface
+    {
+        return $crawlProfile->transformUrl(new Uri($origin))->transformedUrl();
     }
     private function determineRedirectUrl(UriInterface $redirectUrl, UriInterface $baseUrl): UriInterface
     {

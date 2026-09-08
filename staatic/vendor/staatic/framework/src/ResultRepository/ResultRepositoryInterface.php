@@ -41,6 +41,12 @@ interface ResultRepositoryInterface
      */
     public function markManyDeployed($deploymentId, $resultIds): void;
     /**
+     * @param string $buildId
+     * @param string $deploymentId
+     * @param mixed[] $keepSha1s
+     */
+    public function markAllDeployedExceptSha1s($buildId, $deploymentId, $keepSha1s): int;
+    /**
      * @param string $resultId
      */
     public function find($resultId): ?Result;
@@ -53,6 +59,11 @@ interface ResultRepositoryInterface
      * @param string $buildId
      */
     public function findByBuildIdWithRedirectUrl($buildId): array;
+    /**
+     * @param string $buildId
+     * @param mixed[] $sha1s
+     */
+    public function findByBuildIdAndSha1s($buildId, $sha1s): Generator;
     /**
      * @param string $buildId
      * @param string $deploymentId

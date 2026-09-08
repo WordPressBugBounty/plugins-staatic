@@ -1,8 +1,8 @@
 === Staatic - Static Site Generator for WordPress ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.12.5
-Tested up to: 7.0
+Stable tag: 1.13.0
+Tested up to: 7.1
 Requires at least: 5.0
 Requires PHP: 7.1
 License: BSD-3-Clause
@@ -112,6 +112,28 @@ For commercial support, Staatic Premium, or Staatic Cloud questions, you can als
 3. Configure build, deployment, and advanced publication settings for your site.
 
 == Changelog ==
+
+= 1.13.0 =
+
+Release date: September 8th, 2026.
+
+**Features**
+
+* Adds a Publication Time Limit setting under Advanced settings, so publications on large sites can be given more than the default four hours before they are canceled.
+
+**Improvements**
+
+* Speeds up result lookups by build and URL with a new database index, benefiting redirect and configuration post-processing as well as registering uploads on sites with many media files.
+* Replaces the publication test task with a bounded backend-worker survival diagnostic that reports disabled, running, complete, incomplete, and stale states, without claiming to test proxy responses or CPU capacity.
+
+**Fixes**
+
+* Prevents an HTTP Concurrency of zero from being saved, which stalled the crawl batch size.
+* Prevents duplicate publication diagnostics, delays the first recurring run after the initial dispatch, and removes the Site Health status test when diagnostics are intentionally disabled.
+* Prevents large publications from failing when the deployment is initiated from the WordPress admin, by building the deployment manifest in bounded steps that resume across background runs.
+* Gives additional redirects precedence over generated results for the same address on every deployment method, instead of silently dropping the redirect or uploading the generated page alongside it; the publication log now names each result a redirect replaced.
+* Prevents a publication from removing the only remaining version of a page when two addresses that differ by a trailing slash redirect to each other.
+* Removes redirect results that point at their own address instead of publishing them as pages.
 
 = 1.12.5 =
 

@@ -35,6 +35,10 @@ final class Resource
         [$md5, $sha1, $size] = self::calculateHashesAndSize($content);
         return new self($content, $md5, $sha1, $size);
     }
+    public static function createWithHashes($content, string $md5, string $sha1, int $size): self
+    {
+        return new self(Utils::streamFor($content), $md5, $sha1, $size);
+    }
     public function content(): StreamInterface
     {
         return $this->content;

@@ -7,6 +7,7 @@ namespace Staatic\WordPress\Publication;
 use Staatic\Vendor\Psr\Log\LoggerInterface;
 use RuntimeException;
 use Staatic\WordPress\Logging\Contextable;
+use Staatic\WordPress\Publication\Task\ConditionallyRestartableTaskInterface;
 use Staatic\WordPress\Publication\Task\RestartableTaskInterface;
 use Staatic\WordPress\Publication\Task\TaskInterface;
 use Staatic\WordPress\Util\DateUtil;
@@ -234,12 +235,16 @@ final class BackgroundPublisher extends WP_Background_Process
             $this->publication->setCurrentTask($taskName);
             $this->publicationRepository->update($this->publication);
             $this->logger->info($this->task->description());
-        } elseif (!$this->task instanceof RestartableTaskInterface) {
-            $this->handleFailure(
-                new RuntimeException(
-                    __('Task failed due to a timeout or fatal error; consider increasing "Publication Task Timeout" under Staatic > Settings > Advanced.', 'staatic')
-                )
-            );
+        } elseif (!$this->taskCanRestart($this->task, $this->publication)) {
+            // Reaching the same task twice means the previous pass never reported back, so
+            // whatever it was doing was cut short mid-flight. The cause is in the PHP error log,
+            // not here: this guard only sees the aftermath, and exists to stop a task that
+            // cannot resume from crashing over and over.
+            $this->handleFailure(new RuntimeException(sprintf(
+                /* translators: %s: Publication task. */
+                __('The %s task was started again after the previous attempt ended unexpectedly ' . '(a fatal error, out of memory, or a timeout); check the PHP error log ' . 'for the cause. If the log shows the task ran out of time, raising ' . '"Publication Task Timeout" under Staatic > Settings > Advanced may help.', 'staatic'),
+                $taskName
+            )));
 
             return \false;
         }
@@ -301,6 +306,41 @@ final class BackgroundPublisher extends WP_Background_Process
     }
 
     /**
+     * Whether reaching this task a second time is a resumption rather than the aftermath of an
+     * attempt that ended unexpectedly.
+     *
+     * Most tasks answer once, by their interface. A task that delegates to something chosen at
+     * runtime — initiating a deployment resumes against Staatic Cloud and cannot resume against
+     * Netlify, GitHub, AWS, SFTP or the filesystem — is asked per publication instead.
+     * @param TaskInterface $task
+     * @param Publication $publication
+     */
+    protected function taskCanRestart($task, $publication): bool
+    {
+        if (!$task instanceof ConditionallyRestartableTaskInterface) {
+            return $task instanceof RestartableTaskInterface;
+        }
+
+        // This runs before the failure handling below, and the implementation belongs to the
+        // task, which may be a third party's. An answer that throws is not an answer, and letting
+        // it escape task() would leave the publication on this task for the queue to enter again
+        // — the crash loop the guard exists to end. So it is caught and read as "cannot resume".
+        try {
+            return $task->isRestartable($publication);
+        } catch (Throwable $failure) {
+            $this->logger->warning(
+                'Unable to determine whether the current task can resume; treating it as not resumable.',
+                [
+                'task' => $task::name(),
+                'failure' => $failure
+            ]
+            );
+
+            return \false;
+        }
+    }
+
+    /**
      * @param Throwable $failure
      */
     protected function handleFailure($failure): void
@@ -352,9 +392,6 @@ final class BackgroundPublisher extends WP_Background_Process
 
     private function exceedsPublicationTimeLimit(Publication $publication): bool
     {
-        return DateUtil::isDateNumHoursAgo(
-            $publication->dateCreated(),
-            apply_filters('staatic_publication_timeout', Publication::TIME_LIMIT_IN_HOURS)
-        );
+        return DateUtil::isDateNumHoursAgo($publication->dateCreated(), Publication::timeLimitInHours());
     }
 }

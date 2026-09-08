@@ -39,6 +39,32 @@ final class Formatter
         return $result;
     }
 
+    /**
+     * A duration in seconds, as a localized number with its unit.
+     *
+     * Single-sourced here because three surfaces render the same publication-worker durations —
+     * the Site Health test, its debug rows and the manual dispatch page — and they had drifted
+     * into two spellings: number_format_i18n() leaves a non-breaking space in place, which shows
+     * up as a literal &nbsp; wherever the value is not rendered as HTML.
+     */
+    public function seconds(int $seconds): string
+    {
+        return sprintf(
+            /* translators: %s: Number of seconds. */
+            _n('%s second', '%s seconds', $seconds, 'staatic'),
+            $this->number($seconds)
+        );
+    }
+
+    /**
+     * A boolean as a word, for the copy-and-paste Site Health report, where a raw false renders
+     * as an empty string and reads as a missing value rather than as "no".
+     */
+    public function yesNo($value): string
+    {
+        return $value ? __('Yes', 'staatic') : __('No', 'staatic');
+    }
+
     public function date(?DateTimeInterface $date): string
     {
         if ($date === null) {

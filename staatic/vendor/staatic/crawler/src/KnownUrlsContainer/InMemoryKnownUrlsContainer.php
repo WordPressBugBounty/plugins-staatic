@@ -27,11 +27,22 @@ class InMemoryKnownUrlsContainer implements KnownUrlsContainerInterface, LoggerA
      */
     public function add($url): void
     {
+        $this->addUrl($url, \true);
+    }
+    /**
+     * @param UriInterface $url
+     */
+    public function addUncrawlable($url): void
+    {
+        $this->addUrl($url, \false);
+    }
+    private function addUrl(UriInterface $url, bool $crawlable): void
+    {
         if ($this->isKnown($url)) {
             throw new RuntimeException("Url '{$url}' is already known");
         }
         $this->logger->debug("Adding url '{$url}' to container");
-        $this->urls[(string) $url] = \true;
+        $this->urls[(string) $url] = $crawlable;
     }
     /**
      * @param UriInterface $url
@@ -42,6 +53,6 @@ class InMemoryKnownUrlsContainer implements KnownUrlsContainerInterface, LoggerA
     }
     public function count(): int
     {
-        return count($this->urls);
+        return count(array_filter($this->urls));
     }
 }

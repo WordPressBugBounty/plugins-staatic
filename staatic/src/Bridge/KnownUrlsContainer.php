@@ -47,9 +47,23 @@ final class KnownUrlsContainer implements KnownUrlsContainerInterface, LoggerAwa
      */
     public function add($url): void
     {
+        $this->addUrl($url, \true);
+    }
+
+    /**
+     * @param UriInterface $url
+     */
+    public function addUncrawlable($url): void
+    {
+        $this->addUrl($url, \false);
+    }
+
+    private function addUrl(UriInterface $url, bool $crawlable): void
+    {
         $this->logger->debug("Adding url '{$url}' to container");
         $result = $this->wpdb->insert($this->tableName, [
-            'hash' => md5((string) $url)
+            'hash' => md5((string) $url),
+            'crawlable' => $crawlable ? 1 : 0
         ]);
         if ($result === \false) {
             throw new RuntimeException("Unable to add url '{$url}' to container: {$this->wpdb->last_error}");
@@ -66,8 +80,13 @@ final class KnownUrlsContainer implements KnownUrlsContainerInterface, LoggerAwa
         );
     }
 
+    /**
+     * Counts only the urls that stand for a request the crawler is going to make. Urls added
+     * through addUncrawlable() - media registered straight from disk by Uploads Sync - are
+     * known so the crawler skips them, but they are not work that is left to do.
+     */
     public function count(): int
     {
-        return (int) $this->wpdb->get_var("SELECT COUNT(*) FROM {$this->tableName}");
+        return (int) $this->wpdb->get_var("SELECT COUNT(*) FROM {$this->tableName} WHERE crawlable = 1");
     }
 }

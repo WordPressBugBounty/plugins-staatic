@@ -23,7 +23,6 @@ final class KnownUrlsContainerFactory
 
     public function __invoke(bool $inMemory): KnownUrlsContainerInterface
     {
-        // df(['inMemory' => $inMemory]);
         // if ($inMemory) {
         //     return new InMemoryKnownUrlsContainer();
         // }

@@ -103,13 +103,21 @@ final class Deployment
         return $this->metadata;
     }
     /**
+     * @param mixed[]|null $metadata
+     */
+    public function initiationStarted($metadata): void
+    {
+        $this->dateStarted = $this->dateStarted ?: new DateTimeImmutable();
+        $this->metadata = $metadata;
+    }
+    /**
      * @param int $numResultsTotal
      * @param int $numResultsDeployable
      * @param mixed[]|null $metadata
      */
     public function deployStarted($numResultsTotal, $numResultsDeployable, $metadata): void
     {
-        $this->dateStarted = new DateTimeImmutable();
+        $this->dateStarted = $this->dateStarted ?: new DateTimeImmutable();
         $this->numResultsTotal = $numResultsTotal;
         $this->numResultsDeployable = $numResultsDeployable;
         $this->metadata = $metadata;

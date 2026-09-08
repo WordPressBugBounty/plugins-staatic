@@ -87,6 +87,9 @@ final class InMemoryResultRepository implements ResultRepositoryInterface, Logge
             if ($result->buildId() !== $buildId) {
                 continue;
             }
+            if (isset($this->deployableResults[$result->id()][$deploymentId])) {
+                continue;
+            }
             $this->deployableResults[$result->id()][$deploymentId] = ['dateCreated' => new DateTimeImmutable(), 'dateDeployed' => null];
             $numResults++;
         }
@@ -116,8 +119,37 @@ final class InMemoryResultRepository implements ResultRepositoryInterface, Logge
             if (!isset($this->deployableResults[$resultId][$deploymentId])) {
                 throw new RuntimeException("Unable to mark result #{$resultId} deployed for deployment #{$deploymentId}: unknown result/deployment combination");
             }
+            if ($this->deployableResults[$resultId][$deploymentId]['dateDeployed'] !== null) {
+                continue;
+            }
             $this->deployableResults[$resultId][$deploymentId]['dateDeployed'] = new DateTimeImmutable();
         }
+    }
+    /**
+     * @param string $buildId
+     * @param string $deploymentId
+     * @param mixed[] $keepSha1s
+     */
+    public function markAllDeployedExceptSha1s($buildId, $deploymentId, $keepSha1s): int
+    {
+        $keep = array_fill_keys($keepSha1s, \true);
+        $numMarked = 0;
+        foreach ($this->deployableResults as $resultId => $deployments) {
+            $result = $this->results[$resultId] ?? null;
+            if ($result === null || $result->buildId() !== $buildId) {
+                continue;
+            }
+            $deployment = $deployments[$deploymentId] ?? null;
+            if ($deployment === null || $deployment['dateDeployed'] !== null) {
+                continue;
+            }
+            if ($result->sha1() !== null && isset($keep[$result->sha1()])) {
+                continue;
+            }
+            $this->deployableResults[$resultId][$deploymentId]['dateDeployed'] = new DateTimeImmutable();
+            $numMarked++;
+        }
+        return $numMarked;
     }
     /**
      * @param string $resultId
@@ -154,16 +186,36 @@ final class InMemoryResultRepository implements ResultRepositoryInterface, Logge
     }
     /**
      * @param string $buildId
+     * @param mixed[] $sha1s
+     */
+    public function findByBuildIdAndSha1s($buildId, $sha1s): Generator
+    {
+        if ($sha1s === []) {
+            return;
+        }
+        $wanted = array_fill_keys($sha1s, \true);
+        foreach ($this->results as $result) {
+            if ($result->buildId() !== $buildId || $result->sha1() === null) {
+                continue;
+            }
+            if (isset($wanted[$result->sha1()])) {
+                yield $result;
+            }
+        }
+    }
+    /**
+     * @param string $buildId
      * @param string $deploymentId
      */
     public function findByBuildIdPendingDeployment($buildId, $deploymentId): Generator
     {
-        foreach ($this->deployableResults as $resultId => $deployments) {
-            $result = $this->results[$resultId];
-            if ($result->buildId() !== $buildId) {
+        $resultIds = array_keys($this->deployableResults);
+        foreach ($resultIds as $resultId) {
+            $result = $this->results[$resultId] ?? null;
+            if ($result === null || $result->buildId() !== $buildId) {
                 continue;
             }
-            $deployment = $deployments[$deploymentId] ?? null;
+            $deployment = $this->deployableResults[$resultId][$deploymentId] ?? null;
             if ($deployment === null || $deployment['dateDeployed'] !== null) {
                 continue;
             }

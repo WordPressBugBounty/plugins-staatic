@@ -10,6 +10,7 @@ use Staatic\Vendor\Psr\Log\NullLogger;
 use Staatic\Framework\ResultRepository\ResultRepositoryInterface;
 use Staatic\Framework\DeploymentRepository\DeploymentRepositoryInterface;
 use Staatic\Framework\DeployStrategy\DeployStrategyInterface;
+use Staatic\Framework\DeployStrategy\ResumableDeployStrategyInterface;
 class StaticDeployer implements LoggerAwareInterface
 {
     /**
@@ -48,16 +49,28 @@ class StaticDeployer implements LoggerAwareInterface
     /**
      * @param Deployment $deployment
      */
-    public function initiateDeployment($deployment): void
+    public function initiateDeployment($deployment): bool
     {
         $this->logger->notice('Initiating deployment', ['deploymentId' => $deployment->id()]);
         $this->resultRepository->scheduleForDeployment($deployment->buildId(), $deployment->id());
-        $deploymentMetadata = $this->deployStrategy->initiate($deployment);
+        if ($this->deployStrategy instanceof ResumableDeployStrategyInterface) {
+            $isFinished = $this->deployStrategy->initiateResumable($deployment, function (array $deploymentMetadata) use ($deployment): void {
+                $deployment->initiationStarted($deploymentMetadata);
+                $this->deploymentRepository->update($deployment);
+            });
+            if (!$isFinished) {
+                return \false;
+            }
+            $deploymentMetadata = $deployment->metadata();
+        } else {
+            $deploymentMetadata = $this->deployStrategy->initiate($deployment);
+        }
         $numResultsTotal = $this->resultRepository->countByBuildId($deployment->buildId());
         $numResultsDeployable = $this->resultRepository->countByBuildIdPendingDeployment($deployment->buildId(), $deployment->id());
         $deployment->deployStarted($numResultsTotal, $numResultsDeployable, $deploymentMetadata);
         $this->deploymentRepository->update($deployment);
         $this->logger->notice("Deployment initiated ({$numResultsTotal} results total, {$numResultsDeployable} results deployable)", ['deploymentId' => $deployment->id()]);
+        return \true;
     }
     /**
      * @param Deployment $deployment

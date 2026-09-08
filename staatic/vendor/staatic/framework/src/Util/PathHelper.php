@@ -18,4 +18,8 @@ final class PathHelper
         $filePath = rtrim($filePath, '/') . '/';
         return $filePath . 'index.html';
     }
+    public static function determineCollapsedPath(string $uriPath): string
+    {
+        return '/' . trim(rawurldecode($uriPath), '/');
+    }
 }

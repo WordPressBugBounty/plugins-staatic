@@ -205,7 +205,13 @@ final class HttpClientFactory
                 $options->setCaFile($sslVerifyPath);
             }
         }
-        $httpClient = HttpClient::create($options->toArray(), (int) $this->httpConcurrency->value());
+        $httpClient = HttpClient::create(
+            $options->toArray(),
+            // The setting clamps on write, but the option can also reach the database without
+            // passing through the settings screen; a stored 0 would mean no concurrent requests
+            // at all, so the read side holds the same floor.
+            max(HttpConcurrencySetting::MINIMUM_CONCURRENCY, (int) $this->httpConcurrency->value())
+        );
 
         return new RetryableHttpClient($httpClient);
     }

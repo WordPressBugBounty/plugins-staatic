@@ -27,6 +27,8 @@ final class SqliteResultRepository implements ResultRepositoryInterface, LoggerA
      */
     private $deployTableName = 'staatic_results_deployment';
     use LoggerAwareTrait;
+    private const PAGE_SIZE = 2000;
+    private const MAX_SHA1_CHUNK = 500;
     private const TABLE_DEFINITION = '
         CREATE TABLE IF NOT EXISTS %s (
             id TEXT NOT NULL,
@@ -185,7 +187,7 @@ final class SqliteResultRepository implements ResultRepositoryInterface, LoggerA
     {
         $this->logger->debug("Scheduling results in build #{$buildId} for deployment #{$deploymentId}", ['buildId' => $buildId, 'deploymentId' => $deploymentId]);
         try {
-            $statement = $this->sqlite->prepare("\n                INSERT INTO {$this->deployTableName} (deployment_id, result_id, date_created)\n                SELECT :deploymentId, r.id, :dateCreated\n                FROM {$this->tableName} r\n                WHERE r.build_id = :buildId\n            ");
+            $statement = $this->sqlite->prepare("\n                INSERT OR IGNORE INTO {$this->deployTableName} (deployment_id, result_id, date_created)\n                SELECT :deploymentId, r.id, :dateCreated\n                FROM {$this->tableName} r\n                WHERE r.build_id = :buildId\n            ");
             $statement->bindValue(':deploymentId', $deploymentId, \SQLITE3_TEXT);
             $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
             $statement->bindValue(':dateCreated', (new DateTimeImmutable())->format('c'), \SQLITE3_TEXT);
@@ -239,15 +241,43 @@ final class SqliteResultRepository implements ResultRepositoryInterface, LoggerA
     public function markManyDeployed($deploymentId, $resultIds): void
     {
         $numResults = count($resultIds);
+        if ($numResults === 0) {
+            return;
+        }
         $this->logger->debug("Marking {$numResults} results deployed for deployment #{$deploymentId}", ['deploymentId' => $deploymentId]);
         try {
-            $statement = $this->sqlite->prepare("\n                UPDATE {$this->deployTableName}\n                SET date_deployed = :dateDeployed\n                WHERE deployment_id = :deploymentId\n                    AND result_id IN ('" . implode("', '", $resultIds) . "')", (new DateTimeImmutable())->format('Y-m-d H:i:s'), $deploymentId);
+            $statement = $this->sqlite->prepare("\n                UPDATE {$this->deployTableName}\n                SET date_deployed = :dateDeployed\n                WHERE deployment_id = :deploymentId\n                    AND date_deployed IS NULL\n                    AND result_id IN ('" . implode("', '", $resultIds) . "')");
             $statement->bindValue(':deploymentId', $deploymentId, \SQLITE3_TEXT);
             $statement->bindValue(':dateDeployed', (new DateTimeImmutable())->format('c'), \SQLITE3_TEXT);
             $statement->execute();
         } catch (Exception $e) {
             throw new RuntimeException("Unable to mark results deployed for deployment #{$deploymentId}: {$e->getMessage()}");
         }
+    }
+    /**
+     * @param string $buildId
+     * @param string $deploymentId
+     * @param mixed[] $keepSha1s
+     */
+    public function markAllDeployedExceptSha1s($buildId, $deploymentId, $keepSha1s): int
+    {
+        $this->logger->debug(sprintf('Marking every result in build #%s deployed for deployment #%s except %d hashes', $buildId, $deploymentId, count($keepSha1s)), ['buildId' => $buildId, 'deploymentId' => $deploymentId]);
+        $exclusion = '';
+        foreach (array_chunk(array_values(array_unique($keepSha1s)), self::MAX_SHA1_CHUNK) as $chunk) {
+            $exclusion .= " AND (r.sha1 IS NULL OR r.sha1 NOT IN ('" . implode("', '", array_map(function ($sha1) {
+                return SQLite3::escapeString((string) $sha1);
+            }, $chunk)) . "'))";
+        }
+        try {
+            $statement = $this->sqlite->prepare("\n                UPDATE {$this->deployTableName}\n                SET date_deployed = :dateDeployed\n                WHERE deployment_id = :deploymentId\n                    AND date_deployed IS NULL\n                    AND result_id IN (\n                        SELECT r.id\n                        FROM {$this->tableName} r\n                        WHERE r.build_id = :buildId{$exclusion}\n                    )\n            ");
+            $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
+            $statement->bindValue(':deploymentId', $deploymentId, \SQLITE3_TEXT);
+            $statement->bindValue(':dateDeployed', (new DateTimeImmutable())->format('c'), \SQLITE3_TEXT);
+            $statement->execute();
+        } catch (Exception $e) {
+            throw new RuntimeException("Unable to mark results deployed for deployment #{$deploymentId}: {$e->getMessage()}");
+        }
+        return $this->sqlite->changes();
     }
     private function bindResultValues(Result $result, SQLite3Stmt $statement): void
     {
@@ -293,11 +323,42 @@ final class SqliteResultRepository implements ResultRepositoryInterface, LoggerA
      */
     public function findByBuildId($buildId): Generator
     {
-        $statement = $this->sqlite->prepare("SELECT * FROM {$this->tableName} WHERE build_id = :buildId");
-        $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
-        $result = $statement->execute();
-        while ($row = $result->fetchArray(\SQLITE3_ASSOC)) {
-            yield $this->rowToResult($row);
+        $cursor = '';
+        while (\true) {
+            $statement = $this->sqlite->prepare("\n                SELECT *\n                FROM {$this->tableName}\n                WHERE build_id = :buildId\n                    AND id > :cursor\n                ORDER BY id\n                LIMIT " . self::PAGE_SIZE);
+            $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
+            $statement->bindValue(':cursor', $cursor, \SQLITE3_TEXT);
+            $result = $statement->execute();
+            $numRows = 0;
+            while ($row = $result->fetchArray(\SQLITE3_ASSOC)) {
+                $numRows++;
+                $cursor = $row['id'];
+                yield $this->rowToResult($row);
+            }
+            if ($numRows < self::PAGE_SIZE) {
+                return;
+            }
+        }
+    }
+    /**
+     * @param string $buildId
+     * @param mixed[] $sha1s
+     */
+    public function findByBuildIdAndSha1s($buildId, $sha1s): Generator
+    {
+        $sha1s = array_values(array_unique($sha1s));
+        if ($sha1s === []) {
+            return;
+        }
+        foreach (array_chunk($sha1s, self::MAX_SHA1_CHUNK) as $chunk) {
+            $statement = $this->sqlite->prepare("\n                SELECT *\n                FROM {$this->tableName}\n                WHERE build_id = :buildId\n                    AND sha1 IN ('" . implode("', '", array_map(function ($sha1) {
+                return SQLite3::escapeString((string) $sha1);
+            }, $chunk)) . "')");
+            $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
+            $result = $statement->execute();
+            while ($row = $result->fetchArray(\SQLITE3_ASSOC)) {
+                yield $this->rowToResult($row);
+            }
         }
     }
     /**
@@ -316,12 +377,22 @@ final class SqliteResultRepository implements ResultRepositoryInterface, LoggerA
      */
     public function findByBuildIdPendingDeployment($buildId, $deploymentId): Generator
     {
-        $statement = $this->sqlite->prepare("\n            SELECT r.*\n            FROM {$this->tableName} r\n                LEFT JOIN {$this->deployTableName} d ON d.deployment_id = :deploymentId AND d.result_id = r.id\n            WHERE r.build_id = :buildId\n                AND d.date_deployed IS NULL\n        ");
-        $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
-        $statement->bindValue(':deploymentId', $deploymentId, \SQLITE3_TEXT);
-        $result = $statement->execute();
-        while ($row = $result->fetchArray(\SQLITE3_ASSOC)) {
-            yield $this->rowToResult($row);
+        $cursor = '';
+        while (\true) {
+            $statement = $this->sqlite->prepare("\n                SELECT r.*\n                FROM {$this->tableName} r\n                    LEFT JOIN {$this->deployTableName} d ON d.deployment_id = :deploymentId AND d.result_id = r.id\n                WHERE r.build_id = :buildId\n                    AND r.id > :cursor\n                    AND d.date_deployed IS NULL\n                ORDER BY r.id\n                LIMIT " . self::PAGE_SIZE);
+            $statement->bindValue(':buildId', $buildId, \SQLITE3_TEXT);
+            $statement->bindValue(':deploymentId', $deploymentId, \SQLITE3_TEXT);
+            $statement->bindValue(':cursor', $cursor, \SQLITE3_TEXT);
+            $result = $statement->execute();
+            $numRows = 0;
+            while ($row = $result->fetchArray(\SQLITE3_ASSOC)) {
+                $numRows++;
+                $cursor = $row['id'];
+                yield $this->rowToResult($row);
+            }
+            if ($numRows < self::PAGE_SIZE) {
+                return;
+            }
         }
     }
     /**

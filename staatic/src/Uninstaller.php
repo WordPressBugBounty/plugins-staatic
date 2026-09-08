@@ -55,6 +55,7 @@ final class Uninstaller
             'staatic_logging_level',
             'staatic_override_site_url',
             'staatic_page_not_found_path',
+            'staatic_publication_time_limit',
             'staatic_ssl_verify_behavior',
             'staatic_ssl_verify_path',
             'staatic_uninstall_data',
@@ -114,7 +115,12 @@ final class Uninstaller
             'staatic_latest_publication_id',
             'staatic_active_publication_id',
             'staatic_active_preview_publication_id',
-            'staatic_test_request_status'
+            // The publication worker diagnostic's run lock and recorded status. This class is
+            // loaded directly by uninstall.php without the plugin autoloader, so they are named
+            // here rather than read off TestRequest — but they are still settings, and the
+            // opt-out above governs them like the rest.
+            'staatic_test_request_lock',
+            'staatic_test_request_status',
         ];
         foreach ($options as $option) {
             // var_dump($option); continue; //!

@@ -30,6 +30,24 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
     private const MAX_URL_LENGTH = 2083;
 
     /**
+     * How many rows a paged read fetches per statement. Small enough that a build of any size
+     * costs a bounded amount of memory — a 75k-result build used to need some 300 MiB in one
+     * go, against a web request's typical 256 MiB — and large enough that the per-statement
+     * overhead is not worth counting.
+     *
+     * @var int
+     */
+    private const PAGE_SIZE = 2000;
+
+    /**
+     * How many hashes go into one IN () list. wpdb has no bind-count ceiling, but a statement
+     * still has to stay comfortably under the server's max_allowed_packet.
+     *
+     * @var int
+     */
+    private const MAX_SHA1_CHUNK = 500;
+
+    /**
      * @var string
      */
     private $tableName;
@@ -176,8 +194,13 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
             'buildId' => $buildId,
             'deploymentId' => $deploymentId
         ]);
+        // IGNORE makes this repeatable. Initiating a deployment can take several passes, and a
+        // pass that is cut short runs this again; without it the second run would collide with
+        // the rows the first one inserted, since they are keyed by result and deployment. Rows
+        // that already exist keep their date_created and, crucially, their date_deployed, so
+        // re-scheduling never undoes marking that has already happened.
         $statement = $this->wpdb->prepare(
-            "\n            INSERT INTO {$this->deployTableName} (deployment_uuid, result_uuid, date_created)\n            SELECT UNHEX(REPLACE(%s, '-', '')), r.uuid, %s\n            FROM {$this->tableName} r\n            WHERE r.build_uuid = UNHEX(REPLACE(%s, '-', ''))",
+            "\n            INSERT IGNORE INTO {$this->deployTableName} (deployment_uuid, result_uuid, date_created)\n            SELECT UNHEX(REPLACE(%s, '-', '')), r.uuid, %s\n            FROM {$this->tableName} r\n            WHERE r.build_uuid = UNHEX(REPLACE(%s, '-', ''))",
             $deploymentId,
             (new DateTimeImmutable())->format('Y-m-d H:i:s'),
             $buildId
@@ -223,21 +246,75 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
     public function markManyDeployed($deploymentId, $resultIds): void
     {
         $numResults = count($resultIds);
+        if ($numResults === 0) {
+            return;
+        }
         $this->logger->debug("Marking {$numResults} results deployed for deployment #{$deploymentId}", [
             'deploymentId' => $deploymentId
         ]);
+        // "date_deployed IS NULL" makes this idempotent, which is what lets an interrupted
+        // marking pass simply run again. It also means MySQL's rows-changed count says how many
+        // were newly marked, not how many were named, so only an outright failure is an error.
         $statement = $this->wpdb->prepare(
-            "\n            UPDATE {$this->deployTableName}\n            SET date_deployed = %s\n            WHERE deployment_uuid = UNHEX(REPLACE(%s, '-', ''))\n                AND result_uuid IN (UNHEX(REPLACE('" . implode(
+            "\n            UPDATE {$this->deployTableName}\n            SET date_deployed = %s\n            WHERE deployment_uuid = UNHEX(REPLACE(%s, '-', ''))\n                AND date_deployed IS NULL\n                AND result_uuid IN (UNHEX(REPLACE('" . implode(
                 "', '-', '')), UNHEX(REPLACE('",
-                $resultIds
+                array_map('esc_sql', $resultIds)
             ) . "', '-', '')))",
             (new DateTimeImmutable())->format('Y-m-d H:i:s'),
             $deploymentId
         );
         $rowsAffected = $this->wpdb->query($statement);
-        if ($rowsAffected !== $numResults) {
-            throw new RuntimeException("Unable to mark results deployed for deployment #{$deploymentId}");
+        if ($rowsAffected === \false) {
+            throw new RuntimeException(
+                "Unable to mark results deployed for deployment #{$deploymentId}: {$this->wpdb->last_error}"
+            );
         }
+    }
+
+    /**
+     * @param string $buildId
+     * @param string $deploymentId
+     * @param mixed[] $keepSha1s
+     */
+    public function markAllDeployedExceptSha1s($buildId, $deploymentId, $keepSha1s): int
+    {
+        $this->logger->debug(
+            sprintf(
+                'Marking every result in build #%s deployed for deployment #%s except %d hashes',
+                $buildId,
+                $deploymentId,
+                count($keepSha1s)
+            ),
+            [
+            'buildId' => $buildId,
+            'deploymentId' => $deploymentId
+        ]
+        );
+        // Chunked so no single IN () list grows unbounded; the chunks are ANDed, which is what
+        // "not in any of them" means. A NULL sha1 is not one of the kept hashes, but
+        // "NULL NOT IN (…)" is NULL rather than true and would quietly leave the row pending
+        // forever, so it is named explicitly — as the framework's own repositories do.
+        $exclusion = '';
+        foreach (array_chunk(array_values(array_unique($keepSha1s)), self::MAX_SHA1_CHUNK) as $chunk) {
+            $exclusion .= " AND (r.sha1 IS NULL OR r.sha1 NOT IN ('" . implode(
+                "', '",
+                array_map('esc_sql', $chunk)
+            ) . "'))";
+        }
+        $statement = $this->wpdb->prepare(
+            "\n            UPDATE {$this->deployTableName} d\n                INNER JOIN {$this->tableName} r ON r.uuid = d.result_uuid\n            SET d.date_deployed = %s\n            WHERE d.deployment_uuid = UNHEX(REPLACE(%s, '-', ''))\n                AND r.build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                AND d.date_deployed IS NULL{$exclusion}",
+            (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+            $deploymentId,
+            $buildId
+        );
+        $rowsAffected = $this->wpdb->query($statement);
+        if ($rowsAffected === \false) {
+            throw new RuntimeException(
+                "Unable to mark results deployed for deployment #{$deploymentId}: {$this->wpdb->last_error}"
+            );
+        }
+
+        return is_int($rowsAffected) ? $rowsAffected : 0;
     }
 
     private function getResultValues(Result $result): array
@@ -308,15 +385,54 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
      */
     public function findByBuildId($buildId): Generator
     {
-        $rows = $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "SELECT * FROM {$this->tableName} WHERE build_uuid = UNHEX(REPLACE(%s, '-', ''))",
-                $buildId
-            ),
-            \ARRAY_A
-        );
-        foreach ($rows as $row) {
-            yield $this->rowToResult($row);
+        $cursor = 0;
+        while (\true) {
+            $rows = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "\n                    SELECT *\n                    FROM {$this->tableName}\n                    WHERE build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                        AND id > %d\n                    ORDER BY id\n                    LIMIT %d",
+                    $buildId,
+                    $cursor,
+                    self::PAGE_SIZE
+                ),
+                \ARRAY_A
+            );
+            foreach ($rows as $row) {
+                $cursor = (int) $row['id'];
+                yield $this->rowToResult($row);
+            }
+            if (count($rows) < self::PAGE_SIZE) {
+                return;
+            }
+            unset($rows);
+        }
+    }
+
+    /**
+     * @param string[] $sha1s
+     * @return Result[]|Generator
+     * @param string $buildId
+     */
+    public function findByBuildIdAndSha1s($buildId, $sha1s): Generator
+    {
+        $sha1s = array_values(array_unique($sha1s));
+        if ($sha1s === []) {
+            return;
+        }
+        foreach (array_chunk($sha1s, self::MAX_SHA1_CHUNK) as $chunk) {
+            $rows = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "\n                    SELECT *\n                    FROM {$this->tableName}\n                    WHERE build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                        AND sha1 IN ('" . implode(
+                        "', '",
+                        array_map('esc_sql', $chunk)
+                    ) . "')",
+                    $buildId
+                ),
+                \ARRAY_A
+            );
+            foreach ($rows as $row) {
+                yield $this->rowToResult($row);
+            }
+            unset($rows);
         }
     }
 
@@ -340,21 +456,35 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
     }
 
     /**
+     * Pages on the results table's own primary key rather than on date_deployed. That matters
+     * because callers mark results deployed while draining this generator: a cursor over a
+     * column the caller is writing would drift, whereas r.id is immutable, so each page
+     * continues exactly where the last one stopped and no pending row can be stepped over.
      * @param string $buildId
      * @param string $deploymentId
      */
     public function findByBuildIdPendingDeployment($buildId, $deploymentId): Generator
     {
-        $rows = $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "\n                SELECT r.*\n                FROM {$this->tableName} r\n                    LEFT JOIN {$this->deployTableName} d ON\n                        d.deployment_uuid = UNHEX(REPLACE(%s, '-', '')) AND\n                        d.result_uuid = r.uuid\n                WHERE r.build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                    AND d.date_deployed IS NULL",
-                $deploymentId,
-                $buildId
-            ),
-            \ARRAY_A
-        );
-        foreach ($rows as $row) {
-            yield $this->rowToResult($row);
+        $cursor = 0;
+        while (\true) {
+            $rows = $this->wpdb->get_results(
+                $this->wpdb->prepare(
+                    "\n                    SELECT r.*\n                    FROM {$this->tableName} r\n                        LEFT JOIN {$this->deployTableName} d ON\n                            d.deployment_uuid = UNHEX(REPLACE(%s, '-', '')) AND\n                            d.result_uuid = r.uuid\n                    WHERE r.build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                        AND r.id > %d\n                        AND d.date_deployed IS NULL\n                    ORDER BY r.id\n                    LIMIT %d",
+                    $deploymentId,
+                    $buildId,
+                    $cursor,
+                    self::PAGE_SIZE
+                ),
+                \ARRAY_A
+            );
+            foreach ($rows as $row) {
+                $cursor = (int) $row['id'];
+                yield $this->rowToResult($row);
+            }
+            if (count($rows) < self::PAGE_SIZE) {
+                return;
+            }
+            unset($rows);
         }
     }
 

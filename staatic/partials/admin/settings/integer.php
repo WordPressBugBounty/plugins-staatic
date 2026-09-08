@@ -34,7 +34,16 @@ if (isset($attributes['composed'])) {
             min="<?php 
 echo isset($attributes['min']) ? (int) $attributes['min'] : 0;
 ?>"
-            min="<?php 
+            <?php 
+if (isset($attributes['max'])) {
+    ?>
+            max="<?php 
+    echo (int) $attributes['max'];
+    ?>"
+            <?php 
+}
+?>
+            step="<?php 
 echo isset($attributes['step']) ? (int) $attributes['step'] : 1;
 ?>"
             class="regular-text code"

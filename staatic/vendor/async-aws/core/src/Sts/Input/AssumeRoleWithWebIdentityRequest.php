@@ -67,58 +67,37 @@ final class AssumeRoleWithWebIdentityRequest extends Input
         $body = http_build_query(['Action' => 'AssumeRoleWithWebIdentity', 'Version' => '2011-06-15'] + $this->requestBody(), '', '&', \PHP_QUERY_RFC1738);
         return new Request('POST', $uriString, $query, $headers, StreamFactory::create($body));
     }
-    /**
-     * @param int|null $value
-     */
-    public function setDurationSeconds($value): self
+    public function setDurationSeconds(?int $value): self
     {
         $this->durationSeconds = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setPolicy($value): self
+    public function setPolicy(?string $value): self
     {
         $this->policy = $value;
         return $this;
     }
-    /**
-     * @param mixed[] $value
-     */
-    public function setPolicyArns($value): self
+    public function setPolicyArns(array $value): self
     {
         $this->policyArns = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setProviderId($value): self
+    public function setProviderId(?string $value): self
     {
         $this->providerId = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setRoleArn($value): self
+    public function setRoleArn(?string $value): self
     {
         $this->roleArn = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setRoleSessionName($value): self
+    public function setRoleSessionName(?string $value): self
     {
         $this->roleSessionName = $value;
         return $this;
     }
-    /**
-     * @param string|null $value
-     */
-    public function setWebIdentityToken($value): self
+    public function setWebIdentityToken(?string $value): self
     {
         $this->webIdentityToken = $value;
         return $this;

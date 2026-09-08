@@ -60,6 +60,12 @@ final class Publication
     /** @var int */
     public const TIME_LIMIT_IN_HOURS = 4;
 
+    /** @var int */
+    public const MINIMUM_TIME_LIMIT_IN_HOURS = 1;
+
+    /** @var int */
+    public const MAXIMUM_TIME_LIMIT_IN_HOURS = 72;
+
     /**
      * @var PublicationStatus
      */
@@ -88,6 +94,28 @@ final class Publication
         $this->dateFinished = $dateFinished;
         $this->currentTask = $currentTask;
         $this->status = $status ?? PublicationStatus::create(PublicationStatus::STATUS_PENDING);
+    }
+
+    /**
+     * The number of hours a publication may take before it is canceled.
+     *
+     * The saved setting replaces the built-in default, after which the long-standing
+     * staatic_publication_timeout filter is applied last so an existing filter keeps
+     * overriding whatever the site has configured. The stored value is held to the
+     * bounds the setting enforces, because the option can also reach the database
+     * without passing through the settings screen; the filter stays unbounded, since
+     * it is existing public API and sites rely on it to lift the limit.
+     */
+    public static function timeLimitInHours(): int
+    {
+        $limit = (int) get_option('staatic_publication_time_limit');
+        if ($limit < self::MINIMUM_TIME_LIMIT_IN_HOURS) {
+            $limit = self::TIME_LIMIT_IN_HOURS;
+        } elseif ($limit > self::MAXIMUM_TIME_LIMIT_IN_HOURS) {
+            $limit = self::MAXIMUM_TIME_LIMIT_IN_HOURS;
+        }
+
+        return (int) apply_filters('staatic_publication_timeout', $limit);
     }
 
     public function id(): string

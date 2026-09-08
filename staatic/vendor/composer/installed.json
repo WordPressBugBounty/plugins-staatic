@@ -2865,23 +2865,23 @@
         },
         {
             "name": "symfony/polyfill-php74",
-            "version": "v1.38.1",
-            "version_normalized": "1.38.1.0",
+            "version": "v1.41.0",
+            "version_normalized": "1.41.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php74.git",
-                "reference": "33161c2425b17b0db45b86a8ac97680bc3797e22"
+                "reference": "03c386f3a2a8f39832b71320c59e4340fb988f1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php74/zipball/33161c2425b17b0db45b86a8ac97680bc3797e22",
-                "reference": "33161c2425b17b0db45b86a8ac97680bc3797e22",
+                "url": "https://api.github.com/repos/symfony/polyfill-php74/zipball/03c386f3a2a8f39832b71320c59e4340fb988f1e",
+                "reference": "03c386f3a2a8f39832b71320c59e4340fb988f1e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2"
             },
-            "time": "2026-05-26T05:57:15+00:00",
+            "time": "2026-07-01T14:55:19+00:00",
             "type": "library",
             "extra": {
                 "thanks": {
@@ -2925,7 +2925,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php74/tree/v1.38.1"
+                "source": "https://github.com/symfony/polyfill-php74/tree/v1.41.0"
             },
             "funding": [
                 {

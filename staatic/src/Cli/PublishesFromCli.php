@@ -76,7 +76,10 @@ trait PublishesFromCli
                 if (get_class($task) === CrawlTask::class) {
                     $addTicks = $publication->build()->numUrlsCrawled() - $ticks;
                     if ($addTicks) {
-                        $progress->setTotal($publication->build()->numUrlsCrawlable());
+                        // The total is sampled while the crawl is still running, so it can lag
+                        // the tick count by a batch; keeping it at least the ticks stops the bar
+                        // from reporting more than 100%.
+                        $progress->setTotal(max($publication->build()->numUrlsCrawlable(), $ticks + $addTicks));
                         $progress->tick($addTicks);
                         $ticks += $addTicks;
                     }
@@ -167,9 +170,6 @@ trait PublishesFromCli
 
     private function exceedsPublicationTimeLimit(Publication $publication): bool
     {
-        return DateUtil::isDateNumHoursAgo(
-            $publication->dateCreated(),
-            apply_filters('staatic_publication_timeout', Publication::TIME_LIMIT_IN_HOURS)
-        );
+        return DateUtil::isDateNumHoursAgo($publication->dateCreated(), Publication::timeLimitInHours());
     }
 }

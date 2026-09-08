@@ -43,8 +43,13 @@ final class Scheduler
         }
     }
 
-    public function schedule(string $event, string $schedule): bool
+    public function clear(string $event): bool
     {
-        return Polyfill::wp_schedule_event(time(), $schedule, $event, []);
+        return wp_clear_scheduled_hook($event) !== \false;
+    }
+
+    public function schedule(string $event, string $schedule, ?int $firstRun = null): bool
+    {
+        return Polyfill::wp_schedule_event($firstRun ?? time(), $schedule, $event, []);
     }
 }

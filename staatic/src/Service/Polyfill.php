@@ -73,13 +73,9 @@ final class Polyfill
     // https://developer.wordpress.org/reference/functions/wp_schedule_event/
     public static function wp_schedule_event($timestamp, $recurrence, $hook, $args = []): bool
     {
-        global $wp_version;
         $result = wp_schedule_event($timestamp, $recurrence, $hook, $args);
-        if ($result !== \true && version_compare($wp_version, '5.1.0', '>=')) {
-            return $result;
-        } else {
-            return \true;
-        }
+
+        return $result !== \false;
     }
 
     public static function wp_timezone(): DateTimeZone

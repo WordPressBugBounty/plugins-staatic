@@ -21,9 +21,21 @@ final class ResourceRepositoryFactory
         $this->workDirectory = $workDirectory;
     }
 
+    /**
+     * The directory the resource bodies are stored in, whether or not it exists yet.
+     *
+     * Exposed so callers that need to describe the store to something else (the Staatic Cloud
+     * deploy strategy declares it to the platform) read the same value the repository writes to,
+     * rather than recomputing it from the work directory and drifting.
+     */
+    public function resourceDirectory(): string
+    {
+        return untrailingslashit($this->workDirectory->value()) . '/resources';
+    }
+
     public function __invoke(): ResourceRepositoryInterface
     {
-        $resourceDirectory = untrailingslashit($this->workDirectory->value()) . '/resources';
+        $resourceDirectory = $this->resourceDirectory();
         if (!is_dir($resourceDirectory)) {
             if (!mkdir($resourceDirectory, 0777, \true)) {
                 return new InMemoryResourceRepository();
