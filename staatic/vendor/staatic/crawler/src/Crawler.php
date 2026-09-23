@@ -102,6 +102,7 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
             $this->logger->info(sprintf("%s: %d crawl URLs enqueued", self::shortClassName($crawlUrlProvider), $numEnqueued));
             $totalEnqueued += $numEnqueued;
         }
+        $this->flushKnownUrls();
         return $totalEnqueued;
     }
     private function enqueueProvidedCrawlUrls(CrawlUrlProviderInterface $crawlUrlProvider): int
@@ -147,6 +148,7 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
         }
         $this->responseRejectedHandlerChain = $this->crawlOptions->responseRejectedHandlers()->toChain($this);
         $this->numCrawlProcessed = 0;
+        $this->pendingCrawlsById = [];
         $this->crawlLoop();
         if ($this->isFinishedCrawling()) {
             $this->notifyFinishedCrawling();
@@ -155,7 +157,7 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
     }
     private function crawlLoop(): void
     {
-        while (!$this->isFinishedCrawling() && !$this->maxCrawlsReached()) {
+        while (!$this->isFinishedCrawling() && !$this->maxCrawlsReached() && !$this->deadlineReached()) {
             $this->startCrawlQueue();
         }
     }
@@ -164,9 +166,14 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
         $maxCrawls = $this->crawlOptions->maxCrawls();
         return $maxCrawls !== null && $this->numCrawlProcessed >= $maxCrawls;
     }
+    private function deadlineReached(): bool
+    {
+        $deadline = $this->crawlOptions->deadline();
+        return $deadline !== null && microtime(\true) >= $deadline;
+    }
     private function isFinishedCrawling(): bool
     {
-        return count($this->crawlQueue) === 0;
+        return $this->crawlQueue->isEmpty();
     }
     private function notifyStartsCrawling()
     {
@@ -214,6 +221,10 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
         $priority = $this->determineCrawlUrlPriority($crawlUrl);
         $this->crawlQueue->enqueue($crawlUrl, $priority);
     }
+    private function flushKnownUrls(): void
+    {
+        $this->knownUrlsContainer->flush();
+    }
     private function shouldIgnoreMaxDepth(CrawlUrl $crawlUrl): bool
     {
         if ($crawlUrl->hasTag(self::TAG_PROVIDED_URL)) {
@@ -254,12 +265,25 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
     }
     private function getHttpRequests(): Generator
     {
-        while ($this->crawlQueue->count() && !$this->maxCrawlsReached()) {
-            $crawlUrl = $this->crawlQueue->dequeue();
-            $this->pendingCrawlsById[$crawlUrl->id()] = PendingCrawl::create($crawlUrl);
-            $this->numCrawlProcessed++;
-            $this->logger->debug("Preparing request for '{$crawlUrl->url()}'", ['crawlUrlId' => $crawlUrl->id()]);
-            yield $crawlUrl->id() => new Request('GET', $crawlUrl->url());
+        while (!$this->maxCrawlsReached() && !$this->deadlineReached()) {
+            $limit = $this->crawlOptions->concurrency() * 2;
+            $maxCrawls = $this->crawlOptions->maxCrawls();
+            if ($maxCrawls !== null) {
+                $limit = min($limit, $maxCrawls - $this->numCrawlProcessed);
+            }
+            if ($limit <= 0) {
+                return;
+            }
+            $crawlUrls = $this->crawlQueue->dequeueMany($limit);
+            if ($crawlUrls === []) {
+                return;
+            }
+            foreach ($crawlUrls as $crawlUrl) {
+                $this->pendingCrawlsById[$crawlUrl->id()] = PendingCrawl::create($crawlUrl);
+                $this->numCrawlProcessed++;
+                $this->logger->debug("Preparing request for '{$crawlUrl->url()}'", ['crawlUrlId' => $crawlUrl->id()]);
+                yield $crawlUrl->id() => new Request('GET', $crawlUrl->url());
+            }
         }
     }
     private function handleRequestFulfilled(ResponseInterface $response, string $crawlUrlId): void
@@ -271,6 +295,7 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
         if (!$crawlUrl->hasTag(self::TAG_DONT_TOUCH)) {
             $crawlUrl = $this->responseFulfilledHandlerChain->handle($crawlUrl);
         }
+        $this->flushKnownUrls();
         $this->notifyCrawlRequestFulfilled($crawlUrl);
     }
     private function notifyCrawlRequestFulfilled(CrawlUrl $crawlUrl): void
@@ -295,6 +320,7 @@ final class Crawler implements CrawlerInterface, LoggerAwareInterface
         } elseif (!$crawlUrl->hasTag(self::TAG_DONT_TOUCH)) {
             $crawlUrl = $this->responseRejectedHandlerChain->handle($crawlUrl);
         }
+        $this->flushKnownUrls();
         $this->notifyCrawlRequestRejected($crawlUrl, $transferException);
     }
     private function shouldProcessNotFoundResponse(CrawlUrl $crawlUrl, Throwable $transferException): bool

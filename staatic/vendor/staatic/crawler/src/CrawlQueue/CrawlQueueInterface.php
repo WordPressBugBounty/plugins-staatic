@@ -13,4 +13,9 @@ interface CrawlQueueInterface extends Countable
      */
     public function enqueue($crawlUrl, $priority): void;
     public function dequeue(): CrawlUrl;
+    /**
+     * @param int $limit
+     */
+    public function dequeueMany($limit): array;
+    public function isEmpty(): bool;
 }

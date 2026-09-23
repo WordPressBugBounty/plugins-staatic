@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator for WordPress ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.13.0
+Stable tag: 1.13.1
 Tested up to: 7.1
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -112,6 +112,26 @@ For commercial support, Staatic Premium, or Staatic Cloud questions, you can als
 3. Configure build, deployment, and advanced publication settings for your site.
 
 == Changelog ==
+
+= 1.13.1 =
+
+Release date: September 23rd, 2026.
+
+**Features**
+
+* Adds a Publication Retention Count setting under Advanced settings.
+* Introduces the `staatic_publication_tick` action during crawling.
+* Adds Site Health advice for persistent object caches on large sites and crawl queue indexes stored in ascending order.
+
+**Improvements**
+
+* Speeds up crawling on large sites with batched crawl queue dequeues and discovered URL writes.
+* Keeps the crawl pool fed with time-budgeted batches, so publications started from the WordPress admin run as fast as WP-CLI.
+* Corrects the primary key order of the results deployment table on existing installs and indexes publication logs by date.
+
+**Bug Fixes**
+
+* Prevents wp-admin fatal errors when packaged plugin files are missing.
 
 = 1.13.0 =
 

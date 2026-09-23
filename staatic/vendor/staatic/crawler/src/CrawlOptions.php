@@ -27,6 +27,10 @@ final class CrawlOptions
      */
     private $maxCrawls;
     /**
+     * @var float|null
+     */
+    private $deadline;
+    /**
      * @var int|null
      */
     private $maxDepth;
@@ -75,6 +79,9 @@ final class CrawlOptions
         }
         if (isset($options['maxCrawls'])) {
             $this->setMaxCrawls($options['maxCrawls']);
+        }
+        if (isset($options['deadline'])) {
+            $this->setDeadline($options['deadline']);
         }
         if (isset($options['maxDepth'])) {
             $this->setMaxDepth($options['maxDepth']);
@@ -133,6 +140,15 @@ final class CrawlOptions
     public function maxCrawls(): ?int
     {
         return $this->maxCrawls;
+    }
+    public function setDeadline(?float $deadline): self
+    {
+        $this->deadline = $deadline;
+        return $this;
+    }
+    public function deadline(): ?float
+    {
+        return $this->deadline;
     }
     public function setMaxDepth(?int $maxDepth): self
     {

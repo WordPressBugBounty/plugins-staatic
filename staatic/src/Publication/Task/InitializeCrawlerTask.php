@@ -50,7 +50,7 @@ final class InitializeCrawlerTask implements TaskInterface
     public function execute($publication, $limitedResources): bool
     {
         $staticGenerator = ($this->factory)($publication, $limitedResources);
-        $crawlUrlProviders = $this->factory->createCrawlUrlProviders();
+        $crawlUrlProviders = $this->factory->createCrawlUrlProviders($publication);
         $numEnqueued = $staticGenerator->initializeCrawler($publication->build(), $crawlUrlProviders);
         if (!$numEnqueued) {
             throw new RuntimeException('No crawl urls were enqueued; nothing to do!');

@@ -83,27 +83,76 @@ final class CrawlQueue implements CrawlQueueInterface, LoggerAwareInterface
         ];
     }
 
+    /**
+     * A single-url dequeue is dequeueMany(1): one SELECT-then-DELETE path instead of two, so the
+     * batch path's delete-count assertion (below) covers this one too.
+     */
     public function dequeue(): CrawlUrl
     {
-        $row = $this->wpdb->get_row(
-            "SELECT * FROM {$this->tableName} ORDER BY priority DESC, id ASC LIMIT 1",
-            \ARRAY_A
-        );
-        if ($row === null) {
+        $crawlUrls = $this->dequeueMany(1);
+        if ($crawlUrls === []) {
             throw new RuntimeException('Unable to dequeue; queue was empty');
         }
-        $crawlUrl = $this->rowToCrawlUrl($row);
-        $result = $this->wpdb->delete($this->tableName, [
-            'uuid' => $crawlUrl->id()
-        ]);
-        if ($result === \false) {
-            throw new RuntimeException("Unable to dequeue crawl url '{$crawlUrl->url()}: {$this->wpdb->last_error}");
-        }
-        $this->logger->debug("Dequeued crawl url '{$crawlUrl->url()}'", [
-            'crawlUrlId' => $crawlUrl->id()
-        ]);
 
-        return $crawlUrl;
+        return $crawlUrls[0];
+    }
+
+    /**
+     * @param int $limit
+     */
+    public function dequeueMany($limit): array
+    {
+        if ($limit <= 0) {
+            return [];
+        }
+        $rows = $this->wpdb->get_results(
+            $this->wpdb->prepare("SELECT * FROM {$this->tableName} ORDER BY priority DESC, id ASC LIMIT %d", $limit),
+            \ARRAY_A
+        );
+        if (!$rows) {
+            return [];
+        }
+        $crawlUrls = array_map(function (array $row) {
+            return $this->rowToCrawlUrl($row);
+        }, $rows);
+        // Match the storage format `enqueue()`/`insert()` use for this binary(16) column
+        // (via the globally registered `uuid` field type). A plain `%s` placeholder compares
+        // the 36-char string against the binary column and matches nothing.
+        $placeholders = implode(', ', array_fill(0, count($crawlUrls), "UNHEX(REPLACE(%s, '-', ''))"));
+        $result = $this->wpdb->query(
+            $this->wpdb->prepare("DELETE FROM {$this->tableName} WHERE uuid IN ({$placeholders})", array_map(
+                function (CrawlUrl $crawlUrl) {
+            return $crawlUrl->id();
+        },
+                $crawlUrls
+            ))
+        );
+        if ($result === \false) {
+            throw new RuntimeException("Unable to dequeue crawl urls: {$this->wpdb->last_error}");
+        }
+        if ((int) $result !== count($crawlUrls)) {
+            // The query itself succeeded here, so last_error is empty; a bare "Unable to dequeue
+            // crawl urls: " would hide the actual mismatch (a stray second process, a manual
+            // truncate, a cancel racing this batch). Name the expected/actual counts instead, as
+            // SqliteCrawlQueue::dequeueMany() already does.
+            throw new RuntimeException(sprintf(
+                'Unable to dequeue crawl urls: expected to delete %d row(s), deleted %d',
+                count($crawlUrls),
+                (int) $result
+            ));
+        }
+        foreach ($crawlUrls as $crawlUrl) {
+            $this->logger->debug("Dequeued crawl url '{$crawlUrl->url()}'", [
+                'crawlUrlId' => $crawlUrl->id()
+            ]);
+        }
+
+        return $crawlUrls;
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->wpdb->get_var("SELECT 1 FROM {$this->tableName} LIMIT 1") === null;
     }
 
     private function rowToCrawlUrl(array $row): CrawlUrl

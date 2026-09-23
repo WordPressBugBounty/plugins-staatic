@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Staatic\WordPress\Module\Admin;
 
 use Staatic\WordPress\Module\ModuleInterface;
+use Staatic\WordPress\Util\PluginAsset;
 
 final class RegisterAssets implements ModuleInterface
 {
@@ -46,7 +47,7 @@ final class RegisterAssets implements ModuleInterface
 
     public function enqueueScripts(): void
     {
-        $scriptAsset = require "{$this->pluginPath}/assets/admin.asset.php";
+        $scriptAsset = PluginAsset::manifest("{$this->pluginPath}/assets/admin.asset.php", $this->pluginVersion);
         wp_enqueue_script(
             'staatic-admin',
             "{$this->pluginUrl}/assets/admin.js",

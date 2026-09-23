@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Staatic\WordPress\Request;
 
 use Closure;
-use Staatic\WordPress\Publication\BackgroundPublisher;
+use Staatic\WordPress\Publication\ProcessTimeLimit;
 use Staatic\Vendor\WP_Async_Request;
 
 final class TestRequest extends WP_Async_Request
@@ -107,7 +107,7 @@ final class TestRequest extends WP_Async_Request
             (int) get_option('staatic_background_process_timeout')
         );
         $usesFallback = $configuredRuntime <= 0;
-        $effectiveRuntime = $usesFallback ? BackgroundPublisher::DEFAULT_PROCESS_TIME_LIMIT : $configuredRuntime;
+        $effectiveRuntime = $usesFallback ? ProcessTimeLimit::DEFAULT_PROCESS_TIME_LIMIT : $configuredRuntime;
 
         return [
             'configuredRuntime' => $configuredRuntime,

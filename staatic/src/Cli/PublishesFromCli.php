@@ -9,6 +9,7 @@ use Staatic\WordPress\Logging\Contextable;
 use Staatic\WordPress\Publication\Publication;
 use Staatic\WordPress\Publication\Task\CrawlTask;
 use Staatic\WordPress\Publication\Task\DeployTask;
+use Staatic\WordPress\Publication\Task\InitializeCrawlerTask;
 use Staatic\WordPress\Util\DateUtil;
 use Staatic\WordPress\Util\TimeLimit;
 use Throwable;
@@ -68,7 +69,7 @@ trait PublishesFromCli
             }
             do {
                 try {
-                    $taskFinished = $task->execute($publication, \true);
+                    $taskFinished = $task->execute($publication, self::limitedResourcesForTask(get_class($task)));
                     $this->updatePublicationUnlessCanceled($publication);
                 } catch (Throwable $failure) {
                     $this->handleFailure($publication, $task::name(), $failure);
@@ -118,6 +119,21 @@ trait PublishesFromCli
             __('Publication finished in %s!', 'staatic'),
             $this->formatter->difference($publication->dateCreated(), $publication->dateFinished())
         ));
+    }
+
+    /**
+     * CLI is a long-lived process with no per-request time limit to stay under, unlike
+     * wp-admin's background publisher, so the crawl is not actually resource constrained the
+     * way this flag has always claimed: StaticGeneratorFactory reads it to size the crawl batch
+     * by a fixed progress-bar cadence (60s) instead of wp-admin's request-time estimate. That is
+     * only true for the crawl tasks - every other task's batch size (in particular DeployTask's,
+     * via StaticDeployerFactory::batchSize()) has always meant "unconstrained" as `true`, and
+     * flipping it there too would be an unrelated, unmeasured 4x jump in the deploy write batch
+     * on every CLI publish. Pinned by PublishesFromCliLimitedResourcesTest.
+     */
+    private static function limitedResourcesForTask(string $taskClass): bool
+    {
+        return !in_array($taskClass, [CrawlTask::class, InitializeCrawlerTask::class], \true);
     }
 
     /**

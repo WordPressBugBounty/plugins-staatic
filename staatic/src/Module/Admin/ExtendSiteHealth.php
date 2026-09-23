@@ -58,6 +58,14 @@ final class ExtendSiteHealth implements ModuleInterface
             'label' => __('Writable work directory', 'staatic'),
             'test' => [$this->healthChecks, 'writableWorkDirectoryTest']
         ];
+        $tests['direct']['staatic_object_cache'] = [
+            'label' => __('Persistent object cache', 'staatic'),
+            'test' => [$this->healthChecks, 'objectCacheTest']
+        ];
+        $tests['direct']['staatic_crawl_queue_priority_index'] = [
+            'label' => __('Crawl queue priority index', 'staatic'),
+            'test' => [$this->healthChecks, 'crawlQueuePriorityIndexTest']
+        ];
         if (TestRequest::isEnabled()) {
             $tests['direct']['staatic_publication_task_timeout'] = [
                 'label' => __('Publication worker survival', 'staatic'),

@@ -43,6 +43,22 @@ class InMemoryCrawlQueue implements CrawlQueueInterface, LoggerAwareInterface
         $this->logger->debug("Dequeued crawl url '{$crawlUrl->url()}'", ['crawlUrlId' => $crawlUrl->id()]);
         return $crawlUrl;
     }
+    /**
+     * @param int $limit
+     */
+    public function dequeueMany($limit): array
+    {
+        $crawlUrls = [];
+        while ($limit > 0 && $this->decoratedQueue->valid()) {
+            $crawlUrls[] = $this->dequeue();
+            $limit--;
+        }
+        return $crawlUrls;
+    }
+    public function isEmpty(): bool
+    {
+        return !$this->decoratedQueue->valid();
+    }
     public function count(): int
     {
         return $this->decoratedQueue->count();

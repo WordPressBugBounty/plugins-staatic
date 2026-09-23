@@ -9,6 +9,7 @@ use Staatic\WordPress\Module\Admin\Page\TestRequestPage;
 use Staatic\WordPress\Module\Admin\Page\SettingsPage;
 use Staatic\WordPress\Request\TestRequest;
 use Throwable;
+use wpdb;
 
 final class HealthChecks
 {
@@ -27,15 +28,31 @@ final class HealthChecks
      */
     private $formatter;
 
+    /**
+     * @var wpdb
+     */
+    private $wpdb;
+
+    /**
+     * Above this many urls in the last build, a per-request object cache miss on autoloaded
+     * options and menus starts costing enough (OneDesk lever 9, ~0.3-0.5 CPU-s/page) to be
+     * worth recommending a persistent one for.
+     *
+     * @var int
+     */
+    private const LARGE_BUILD_URL_THRESHOLD = 5000;
+
     public function __construct(
         HttpClientFactory $httpClientFactory,
         SiteUrlProvider $siteUrlProvider,
-        Formatter $formatter
+        Formatter $formatter,
+        wpdb $wpdb
     )
     {
         $this->httpClientFactory = $httpClientFactory;
         $this->siteUrlProvider = $siteUrlProvider;
         $this->formatter = $formatter;
+        $this->wpdb = $wpdb;
     }
 
     public function permalinkStructureTest()
@@ -257,6 +274,113 @@ final class HealthChecks
             'description' => $introduction,
             'test' => 'staatic_loopback_requests'
         ]);
+    }
+
+    /**
+     * A page render without a persistent object cache re-fetches alloptions and menus from the
+     * database every request; on a small site that is noise, but the crawler makes one such
+     * request per url, so on a large build it is a real, avoidable constant-factor tax.
+     */
+    public function objectCacheTest()
+    {
+        // A build in progress has num_urls_crawlable near 0 for most of its life, so ordering by
+        // id alone reads the newest (possibly still-running) build instead of the last completed
+        // one, and the recommendation flickers off while a publication is running.
+        $numUrlsCrawlable = (int) $this->wpdb->get_var(
+            "SELECT num_urls_crawlable FROM {$this->wpdb->prefix}staatic_builds\n                WHERE date_crawl_finished IS NOT NULL\n                ORDER BY id DESC LIMIT 1"
+        );
+        if (wp_using_ext_object_cache() || $numUrlsCrawlable <= self::LARGE_BUILD_URL_THRESHOLD) {
+            return $this->buildTestReport([
+                'label' => __('No persistent object cache recommendation needed', 'staatic'),
+                'status' => 'good',
+                'description' => __('<p>Either a persistent object cache is already active, or the last build was small enough that one is unlikely to make a noticeable difference.</p>', 'staatic'),
+                'test' => 'staatic_object_cache'
+            ]);
+        }
+
+        return $this->buildTestReport([
+            'label' => __('A persistent object cache is recommended for this site', 'staatic'),
+            'status' => 'recommended',
+            'description' => sprintf(
+                /* translators: %1$s: Number of urls in the last build. */
+                __('<p>The last build crawled %1$s urls without a persistent object cache active. Without one, every crawled url re-fetches options and menus from the database, which adds up on a site this size.</p>', 'staatic'),
+                $this->formatter->number($numUrlsCrawlable)
+            ),
+            'actions' => __('<p>Installing and enabling a persistent object cache (such as Redis or Memcached) is likely to reduce publication time on this site.</p>', 'staatic'),
+            'test' => 'staatic_object_cache'
+        ]);
+    }
+
+    /**
+     * Every dequeue sorts the whole crawl queue unless its index actually descends on priority
+     * (CreateIndexOnCrawlQueuePriorityTest pins why: the two ordering columns run in opposite
+     * directions). MySQL < 8.0 and MariaDB < 10.8 parse the DESC keyword but store an ascending
+     * index anyway, which leaves the site exactly where it was before that index existed.
+     */
+    public function crawlQueuePriorityIndexTest()
+    {
+        $tableName = "{$this->wpdb->prefix}staatic_crawl_queue";
+        if (!$this->tableExists($tableName)) {
+            // A table that does not exist yet - activation still in progress, or a multisite
+            // bulk-activate that has not reached this site - answers this same "SHOW INDEX"
+            // query with zero rows, exactly like an existing table whose index migration
+            // failed. Those are different conditions: the former resolves itself once setup
+            // runs and is not a performance regression to warn about, the latter genuinely
+            // costs every dequeue a filesort. Reporting "critical" for a table Staatic simply
+            // has not created yet would be a false alarm.
+            return $this->buildTestReport([
+                'label' => __('Crawl queue priority index', 'staatic'),
+                'status' => 'good',
+                'description' => __('<p>The crawl queue table does not exist yet.</p>', 'staatic'),
+                'test' => 'staatic_crawl_queue_priority_index'
+            ]);
+        }
+        $rows = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SHOW INDEX FROM {$tableName} WHERE Key_name = %s AND Column_name = %s",
+                'priority',
+                'priority'
+            ),
+            \ARRAY_A
+        );
+        // An install whose v1.13.0-beta4 migration failed (it throws) has no priority index at
+        // all, which is strictly worse than an ascending one - dequeuing filesorts the whole
+        // queue on every batch instead of just missing the (harmless) DESC optimisation. That
+        // must not be reported as "good". The table-existence check above already ruled out the
+        // other reason this same query answers empty.
+        if (!is_array($rows) || $rows === []) {
+            return $this->buildTestReport([
+                'label' => __('Crawl queue priority index is missing', 'staatic'),
+                'status' => 'critical',
+                'description' => __('<p>The crawl queue has no index on its priority column, so dequeuing has to sort the whole queue on every batch.</p>', 'staatic'),
+                'actions' => __('<p>Deactivating and reactivating Staatic re-runs its database migrations, which re-creates this index.</p>', 'staatic'),
+                'test' => 'staatic_crawl_queue_priority_index'
+            ]);
+        }
+        $isStoredAscending = ($rows[0]['Collation'] ?? null) !== 'D';
+        if (!$isStoredAscending) {
+            return $this->buildTestReport([
+                'label' => __('Crawl queue priority index is in good shape', 'staatic'),
+                'status' => 'good',
+                'description' => __('<p>The database server honours a descending index on the crawl queue, so dequeuing does not require sorting the whole queue.</p>', 'staatic'),
+                'test' => 'staatic_crawl_queue_priority_index'
+            ]);
+        }
+
+        return $this->buildTestReport([
+            'label' => __('Crawl queue priority index is stored ascending', 'staatic'),
+            'status' => 'recommended',
+            'description' => __('<p>This database server accepts a descending index but stores it ascending, so every dequeue still has to sort the whole crawl queue. This is a known limitation of MySQL versions older than 8.0 and MariaDB versions older than 10.8.</p>', 'staatic'),
+            'actions' => __('<p>Upgrading to MySQL 8.0+ or MariaDB 10.8+ lets this index be stored in the order the crawler actually reads it in.</p>', 'staatic'),
+            'test' => 'staatic_crawl_queue_priority_index'
+        ]);
+    }
+
+    private function tableExists(string $tableName): bool
+    {
+        $pattern = $this->wpdb->esc_like($tableName);
+
+        return $this->wpdb->get_var($this->wpdb->prepare('SHOW TABLES LIKE %s', $pattern)) === $tableName;
     }
 
     private function buildTestReport(array $args): array

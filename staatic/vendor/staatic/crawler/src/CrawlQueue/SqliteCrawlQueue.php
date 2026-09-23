@@ -90,26 +90,61 @@ final class SqliteCrawlQueue implements CrawlQueueInterface, LoggerAwareInterfac
     }
     public function dequeue(): CrawlUrl
     {
-        try {
-            $statement = $this->sqlite->prepare("\n                SELECT *\n                FROM {$this->tableName}\n                ORDER BY priority DESC, position ASC\n                LIMIT 1\n            ");
-            $result = $statement->execute();
-        } catch (Exception $e) {
-            throw new RuntimeException("Unable to dequeue crawl url: {$e->getMessage()}", 0, $e);
-        }
-        $row = $result->fetchArray(\SQLITE3_ASSOC);
-        if ($row === \false) {
+        $crawlUrls = $this->dequeueMany(1);
+        if ($crawlUrls === []) {
             throw new RuntimeException('Unable to dequeue; queue was empty');
         }
-        $crawlUrl = $this->rowToCrawlUrl($row);
+        return $crawlUrls[0];
+    }
+    /**
+     * @param int $limit
+     */
+    public function dequeueMany($limit): array
+    {
+        if ($limit <= 0) {
+            return [];
+        }
         try {
-            $statement = $this->sqlite->prepare("DELETE FROM {$this->tableName} WHERE id = :id");
-            $statement->bindValue(':id', $crawlUrl->id(), \SQLITE3_TEXT);
+            $statement = $this->sqlite->prepare("\n                SELECT *\n                FROM {$this->tableName}\n                ORDER BY priority DESC, position ASC\n                LIMIT :limit\n            ");
+            $statement->bindValue(':limit', $limit, \SQLITE3_INTEGER);
+            $result = $statement->execute();
+        } catch (Exception $e) {
+            throw new RuntimeException("Unable to dequeue crawl urls: {$e->getMessage()}", 0, $e);
+        }
+        $crawlUrls = [];
+        while (($row = $result->fetchArray(\SQLITE3_ASSOC)) !== \false) {
+            $crawlUrls[] = $this->rowToCrawlUrl($row);
+        }
+        if ($crawlUrls === []) {
+            return [];
+        }
+        try {
+            $placeholders = implode(',', array_fill(0, count($crawlUrls), '?'));
+            $statement = $this->sqlite->prepare("DELETE FROM {$this->tableName} WHERE id IN ({$placeholders})");
+            $index = 1;
+            foreach ($crawlUrls as $crawlUrl) {
+                $statement->bindValue($index++, $crawlUrl->id(), \SQLITE3_TEXT);
+            }
             $statement->execute();
         } catch (Exception $e) {
-            throw new RuntimeException("Unable to dequeue crawl url '{$crawlUrl->url()}': {$e->getMessage()}", 0, $e);
+            throw new RuntimeException("Unable to dequeue crawl urls: {$e->getMessage()}", 0, $e);
         }
-        $this->logger->debug("Dequeued crawl url '{$crawlUrl->url()}'", ['crawlUrlId' => $crawlUrl->id()]);
-        return $crawlUrl;
+        if ($this->sqlite->changes() !== count($crawlUrls)) {
+            throw new RuntimeException(sprintf('Unable to dequeue crawl urls: expected to delete %d row(s), deleted %d', count($crawlUrls), $this->sqlite->changes()));
+        }
+        foreach ($crawlUrls as $crawlUrl) {
+            $this->logger->debug("Dequeued crawl url '{$crawlUrl->url()}'", ['crawlUrlId' => $crawlUrl->id()]);
+        }
+        return $crawlUrls;
+    }
+    public function isEmpty(): bool
+    {
+        try {
+            $result = $this->sqlite->query("SELECT 1 FROM {$this->tableName} LIMIT 1");
+        } catch (Exception $e) {
+            throw new RuntimeException("Unable to check crawl queue: {$e->getMessage()}", 0, $e);
+        }
+        return $result->fetchArray(\SQLITE3_NUM) === \false;
     }
     private function rowToCrawlUrl(array $row): CrawlUrl
     {

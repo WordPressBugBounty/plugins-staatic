@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Staatic\WordPress\Service;
 
+use Staatic\WordPress\Util\PluginAsset;
+
 final class AdminNavigation
 {
     public const PARENT_SLUG = 'staatic';
@@ -107,7 +109,13 @@ final class AdminNavigation
 
     private function inlineLogoSvg(): string
     {
-        $svg = file_get_contents(plugin_dir_path(\STAATIC_FILE) . 'assets/logo.svg');
+        $svg = PluginAsset::read(plugin_dir_path(\STAATIC_FILE) . 'assets/logo.svg');
+        if ($svg === null) {
+            // add_menu_page() also accepts a dashicons slug as its icon argument, so a
+            // missing (e.g. mispackaged) logo degrades to a stock icon instead of fataling
+            // wp-admin on base64_encode(false).
+            return 'dashicons-admin-site-alt3';
+        }
 
         return sprintf('data:image/svg+xml;base64,%s', base64_encode($svg));
     }

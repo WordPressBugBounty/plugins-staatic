@@ -16,8 +16,14 @@ interface KnownUrlsContainerInterface extends Countable
      */
     public function addUncrawlable($url): void;
     /**
+     * @param mixed[] $urls
+     * @param bool $crawlable
+     */
+    public function addMany($urls, $crawlable): void;
+    /**
      * @param UriInterface $url
      */
     public function isKnown($url): bool;
+    public function flush(): void;
     public function count(): int;
 }

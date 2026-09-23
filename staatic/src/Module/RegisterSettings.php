@@ -19,6 +19,7 @@ use Staatic\WordPress\Setting\Advanced\SslVerifySetting;
 use Staatic\WordPress\Setting\Advanced\CrawlerSetting;
 use Staatic\WordPress\Setting\Advanced\BackgroundProcessTimeout;
 use Staatic\WordPress\Setting\Advanced\PublicationTimeLimitSetting;
+use Staatic\WordPress\Setting\Advanced\PublicationRetentionCountSetting;
 use Staatic\WordPress\Setting\Advanced\UninstallSetting;
 use Staatic\Vendor\Symfony\Component\DependencyInjection\ServiceLocator;
 use Staatic\WordPress\Service\PartialRenderer;
@@ -107,7 +108,8 @@ final class RegisterSettings implements ModuleInterface
                 $this->settingLocator->get(SslVerifySetting::class),
                 $this->settingLocator->get(CrawlerSetting::class),
                 $this->settingLocator->get(BackgroundProcessTimeout::class),
-                $this->settingLocator->get(PublicationTimeLimitSetting::class)
+                $this->settingLocator->get(PublicationTimeLimitSetting::class),
+                $this->settingLocator->get(PublicationRetentionCountSetting::class)
             ]
         ];
         $settings = apply_filters('staatic_settings', $settings);

@@ -6,7 +6,6 @@ use Staatic\Vendor\Psr\Http\Message\UriInterface;
 use Staatic\Vendor\Psr\Log\LoggerAwareInterface;
 use Staatic\Vendor\Psr\Log\LoggerAwareTrait;
 use Staatic\Vendor\Psr\Log\NullLogger;
-use RuntimeException;
 class InMemoryKnownUrlsContainer implements KnownUrlsContainerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
@@ -27,19 +26,29 @@ class InMemoryKnownUrlsContainer implements KnownUrlsContainerInterface, LoggerA
      */
     public function add($url): void
     {
-        $this->addUrl($url, \true);
+        $this->addMany([$url], \true);
     }
     /**
      * @param UriInterface $url
      */
     public function addUncrawlable($url): void
     {
-        $this->addUrl($url, \false);
+        $this->addMany([$url], \false);
+    }
+    /**
+     * @param mixed[] $urls
+     * @param bool $crawlable
+     */
+    public function addMany($urls, $crawlable): void
+    {
+        foreach ($urls as $url) {
+            $this->addUrl($url, $crawlable);
+        }
     }
     private function addUrl(UriInterface $url, bool $crawlable): void
     {
         if ($this->isKnown($url)) {
-            throw new RuntimeException("Url '{$url}' is already known");
+            return;
         }
         $this->logger->debug("Adding url '{$url}' to container");
         $this->urls[(string) $url] = $crawlable;
@@ -50,6 +59,9 @@ class InMemoryKnownUrlsContainer implements KnownUrlsContainerInterface, LoggerA
     public function isKnown($url): bool
     {
         return isset($this->urls[(string) $url]);
+    }
+    public function flush(): void
+    {
     }
     public function count(): int
     {

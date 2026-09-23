@@ -32,7 +32,7 @@ return new class extends AbstractMigration {
         );
         $this->query(
             $wpdb,
-            "\n            CREATE TABLE {$wpdb->prefix}staatic_log_entries (\n                id bigint(20) unsigned NOT NULL auto_increment,\n                uuid binary(16) NOT NULL,\n                log_date datetime NOT NULL,\n                log_level varchar(40) NOT NULL,\n                message text NOT NULL,\n                context text,\n                publication_uuid binary(16),\n                PRIMARY KEY  (id),\n                UNIQUE KEY uuid (uuid),\n                KEY publication_uuid (publication_uuid)\n            ) {$wpdb->get_charset_collate()};\n        "
+            "\n            CREATE TABLE {$wpdb->prefix}staatic_log_entries (\n                id bigint(20) unsigned NOT NULL auto_increment,\n                uuid binary(16) NOT NULL,\n                log_date datetime NOT NULL,\n                log_level varchar(40) NOT NULL,\n                message text NOT NULL,\n                context text,\n                publication_uuid binary(16),\n                PRIMARY KEY  (id),\n                UNIQUE KEY uuid (uuid),\n                KEY publication_uuid (publication_uuid),\n                KEY log_date (log_date)\n            ) {$wpdb->get_charset_collate()};\n        "
         );
         // `unsigned` is deliberately lower case here. dbDelta compares the declared column type
         // against SHOW COLUMNS with a case-sensitive comparison, and the server always reports
@@ -49,7 +49,7 @@ return new class extends AbstractMigration {
         );
         $this->query(
             $wpdb,
-            "\n            CREATE TABLE {$wpdb->prefix}staatic_results_deployment (\n                result_uuid binary(16) NOT NULL,\n                deployment_uuid binary(16) NOT NULL,\n                date_created datetime NOT NULL,\n                date_deployed datetime,\n                PRIMARY KEY  (result_uuid, deployment_uuid)\n            ) {$wpdb->get_charset_collate()};\n        "
+            "\n            CREATE TABLE {$wpdb->prefix}staatic_results_deployment (\n                result_uuid binary(16) NOT NULL,\n                deployment_uuid binary(16) NOT NULL,\n                date_created datetime NOT NULL,\n                date_deployed datetime,\n                PRIMARY KEY  (deployment_uuid, result_uuid)\n            ) {$wpdb->get_charset_collate()};\n        "
         );
         // Capabilities
         $this->addCapabilityToRole('administrator', 'staatic_manage_settings');

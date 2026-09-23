@@ -2,6 +2,7 @@
 
 namespace Staatic\Vendor\AsyncAws\Core\Sts\ValueObject;
 
+use Throwable;
 use Staatic\Vendor\AsyncAws\Core\Exception\InvalidArgument;
 final class AssumedRoleUser
 {
@@ -24,7 +25,7 @@ final class AssumedRoleUser
     {
         return $this->assumedRoleId;
     }
-    private function throwException(\Throwable $exception)
+    private function throwException(Throwable $exception)
     {
         throw $exception;
     }

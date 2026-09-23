@@ -32,8 +32,8 @@ final class BackgroundPublisher extends WP_Background_Process
      */
     private $publicationTaskProvider;
 
-    /** @var int */
-    public const DEFAULT_PROCESS_TIME_LIMIT = 300;
+    /** @var int Kept for third-party back-compat only; use ProcessTimeLimit::DEFAULT_PROCESS_TIME_LIMIT. */
+    public const DEFAULT_PROCESS_TIME_LIMIT = ProcessTimeLimit::DEFAULT_PROCESS_TIME_LIMIT;
 
     /** @var int */
     protected $timeout;
@@ -168,7 +168,7 @@ final class BackgroundPublisher extends WP_Background_Process
     public function processTimeLimit($timeLimit)
     {
         if ($this->setTimeLimitSuccess) {
-            return $this->timeout === 0 ? self::DEFAULT_PROCESS_TIME_LIMIT : (int) ($this->timeout / 3);
+            return ProcessTimeLimit::fromTimeout($this->timeout);
         }
 
         return $timeLimit;

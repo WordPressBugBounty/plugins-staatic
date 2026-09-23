@@ -46,7 +46,10 @@ class StsClient extends AbstractApi
     {
         return new XmlAwsErrorFactory();
     }
-    protected function getEndpointMetadata(?string $region): array
+    /**
+     * @param string|null $region
+     */
+    protected function getEndpointMetadata($region): array
     {
         if (null === $region) {
             return ['endpoint' => 'https://sts.amazonaws.com', 'signRegion' => 'us-east-1', 'signService' => 'sts', 'signVersions' => ['v4']];

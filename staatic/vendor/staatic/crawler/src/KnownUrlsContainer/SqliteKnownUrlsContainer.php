@@ -72,26 +72,39 @@ final class SqliteKnownUrlsContainer implements KnownUrlsContainerInterface, Log
      */
     public function add($url): void
     {
-        $this->addUrl($url, \true);
+        $this->addMany([$url], \true);
     }
     /**
      * @param UriInterface $url
      */
     public function addUncrawlable($url): void
     {
-        $this->addUrl($url, \false);
+        $this->addMany([$url], \false);
+    }
+    /**
+     * @param mixed[] $urls
+     * @param bool $crawlable
+     */
+    public function addMany($urls, $crawlable): void
+    {
+        foreach ($urls as $url) {
+            $this->addUrl($url, $crawlable);
+        }
     }
     private function addUrl(UriInterface $url, bool $crawlable): void
     {
         $this->logger->debug("Adding url '{$url}' to container");
         try {
-            $statement = $this->sqlite->prepare("INSERT INTO {$this->tableName} (hash, crawlable) VALUES (:hash, :crawlable)");
+            $statement = $this->sqlite->prepare("INSERT OR IGNORE INTO {$this->tableName} (hash, crawlable) VALUES (:hash, :crawlable)");
             $statement->bindValue(':hash', md5((string) $url), \SQLITE3_TEXT);
             $statement->bindValue(':crawlable', $crawlable ? 1 : 0, \SQLITE3_INTEGER);
             $statement->execute();
         } catch (Exception $e) {
             throw new RuntimeException("Unable to add url '{$url}' to container: {$e->getMessage()}", 0, $e);
         }
+    }
+    public function flush(): void
+    {
     }
     /**
      * @param UriInterface $url
