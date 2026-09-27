@@ -11,6 +11,7 @@ use Staatic\Vendor\GuzzleHttp\RequestOptions;
 use Staatic\Vendor\GuzzleHttp\Utils as GuzzleUtils;
 use Staatic\Vendor\GuzzleRetry\GuzzleRetryMiddleware;
 use Staatic\WordPress\Bridge\HttpsToHttpMiddleware;
+use Staatic\WordPress\Bridge\MaintenanceAwareRetryDecider;
 use Staatic\WordPress\Bridge\RewriteResponseBodyMiddleware;
 use Staatic\WordPress\Service\SiteUrlProvider;
 use Staatic\WordPress\Setting\Advanced\HttpAuthenticationPasswordSetting;
@@ -74,6 +75,23 @@ final class HttpClientFactory
      */
     private $siteUrlProvider;
 
+    /**
+     * Longest pause the crawler honours before retrying one of its own requests, whatever
+     * Retry-After the site sends (WordPress maintenance mode always sends 600).
+     *
+     * @var int
+     */
+    public const RETRY_MAX_DELAY_SECONDS = 30;
+
+    /**
+     * Retry-scheduling budget per request: no retry is started once this many seconds have
+     * passed since the first attempt. The attempt that is already running, plus one capped
+     * pause, can still follow, so a URL is given up after roughly this plus two attempts.
+     *
+     * @var int
+     */
+    public const RETRY_GIVE_UP_AFTER_SECONDS = 120;
+
     public function __construct(
         HttpConcurrencySetting $httpConcurrency,
         HttpTimeoutSetting $httpTimeout,
@@ -130,10 +148,7 @@ final class HttpClientFactory
     {
         $stack = HandlerStack::create();
         if ($withRetry) {
-            $stack->push(GuzzleRetryMiddleware::factory([
-                'retry_on_timeout' => \false,
-                'retry_on_status' => [502, 503, 429]
-            ]), 'retry');
+            $stack->push(GuzzleRetryMiddleware::factory($this->retryOptions($forInternal)), 'retry');
         }
         if (!$forInternal) {
             return $stack;
@@ -149,6 +164,38 @@ final class HttpClientFactory
         }
 
         return $stack;
+    }
+
+    private function retryOptions(bool $forInternal): array
+    {
+        $options = [
+            'retry_on_timeout' => \false,
+            'retry_on_status' => [502, 503, 429]
+        ];
+        // Only requests to this site (the crawler's) are capped: a maintenance Retry-After is a
+        // WordPress constant, while a deployment API's Retry-After is a real rate-limit window.
+        if ($forInternal) {
+            $options = array_merge($options, [
+                'max_allowable_timeout_secs' => self::RETRY_MAX_DELAY_SECONDS,
+                'give_up_after_secs' => self::RETRY_GIVE_UP_AFTER_SECONDS,
+                'should_retry_callback' => new MaintenanceAwareRetryDecider()
+            ]);
+        }
+        /**
+         * Filters the options of the retry middleware used for HTTP requests.
+         *
+         * The returned options are merged over the defaults, so returning only
+         * the options to change is sufficient. See caseyamcl/guzzle_retry_middleware
+         * for the available options.
+         *
+         * @since 1.13.2
+         *
+         * @param array $options     Retry middleware options.
+         * @param bool  $forInternal Whether the requests target this site (crawling).
+         */
+        $filtered = apply_filters('staatic_http_retry_options', $options, $forInternal);
+
+        return is_array($filtered) ? array_merge($options, $filtered) : $options;
     }
 
     private function crawlerBodyReplacements(): array

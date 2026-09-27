@@ -219,8 +219,8 @@ final class PublicationRepository implements LoggerAwareInterface
     private function buildQuery(
         ?string $status,
         ?string $query,
-        int $limit = null,
-        int $offset = null,
+        ?int $limit = null,
+        ?int $offset = null,
         ?string $orderBy = null,
         ?string $direction = null
     ): string

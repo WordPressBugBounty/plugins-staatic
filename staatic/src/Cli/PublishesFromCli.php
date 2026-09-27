@@ -10,7 +10,6 @@ use Staatic\WordPress\Publication\Publication;
 use Staatic\WordPress\Publication\Task\CrawlTask;
 use Staatic\WordPress\Publication\Task\DeployTask;
 use Staatic\WordPress\Publication\Task\InitializeCrawlerTask;
-use Staatic\WordPress\Util\DateUtil;
 use Staatic\WordPress\Util\TimeLimit;
 use Throwable;
 use WP_CLI;
@@ -39,7 +38,7 @@ trait PublishesFromCli
                     'task' => $task::name()
                 ]);
             }
-            if ($this->exceedsPublicationTimeLimit($publication)) {
+            if ($publication->exceedsTimeLimit()) {
                 $this->handleFailure(
                     $publication,
                     $task::name(),
@@ -182,10 +181,5 @@ trait PublishesFromCli
         $freshPublication = $this->publicationRepository->find($publication->id());
 
         return $freshPublication->status()->isCanceled();
-    }
-
-    private function exceedsPublicationTimeLimit(Publication $publication): bool
-    {
-        return DateUtil::isDateNumHoursAgo($publication->dateCreated(), Publication::timeLimitInHours());
     }
 }

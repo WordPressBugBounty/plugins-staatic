@@ -73,6 +73,12 @@ final class PublicationStatus
         return $this->status === self::STATUS_IN_PROGRESS;
     }
 
+    /** Whether the publication has been claimed and has not ended: pending or in progress. */
+    public function isRunning(): bool
+    {
+        return $this->isPending() || $this->isInProgress();
+    }
+
     public function isFinished(): bool
     {
         return $this->status === self::STATUS_FINISHED;

@@ -14,6 +14,9 @@ use Staatic\Crawler\UrlEvaluator\InternalUrlEvaluator;
 use Staatic\Crawler\UrlEvaluator\UrlEvaluatorInterface;
 use Staatic\WordPress\Bridge\CrawlProfile;
 use Staatic\WordPress\Service\ExcludeUrls;
+use Staatic\WordPress\Service\OriginRules\OriginRulePathEvaluator;
+use Staatic\WordPress\Service\OriginRules\OriginRulePathMatcher;
+use Staatic\WordPress\Service\OriginRules\OriginRulePaths;
 use Staatic\WordPress\Service\SiteUrlProvider;
 use Staatic\WordPress\Setting\Build\ExcludeUrlsSetting;
 use Staatic\WordPress\Util\WordpressEnv;
@@ -35,24 +38,48 @@ final class CrawlProfileFactory
      */
     private $urlTransformerFactory;
 
+    /**
+     * @var OriginRulePaths
+     */
+    private $originRulePaths;
+
     public function __construct(
         SiteUrlProvider $siteUrlProvider,
         ExcludeUrlsSetting $excludeUrls,
-        UrlTransformerFactory $urlTransformerFactory
+        UrlTransformerFactory $urlTransformerFactory,
+        OriginRulePaths $originRulePaths
     )
     {
         $this->siteUrlProvider = $siteUrlProvider;
         $this->excludeUrls = $excludeUrls;
         $this->urlTransformerFactory = $urlTransformerFactory;
+        $this->originRulePaths = $originRulePaths;
     }
 
-    public function __invoke(UriInterface $baseUrl, UriInterface $destinationUrl): CrawlProfileInterface
+    /**
+     * @param bool $isPreview Whether the publication targets the preview site; selects which
+     *                        origin rule paths are kept out of the crawl.
+     */
+    public function __invoke(
+        UriInterface $baseUrl,
+        UriInterface $destinationUrl,
+        bool $isPreview
+    ): CrawlProfileInterface
     {
         $lowercaseUrls = (bool) get_option('staatic_crawler_lowercase_urls');
         $urlEvaluator = $this->createUrlEvaluator($baseUrl);
         $urlTransformer = ($this->urlTransformerFactory)($baseUrl, $destinationUrl);
+        $crawlProfile = new CrawlProfile($baseUrl, $destinationUrl, $lowercaseUrls, $urlEvaluator, $urlTransformer);
+        $originRuleMatcher = new OriginRulePathMatcher($this->originRulePaths->patterns($isPreview));
+        if ($originRuleMatcher->isEmpty()) {
+            return $crawlProfile;
+        }
 
-        return new CrawlProfile($baseUrl, $destinationUrl, $lowercaseUrls, $urlEvaluator, $urlTransformer);
+        // Origin rule patterns describe published paths, so the evaluator transforms each URL
+        // through this very profile (lowercasing included) before matching it.
+        return $crawlProfile->withUrlEvaluator(
+            new ChainUrlEvaluator([$urlEvaluator, new OriginRulePathEvaluator($originRuleMatcher, $crawlProfile)])
+        );
     }
 
     private function createUrlEvaluator(UriInterface $baseUrl): UrlEvaluatorInterface

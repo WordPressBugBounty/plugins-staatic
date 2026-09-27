@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Staatic\Framework\Build;
 use Staatic\Framework\Deployment;
+use Staatic\WordPress\Util\DateUtil;
 use WP_User;
 
 final class Publication
@@ -79,7 +80,7 @@ final class Publication
         bool $isPreview = \false,
         ?int $userId = null,
         array $metadata = [],
-        PublicationStatus $status = null,
+        ?PublicationStatus $status = null,
         ?DateTimeInterface $dateFinished = null,
         ?string $currentTask = null
     )
@@ -116,6 +117,16 @@ final class Publication
         }
 
         return (int) apply_filters('staatic_publication_timeout', $limit);
+    }
+
+    /**
+     * Whether the publication started longer ago than the time limit allows.
+     *
+     * @param int|null $timeLimitInHours Defaults to timeLimitInHours().
+     */
+    public function exceedsTimeLimit(?int $timeLimitInHours = null): bool
+    {
+        return DateUtil::isDateNumHoursAgo($this->dateCreated, $timeLimitInHours ?? self::timeLimitInHours());
     }
 
     public function id(): string

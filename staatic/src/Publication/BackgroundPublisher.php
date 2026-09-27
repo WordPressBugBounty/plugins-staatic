@@ -10,7 +10,6 @@ use Staatic\WordPress\Logging\Contextable;
 use Staatic\WordPress\Publication\Task\ConditionallyRestartableTaskInterface;
 use Staatic\WordPress\Publication\Task\RestartableTaskInterface;
 use Staatic\WordPress\Publication\Task\TaskInterface;
-use Staatic\WordPress\Util\DateUtil;
 use Staatic\WordPress\Util\TimeLimit;
 use Throwable;
 use Staatic\Vendor\WP_Background_Process;
@@ -223,7 +222,7 @@ final class BackgroundPublisher extends WP_Background_Process
                 $this->timeout
             ));
         }
-        if ($this->exceedsPublicationTimeLimit($this->publication)) {
+        if ($this->publication->exceedsTimeLimit()) {
             $this->handleFailure(
                 new RuntimeException(__('The publication process took too long and was canceled.', 'staatic'))
             );
@@ -388,10 +387,5 @@ final class BackgroundPublisher extends WP_Background_Process
         $freshPublication = $this->publicationRepository->find($publication->id());
 
         return $freshPublication->status()->isCanceled();
-    }
-
-    private function exceedsPublicationTimeLimit(Publication $publication): bool
-    {
-        return DateUtil::isDateNumHoursAgo($publication->dateCreated(), Publication::timeLimitInHours());
     }
 }

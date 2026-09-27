@@ -121,6 +121,11 @@ final class Uninstaller
             // opt-out above governs them like the rest.
             'staatic_test_request_lock',
             'staatic_test_request_status',
+            // The origin rule paths Staatic Cloud writes for managed sites (OriginRulePaths). Their
+            // mere presence marks a site as platform-managed, so a site that leaves the platform
+            // would otherwise keep the read-only row and the old exclusions after a reinstall.
+            'staatic_origin_rule_paths_live',
+            'staatic_origin_rule_paths_preview',
         ];
         foreach ($options as $option) {
             // var_dump($option); continue; //!

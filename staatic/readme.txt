@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator for WordPress ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.13.1
+Stable tag: 1.13.2
 Tested up to: 7.1
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -113,6 +113,23 @@ For commercial support, Staatic Premium, or Staatic Cloud questions, you can als
 
 == Changelog ==
 
+= 1.13.2 =
+
+Release date: September 27th, 2026.
+
+**Features**
+
+* Introduces the `staatic_origin_rule_paths` filter to supply origin rule paths from code.
+* Defers WordPress background updates while a publication of the main site runs, so an update does not put the site in maintenance mode mid-crawl.
+* Introduces the `staatic_defer_automatic_updates` filter to turn off deferring background updates.
+* Introduces the `staatic_automatic_updates_deferred` action, fired with the publication ID and site ID each time an update run is deferred.
+* Introduces the `staatic_http_retry_options` filter to adjust how failed HTTP requests are retried.
+
+**Improvements**
+
+* Excludes paths that Staatic Cloud origin rules forward to your origin from publications.
+* Caps the pause between crawler retries at 30 seconds and gives up retrying a URL after about two minutes, so a site that is briefly in maintenance mode no longer holds up a publication for 10 minutes per attempt.
+
 = 1.13.1 =
 
 Release date: September 23rd, 2026.
@@ -146,7 +163,7 @@ Release date: September 8th, 2026.
 * Speeds up result lookups by build and URL with a new database index, benefiting redirect and configuration post-processing as well as registering uploads on sites with many media files.
 * Replaces the publication test task with a bounded backend-worker survival diagnostic that reports disabled, running, complete, incomplete, and stale states, without claiming to test proxy responses or CPU capacity.
 
-**Fixes**
+**Bug Fixes**
 
 * Prevents an HTTP Concurrency of zero from being saved, which stalled the crawl batch size.
 * Prevents duplicate publication diagnostics, delays the first recurring run after the initial dispatch, and removes the Site Health status test when diagnostics are intentionally disabled.
@@ -154,67 +171,6 @@ Release date: September 8th, 2026.
 * Gives additional redirects precedence over generated results for the same address on every deployment method, instead of silently dropping the redirect or uploading the generated page alongside it; the publication log now names each result a redirect replaced.
 * Prevents a publication from removing the only remaining version of a page when two addresses that differ by a trailing slash redirect to each other.
 * Removes redirect results that point at their own address instead of publishing them as pages.
-
-= 1.12.5 =
-
-Release date: July 10th, 2026.
-
-**Bug Fixes**
-
-* Fixes fatal errors when saving additional URLs or additional redirects containing malformed or incomplete entries.
-* Fixes a fatal error when force-canceling a no longer existing publication using the publish and redeploy WP-CLI commands.
-* Fixes publication cancellation and scheduled cleanup reading stale publication state on sites using a persistent object cache.
-
-= 1.12.4 =
-
-Release date: May 26th, 2026.
-
-**Bug Fixes**
-
-* Fixes the publication resources Download button failing with an expired link error.
-
-= 1.12.3 =
-
-Release date: May 26th, 2026.
-
-**Bug Fixes**
-
-* Fixes partial publications incorrectly deleting canonical page output when slash and non-slash URL variants are merged.
-* Fixes SFTP deployments ignoring the configured port and always using the default port.
-* Fixes compatibility issues on fresh installations where unset default settings could trigger errors.
-* Fixes security hardening for admin actions and exports.
-* Fixes protocol-relative external URLs being rewritten to HTTP.
-
-= 1.12.2 =
-
-Release date: April 14th, 2026.
-
-**Bug Fixes**
-
-* Fixes fatal errors in capability migrations when expected WordPress roles are unavailable.
-
-= 1.12.1 =
-
-Release date: January 12th, 2026.
-
-**Bug Fixes**
-
-* Fixes debug mode issue in API factory.
-
-= 1.12.0 =
-
-Release date: September 12th, 2025.
-
-**Features**
-
-* Adds `staatic_should_transform_url` filter for independent URL transformation control.
-
-**Bug Fixes**
-
-* Fixes SVG data URL fragment references being incorrectly extracted.
-* Fixes Html5DomParser compatibility with extended URL context.
-* Fixes URL extraction overlap bug when extended URL context is enabled.
-* Fixes malformed URL rewriting when extended context captures partial protocols.
 
 = Earlier releases =
 

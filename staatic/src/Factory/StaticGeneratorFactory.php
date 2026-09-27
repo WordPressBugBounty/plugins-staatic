@@ -37,6 +37,9 @@ use Staatic\WordPress\Publication\PublicationTickObserver;
 use Staatic\WordPress\Service\AdditionalPaths;
 use Staatic\WordPress\Service\AdditionalRedirects;
 use Staatic\WordPress\Service\AdditionalUrls;
+use Staatic\WordPress\Service\OriginRules\OriginRulePathMatcher;
+use Staatic\WordPress\Service\OriginRules\OriginRulePaths;
+use Staatic\WordPress\Service\OriginRules\OriginRulePathsPostProcessor;
 use Staatic\WordPress\Setting\Advanced\HttpConcurrencySetting;
 use Staatic\WordPress\Setting\Advanced\HttpTimeoutSetting;
 use Staatic\WordPress\Util\WordpressEnv;
@@ -120,6 +123,11 @@ final class StaticGeneratorFactory
      * @var HttpTimeoutSetting
      */
     private $httpTimeout;
+
+    /**
+     * @var OriginRulePaths
+     */
+    private $originRulePaths;
 
     /**
      * CLI's batch time budget. Unlike wp-admin there is no hard request time limit to stay
@@ -237,7 +245,8 @@ final class StaticGeneratorFactory
         ResourceRepositoryInterface $resourceRepository,
         UrlTransformerFactory $urlTransformerFactory,
         HtmlUrlExtractorMapping $htmlUrlExtractorMapping,
-        HttpTimeoutSetting $httpTimeout
+        HttpTimeoutSetting $httpTimeout,
+        OriginRulePaths $originRulePaths
     )
     {
         $this->logger = $logger;
@@ -251,6 +260,7 @@ final class StaticGeneratorFactory
         $this->urlTransformerFactory = $urlTransformerFactory;
         $this->htmlUrlExtractorMapping = $htmlUrlExtractorMapping;
         $this->httpTimeout = $httpTimeout;
+        $this->originRulePaths = $originRulePaths;
     }
 
     public function __invoke(Publication $publication, bool $limitedResources = \true): StaticGenerator
@@ -269,7 +279,7 @@ final class StaticGeneratorFactory
             return $this->memoizedGenerator;
         }
         $this->knownUrlsContainer = ($this->knownUrlsContainerFactory)(!$limitedResources);
-        $this->crawlProfile = ($this->crawlProfileFactory)($this->build->entryUrl(), $this->build->destinationUrl());
+        $this->crawlProfile = ($this->crawlProfileFactory)($this->build->entryUrl(), $this->build->destinationUrl(), $publication->isPreview());
         $this->urlTransformer = ($this->urlTransformerFactory)($this->build->entryUrl(), $this->build->destinationUrl());
         $domParser = get_option('staatic_crawler_dom_parser') ?: null;
         $processNotFound = (bool) get_option('staatic_crawler_process_not_found');
@@ -439,6 +449,13 @@ final class StaticGeneratorFactory
                 $this->transformers
             );
         }
+        // The crawl profile keeps origin rule paths out of the crawl, but a partial publication
+        // also inherits its parent's results, and a post processor can add results of its own.
+        $postProcessors[] = new OriginRulePathsPostProcessor($this->resultRepository, new OriginRulePathMatcher(
+            $this->originRulePaths->patterns(
+            $this->publication->isPreview()
+        )
+        ));
         $postProcessors[] = new DuplicatesRemoverPostProcessor(
             $this->resultRepository,
             $additionalRedirects,
