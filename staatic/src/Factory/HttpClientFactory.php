@@ -9,7 +9,10 @@ use Staatic\Vendor\GuzzleHttp\ClientInterface;
 use Staatic\Vendor\GuzzleHttp\HandlerStack;
 use Staatic\Vendor\GuzzleHttp\RequestOptions;
 use Staatic\Vendor\GuzzleHttp\Utils as GuzzleUtils;
+use Staatic\Vendor\GuzzleHttp\Middleware;
 use Staatic\Vendor\GuzzleRetry\GuzzleRetryMiddleware;
+use Staatic\Vendor\Psr\Http\Message\RequestInterface;
+use Staatic\WordPress\Bridge\ClientMetadataHttpClient;
 use Staatic\WordPress\Bridge\HttpsToHttpMiddleware;
 use Staatic\WordPress\Bridge\MaintenanceAwareRetryDecider;
 use Staatic\WordPress\Bridge\RewriteResponseBodyMiddleware;
@@ -22,6 +25,7 @@ use Staatic\WordPress\Setting\Advanced\HttpTimeoutSetting;
 use Staatic\WordPress\Setting\Advanced\HttpToHttpsSetting;
 use Staatic\WordPress\Setting\Advanced\SslVerifyBehaviorSetting;
 use Staatic\WordPress\Setting\Advanced\SslVerifyPathSetting;
+use Staatic\WordPress\Util\ClientMetadata;
 use Staatic\WordPress\Util\HttpUtil;
 use Staatic\Vendor\Symfony\Component\HttpClient\HttpClient;
 use Staatic\Vendor\Symfony\Component\HttpClient\HttpOptions;
@@ -92,6 +96,14 @@ final class HttpClientFactory
      */
     public const RETRY_GIVE_UP_AFTER_SECONDS = 120;
 
+    /**
+     * Host of the Staatic API, the only host that receives the X-Staatic-Client header; null
+     * when the plugin has no Staatic API configured (the community edition), in which case no
+     * request carries it.
+     * @var string|null
+     */
+    private $staaticApiHost;
+
     public function __construct(
         HttpConcurrencySetting $httpConcurrency,
         HttpTimeoutSetting $httpTimeout,
@@ -101,7 +113,8 @@ final class HttpClientFactory
         HttpAuthenticationUsernameSetting $httpAuthUsername,
         HttpAuthenticationPasswordSetting $httpAuthPassword,
         HttpToHttpsSetting $httpToHttps,
-        SiteUrlProvider $siteUrlProvider
+        SiteUrlProvider $siteUrlProvider,
+        ?string $staaticApiUrl = null
     )
     {
         $this->httpConcurrency = $httpConcurrency;
@@ -113,6 +126,12 @@ final class HttpClientFactory
         $this->httpAuthPassword = $httpAuthPassword;
         $this->httpToHttps = $httpToHttps;
         $this->siteUrlProvider = $siteUrlProvider;
+        // Same override the Premium API clients honour, so the header follows them to a
+        // non-default API; without a configured API there is nothing to override.
+        if ($staaticApiUrl !== null) {
+            $staaticApiUrl = $_ENV['STAATIC_API_URL'] ?? $_SERVER['STAATIC_API_URL'] ?? $staaticApiUrl;
+        }
+        $this->staaticApiHost = ClientMetadata::hostOf($staaticApiUrl);
     }
 
     public function createInternalClient(array $options = [], bool $withRetry = \true): ClientInterface
@@ -151,7 +170,7 @@ final class HttpClientFactory
             $stack->push(GuzzleRetryMiddleware::factory($this->retryOptions($forInternal)), 'retry');
         }
         if (!$forInternal) {
-            return $stack;
+            return $this->withClientMetadataGuard($stack);
         }
         $replacements = $this->crawlerBodyReplacements();
         if (count($replacements)) {
@@ -163,7 +182,37 @@ final class HttpClientFactory
             $stack->push(HttpsToHttpMiddleware::factory(), 'force_http');
         }
 
+        return $this->withClientMetadataGuard($stack);
+    }
+
+    /**
+     * Pushes the X-Staatic-Client guard last, so it sits closest to the handler: every attempt
+     * the retry middleware makes (whose on_retry_callback may rewrite the request) and every hop
+     * the redirect middleware follows passes through it with its final destination. Middleware
+     * a caller pushes afterwards (the OAuth signer) only adds credentials.
+     */
+    private function withClientMetadataGuard(HandlerStack $stack): HandlerStack
+    {
+        $stack->push($this->clientMetadataMiddleware($this->staaticApiHost), 'staatic_client_metadata');
+
         return $stack;
+    }
+
+    /**
+     * Adds X-Staatic-Client to a request only when it goes to the Staatic API host, decided per
+     * request: the same stack also serves the crawler and third-party deployers. On any other
+     * host, or on every host when no API host is known, the header is removed, also when a
+     * caller supplied it.
+     */
+    private function clientMetadataMiddleware(?string $apiHost): callable
+    {
+        return Middleware::mapRequest(function (RequestInterface $request) use ($apiHost): RequestInterface {
+            if (!ClientMetadata::isStaaticApiHost($request->getUri()->getHost(), $apiHost)) {
+                return $request->withoutHeader(ClientMetadata::HEADER_NAME);
+            }
+
+            return $request->withHeader(ClientMetadata::HEADER_NAME, ClientMetadata::current()->headerValue());
+        });
     }
 
     private function retryOptions(bool $forInternal): array
@@ -260,7 +309,8 @@ final class HttpClientFactory
             max(HttpConcurrencySetting::MINIMUM_CONCURRENCY, (int) $this->httpConcurrency->value())
         );
 
-        return new RetryableHttpClient($httpClient);
+        // Inside the retry layer, so a retried request is judged again.
+        return new RetryableHttpClient(new ClientMetadataHttpClient($httpClient, $this->staaticApiHost));
     }
 
     private function getSslVerifyOption()

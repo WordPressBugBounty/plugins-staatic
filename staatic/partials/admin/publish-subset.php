@@ -6,6 +6,8 @@ namespace Staatic\Vendor;
  * @var \WP_Error|null $errors
  * @var string $paths
  * @var bool $deploy
+ * @var bool $isPreview
+ * @var bool $supportsPreview
  * @var string $rootPath
  * @var string $rootUrlPath
  */
@@ -42,8 +44,11 @@ echo \esc_url(\self_admin_url(\sprintf('admin.php?page=%s', PublishSubsetPage::P
         <?php 
 \wp_nonce_field('staatic-publish-subset');
 ?>
+        <?php 
+require __DIR__ . '/selection-destination.php';
+?>
 
-        <h2><?php 
+        <h2 id="staatic-selection-urls-label"><?php 
 \_e('URLs', 'staatic');
 ?></h2>
 
@@ -64,6 +69,7 @@ echo \esc_url(\self_admin_url(\sprintf('admin.php?page=%s', PublishSubsetPage::P
                 class="large-text code"
                 name="urls"
                 id="urls"
+                aria-labelledby="staatic-selection-urls-label"
                 rows="4"
             ><?php 
 echo \esc_html($urls);
@@ -77,7 +83,7 @@ echo \sprintf(
 ?></p>
         </fieldset>
 
-        <h2><?php 
+        <h2 id="staatic-selection-paths-label"><?php 
 \_e('Filesystem Paths', 'staatic');
 ?></h2>
 
@@ -103,6 +109,7 @@ echo \esc_attr($rootUrlPath);
                 class="large-text code"
                 name="paths"
                 id="paths"
+                aria-labelledby="staatic-selection-paths-label"
                 rows="4"
             ><?php 
 echo \esc_html($paths);
@@ -130,6 +137,12 @@ echo \sprintf(
 ?></p>
         </fieldset>
 
+        <p id="staatic-selection-only-warning" class="description">
+            <strong><?php 
+\_e('Warning: Deploying this selection can remove other files at the selected destination, depending on the configured deployment method.', 'staatic');
+?></strong>
+        </p>
+
         <h2><?php 
 \_e('Deployment', 'staatic');
 ?></h2>
@@ -144,6 +157,7 @@ echo \sprintf(
                     type="checkbox"
                     name="deploy"
                     id="deploy"
+                    aria-describedby="staatic-selection-only-warning"
                     value="1"
                     <?php 
 echo $deploy ? ' checked="checked"' : '';
@@ -161,7 +175,7 @@ echo $deploy ? ' checked="checked"' : '';
         </fieldset>
 
         <?php 
-\submit_button(\__('Publish', 'staatic'));
+\submit_button($submitLabel);
 ?>
 
     </form>

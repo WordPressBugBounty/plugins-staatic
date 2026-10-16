@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Staatic\WordPress\Publication;
 
 use DateTimeImmutable;
+use RuntimeException;
 use Staatic\Vendor\GuzzleHttp\Psr7\Uri;
 use Staatic\Framework\Build;
 use Staatic\Framework\BuildRepository\BuildRepositoryInterface;
@@ -109,6 +110,7 @@ final class PublicationManager implements PublicationManagerInterface
         $isPreview = \false
     ): Publication
     {
+        $this->validateTarget($isPreview);
         $build = $build ?? $this->createBuild($isPreview);
         $deployment = $deployment ?? $this->deploymentFactory->create($build->id());
         $publication = new Publication(
@@ -170,6 +172,7 @@ final class PublicationManager implements PublicationManagerInterface
      */
     public function createBuild($isPreview = \false, $parentBuildId = null): Build
     {
+        $this->validateTarget($isPreview);
         $destinationUrl = $isPreview ? $this->previewUrl->value() : $this->destinationUrl->value();
         $build = new Build($this->buildRepository->nextId(), ($this->siteUrlProvider)(), new Uri(
             $destinationUrl
@@ -177,6 +180,26 @@ final class PublicationManager implements PublicationManagerInterface
         $this->buildRepository->add($build);
 
         return $build;
+    }
+
+    /**
+     * @param Publication $publication
+     * @param bool $isPreview
+     */
+    public function isCompatibleParent($publication, $isPreview = \false): bool
+    {
+        return $publication->isPreview() === $isPreview && $publication->build()->isFinishedCrawling() && (string) $publication->build()->entryUrl() === (string) ($this->siteUrlProvider)() && (string) $publication->build()->destinationUrl() === (string) new Uri(
+            $isPreview ? $this->previewUrl->value() : $this->destinationUrl->value()
+        );
+    }
+
+    private function validateTarget(bool $isPreview): void
+    {
+        if ($isPreview && !apply_filters('staatic_deployment_strategy_supports_preview', \false)) {
+            throw new RuntimeException(
+                __('The configured deployment method does not support preview publications.', 'staatic')
+            );
+        }
     }
 
     /**

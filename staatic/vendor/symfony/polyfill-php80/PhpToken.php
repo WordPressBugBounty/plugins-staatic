@@ -17,10 +17,10 @@ class PhpToken
     }
     public function getTokenName(): ?string
     {
-        if ('UNKNOWN' === $name = token_name($this->id)) {
-            $name = \strlen($this->text) > 1 || \ord($this->text) < 32 ? null : $this->text;
+        if ($this->id < 256) {
+            return \chr($this->id & 0xff);
         }
-        return $name;
+        return 'UNKNOWN' === ($name = token_name($this->id)) ? null : $name;
     }
     public function is($kind): bool
     {
@@ -50,13 +50,14 @@ class PhpToken
         $tokens = token_get_all($code, $flags);
         foreach ($tokens as $index => $token) {
             if (\is_string($token)) {
-                $id = \ord($token);
+                $id = \ord($token[-1]);
                 $text = $token;
             } else {
                 [$id, $text, $line] = $token;
             }
             $tokens[$index] = new static($id, $text, $line, $position);
             $position += \strlen($text);
+            $line += preg_match_all('/\r\n?|\n/', $text);
         }
         return $tokens;
     }

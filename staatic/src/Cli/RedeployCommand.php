@@ -118,9 +118,12 @@ class RedeployCommand
                 $publicationId
             ));
         }
-        $publication = $this->publicationManager->createPublication([
-            'sourcePublicationId' => $publicationId
-        ], $publication->build(), null, $publication->isPreview());
+        $publication = $this->publicationManager->createPublication(array_filter([
+            'sourcePublicationId' => $publicationId,
+            'changeEventsSince' => $publication->metadataByKey('changeEventsSince')
+        ], static function ($value) {
+    return $value !== null;
+}), $publication->build(), null, $publication->isPreview());
         if ($this->publicationManager->claimPublication($publication)) {
             $this->startPublication($publication);
         } else {

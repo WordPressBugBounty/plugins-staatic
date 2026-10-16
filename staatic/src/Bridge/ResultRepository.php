@@ -547,9 +547,15 @@ final class ResultRepository implements ResultRepositoryInterface, LoggerAwareIn
      */
     public function countByBuildIdPendingDeployment($buildId, $deploymentId): int
     {
-        return (int) $this->wpdb->get_var(
+        $count = $this->wpdb->get_var(
             $this->wpdb->prepare("\n                SELECT COUNT(*)\n                FROM {$this->tableName} r\n                    LEFT JOIN {$this->deployTableName} d ON\n                        d.deployment_uuid = UNHEX(REPLACE(%s, '-', '')) AND\n                        d.result_uuid = r.uuid\n                WHERE r.build_uuid = UNHEX(REPLACE(%s, '-', ''))\n                    AND d.date_deployed IS NULL", $deploymentId, $buildId)
         );
+        // Completion relies on this count: a failed read must not mean no work remains.
+        if ($count === null) {
+            throw new RuntimeException("Unable to count pending deployment by build #{$buildId}");
+        }
+
+        return (int) $count;
     }
 
     private function rowToResult(array $row): Result

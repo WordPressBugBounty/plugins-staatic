@@ -224,6 +224,9 @@ final class WpListTable extends WP_List_Table
 
             return !$callback || $callback($item);
         });
+        if (empty($actions)) {
+            return parent::handle_row_actions($item, $column_name, $primary);
+        }
         $actions = array_map(function (RowActionInterface $rowAction) use ($item) {
             return $rowAction->render($item);
         }, $actions);

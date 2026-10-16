@@ -60,7 +60,8 @@ final class SiteUrlProvider
         try {
             $urlPath = $result->getPath();
             $shouldEndWithSlash = WordpressEnv::getUrlsEndWithSlash();
-            $endsWithSlash = substr_compare($urlPath, '/', -strlen('/')) === 0;
+            // Rector's PHP 7.1 substr_compare() downgrade warns on an empty path.
+            $endsWithSlash = $urlPath && substr_compare($urlPath, '/', -strlen('/')) === 0;
             if (!$urlPath) {
                 $result = $result->withPath('/');
             } elseif ($shouldEndWithSlash && !$endsWithSlash) {

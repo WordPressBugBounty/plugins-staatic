@@ -25,7 +25,11 @@ trait TriggersPublications
             $publication = $createCallback();
             if ($this->publicationManager->claimPublication($publication)) {
                 $this->publicationManager->initiateBackgroundPublisher($publication);
-                $message = __('A new publication will be started and deployed automatically.', 'staatic');
+                if ($publication->metadataByKey('skipDeploy')) {
+                    $message = $publication->isPreview() ? __('A new preview publication will be started without deployment.', 'staatic') : __('A new live publication will be started without deployment.', 'staatic');
+                } else {
+                    $message = $publication->isPreview() ? __('A new preview publication will be started and deployed automatically.', 'staatic') : __('A new live publication will be started and deployed automatically.', 'staatic');
+                }
                 $redirectUrl = admin_url(
                     sprintf('admin.php?page=%s&id=%s', PublicationSummaryPage::PAGE_SLUG, $publication->id())
                 );

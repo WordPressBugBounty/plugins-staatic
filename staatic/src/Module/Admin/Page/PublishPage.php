@@ -34,7 +34,7 @@ final class PublishPage implements ModuleInterface
      */
     private $publicationManager;
 
-    use FlashesMessages, TriggersPublications;
+    use TriggersPublications;
 
     /** @var string */
     public const PAGE_SLUG = 'staatic-publish';
@@ -94,6 +94,9 @@ final class PublishPage implements ModuleInterface
             return;
         }
         check_admin_referer('staatic-publish');
+        if (!empty($_REQUEST['preview']) && !apply_filters('staatic_deployment_strategy_supports_preview', \false)) {
+            wp_die(__('The configured deployment method does not support preview publications.', 'staatic'));
+        }
         $this->triggerPublication(__('Publish', 'staatic'), function () {
             return $this->createPublication();
         });
@@ -112,9 +115,12 @@ final class PublishPage implements ModuleInterface
                 wp_die(__('Invalid source publication.', 'staatic'));
             }
 
-            return $this->publicationManager->createPublication([
-                'sourcePublicationId' => $publicationId
-            ], $publication->build(), null, $publication->isPreview());
+            return $this->publicationManager->createPublication(array_filter([
+                'sourcePublicationId' => $publicationId,
+                'changeEventsSince' => $publication->metadataByKey('changeEventsSince')
+            ], static function ($value) {
+    return $value !== null;
+}), $publication->build(), null, $publication->isPreview());
         }
 
         return $this->publicationManager->createPublication([], null, null, !empty($_REQUEST['preview']));

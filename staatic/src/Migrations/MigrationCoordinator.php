@@ -8,6 +8,7 @@ use Exception;
 use Staatic\Vendor\Psr\Log\LoggerAwareInterface;
 use Staatic\Vendor\Psr\Log\LoggerAwareTrait;
 use Staatic\Vendor\Psr\Log\NullLogger;
+use RuntimeException;
 use Staatic\WordPress\Util\TimeLimit;
 use wpdb;
 
@@ -116,16 +117,25 @@ final class MigrationCoordinator implements LoggerAwareInterface
             $this->wpdb->suppress_errors();
         }
         TimeLimit::setTimeLimit(self::TIME_LIMIT);
+        $transactionStarted = \false;
 
         try {
             $this->logger->notice("Migrating {$this->namespace} from {$installedVersion} to {$this->targetVersion}.");
-            $this->wpdb->query('START TRANSACTION');
+            if ($this->wpdb->query('START TRANSACTION') === \false) {
+                throw new RuntimeException("START TRANSACTION failed: {$this->wpdb->last_error}");
+            }
+            $transactionStarted = \true;
             $this->migrator->migrate($installedVersion, $this->targetVersion);
-            $this->wpdb->query('COMMIT');
+            if ($this->wpdb->query('COMMIT') === \false) {
+                throw new RuntimeException("COMMIT failed: {$this->wpdb->last_error}");
+            }
+            $transactionStarted = \false;
             $this->clearTransientCache();
         } catch (Exception $e) {
             $this->logger->error("Migrating {$this->namespace} failed: {$e->getMessage()}");
-            $this->wpdb->query('ROLLBACK');
+            if ($transactionStarted && $this->wpdb->query('ROLLBACK') === \false) {
+                $this->logger->error("Rolling back {$this->namespace} failed: {$this->wpdb->last_error}");
+            }
             $this->migrationFailed($e->getMessage());
 
             return \false;

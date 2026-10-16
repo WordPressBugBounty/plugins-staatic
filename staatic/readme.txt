@@ -1,8 +1,8 @@
 === Staatic - Static Site Generator for WordPress ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.13.2
-Tested up to: 7.1
+Stable tag: 1.14.0
+Tested up to: 7.1.3
 Requires at least: 5.0
 Requires PHP: 7.1
 License: BSD-3-Clause
@@ -112,6 +112,21 @@ For commercial support, Staatic Premium, or Staatic Cloud questions, you can als
 3. Configure build, deployment, and advanced publication settings for your site.
 
 == Changelog ==
+
+= 1.14.0 =
+
+Release date: October 16th, 2026.
+
+**Improvements**
+
+* Improves admin layout, keyboard navigation and accessibility.
+
+**Bug Fixes**
+
+* Keeps settings list checkboxes in sync after editing or removing rows.
+* Prevents deployment stalls after interrupted or overlapping publication tasks.
+* Prevents failed database transactions from being treated as successful plugin upgrades.
+* Prevents admin errors and warnings on PHP 7.1.
 
 = 1.13.2 =
 

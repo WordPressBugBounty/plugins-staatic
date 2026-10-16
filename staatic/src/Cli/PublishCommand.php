@@ -103,6 +103,9 @@ class PublishCommand
         $preview = get_flag_value($assoc_args, 'preview', \false);
         $verbose = get_flag_value($assoc_args, 'verbose', \false);
         $force = get_flag_value($assoc_args, 'force', \false);
+        if ($preview && !apply_filters('staatic_deployment_strategy_supports_preview', \false)) {
+            WP_CLI::error(__('The configured deployment method does not support preview publications.', 'staatic'));
+        }
         if ($verbose && $this->logger instanceof LoggerInterface) {
             $this->logger->enableConsoleLogger();
         }

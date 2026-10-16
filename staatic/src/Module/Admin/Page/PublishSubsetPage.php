@@ -67,15 +67,28 @@ final class PublishSubsetPage implements ModuleInterface
     public function render(): void
     {
         $errors = null;
+        $reviewDestination = \false;
+        $isPreview = !empty($_POST['preview'] ?? $_GET['preview'] ?? null);
+        $supportsPreview = (bool) apply_filters('staatic_deployment_strategy_supports_preview', \false);
+        if ($isPreview && !$supportsPreview) {
+            wp_die(__('The configured deployment method does not support preview publications.', 'staatic'));
+        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             check_admin_referer('staatic-publish-subset');
             $urls = (string) ($_POST['urls'] ?? '');
             $paths = (string) ($_POST['paths'] ?? '');
-            $errors = $this->publicationManager->validateSubsetRequest($urls, $paths);
-            if (!$errors->has_errors()) {
+            // Without JS, a changed destination must be reviewed before publication.
+            $reviewDestination = isset($_POST['update_destination']) || !isset($_POST['rendered_preview']) || (string) $_POST['rendered_preview'] !== ($isPreview ? '1' : '0');
+            $errors = $reviewDestination ? null : $this->publicationManager->validateSubsetRequest($urls, $paths);
+            if (!$reviewDestination && !$errors->has_errors()) {
                 $deploy = !empty($_POST['deploy']);
-                $this->triggerPublication(__('Publish Selection', 'staatic'), function () use ($urls, $paths, $deploy) {
-                    return $this->createPublication($urls, $paths, $deploy);
+                $this->triggerPublication(__('Publish Selection', 'staatic'), function () use (
+                    $urls,
+                    $paths,
+                    $deploy,
+                    $isPreview
+                ) {
+                    return $this->createPublication($urls, $paths, $deploy, $isPreview);
                 });
 
                 return;
@@ -88,11 +101,11 @@ final class PublishSubsetPage implements ModuleInterface
         $rootUrlPath = '/' . trim(WordpressEnv::getWordpressUrlPath(), '/');
         $this->renderer->render(
             'admin/publish-subset.php',
-            compact('urls', 'paths', 'deploy', 'errors', 'rootPath', 'rootUrlPath')
+            compact('urls', 'paths', 'deploy', 'errors', 'rootPath', 'rootUrlPath', 'isPreview', 'supportsPreview', 'reviewDestination')
         );
     }
 
-    private function createPublication(string $urls, string $paths, bool $deploy): Publication
+    private function createPublication(string $urls, string $paths, bool $deploy, bool $isPreview): Publication
     {
         $metadata = [
             'subset' => [
@@ -104,6 +117,6 @@ final class PublishSubsetPage implements ModuleInterface
             $metadata['skipDeploy'] = \true;
         }
 
-        return $this->publicationManager->createPublication($metadata);
+        return $this->publicationManager->createPublication($metadata, null, null, $isPreview);
     }
 }

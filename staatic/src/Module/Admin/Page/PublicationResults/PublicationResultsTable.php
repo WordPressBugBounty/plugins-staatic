@@ -38,7 +38,7 @@ class PublicationResultsTable extends AbstractListTable
     {
         $this->formatter = $formatter;
         $this->repository = $repository;
-        parent::__construct('id', ['date_created', 'DESC']);
+        parent::__construct('url', ['date_created', 'DESC']);
     }
 
     /**
@@ -54,11 +54,7 @@ class PublicationResultsTable extends AbstractListTable
 
     private function setupColumns(): void
     {
-        $this->addColumns([new NumberColumn(
-            $this->formatter,
-            'status_code',
-            __('HTTP Status Code', 'staatic')
-        ), new TextColumn('url', __('URL', 'staatic'), [
+        $this->addColumns([new TextColumn('url', __('URL', 'staatic'), [
             'decorators' => [new CallbackDecorator(function (string $input, Result $item) {
                         return (string) $this->shortUrl($item->url());
                     }), new LinkDecorator(function (Result $item) {
@@ -70,7 +66,11 @@ class PublicationResultsTable extends AbstractListTable
                             $item->originalUrl()
                         ) : null;
                     })]
-        ]), new TextColumn('redirect_url', __('Redirect URL', 'staatic'), [
+        ]), new NumberColumn(
+            $this->formatter,
+            'status_code',
+            __('HTTP Status Code', 'staatic')
+        ), new TextColumn('redirect_url', __('Redirect URL', 'staatic'), [
             'decorators' => [new LinkDecorator(function (Result $item) {
                         return (($nullsafeVariable1 = $item->redirectUrl()) ? $nullsafeVariable1->getAuthority() : null) ? (string) $item->redirectUrl() : null;
                     }, \true)]

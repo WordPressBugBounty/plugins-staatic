@@ -84,11 +84,11 @@ class StaticDeployer implements LoggerAwareInterface
         $this->numResultsDeployedNow = 0;
         $results = $this->resultsPendingDeployment($deployment->buildId(), $deployment);
         $this->deployStrategy->processResults($deployment, $results);
-        if ($this->numResultsDeployedNow > 0) {
-            $this->updateDeployStats($deployment, $this->numResultsDeployed);
-        }
+        $numPending = $this->resultRepository->countByBuildIdPendingDeployment($deployment->buildId(), $deployment->id());
+        $this->numResultsDeployed = max(0, $deployment->numResultsDeployable() - $numPending);
+        $this->updateDeployStats($deployment, $this->numResultsDeployed);
         $this->logger->info("Finished processing {$this->numResultsDeployed} results", ['deploymentId' => $deployment->id()]);
-        return $deployment->numResultsDeployable() <= $deployment->numResultsDeployed();
+        return $numPending === 0;
     }
     private function updateDeployStats(Deployment $deployment, int $numResultsDeployed): void
     {
