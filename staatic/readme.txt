@@ -1,7 +1,7 @@
 === Staatic - Static Site Generator for WordPress ===
 Contributors: staatic
 Tags: performance, seo, security, static, speed
-Stable tag: 1.14.0
+Stable tag: 1.15.0
 Tested up to: 7.1.3
 Requires at least: 5.0
 Requires PHP: 7.1
@@ -97,6 +97,14 @@ Staatic is designed to work on typical WordPress hosting, including many shared 
 
 Large sites, slow origins, strict firewalls, disabled loopback requests, or very limited PHP execution time can require tuning. The Site Health checks, publication logs, and advanced settings are the best starting points if a publication does not start or takes too long.
 
+= Publishing my large site takes hours or uses a lot of disk space. What can I do? =
+
+By default, the Additional Paths setting adds your whole uploads directory to every publication. That way, files that only scripts load are not missed, but every other upload is published too, including image sizes no page uses and backups that other plugins keep there.
+
+If your pages link to the media they use, remove the uploads directory from Additional Paths under Staatic > Settings > Build, or list only the folders you need. Files your pages reference are still published. With the Local Directory deployment method, you can instead turn on Symlink/Copy Uploads, which skips the uploads directory during publication and links it into the published site (or copies it, on Windows).
+
+On shared hosting, leave enough free disk space for the work directory as well as the published site. If a complete publication needs more time, raise the Publication Time Limit under Staatic > Settings > Advanced.
+
 = Where can I get help? =
 
 If you have any questions or issues, please start with the [documentation](https://staatic.com/wordpress/documentation/) and [FAQ](https://staatic.com/wordpress/faq/).
@@ -113,6 +121,23 @@ For commercial support, Staatic Premium, or Staatic Cloud questions, you can als
 
 == Changelog ==
 
+= 1.15.0 =
+
+Release date: October 28th, 2026.
+
+**Features**
+
+* Introduces the `staatic_netlify_functions` filter to deploy Netlify Functions with a publication.
+
+**Improvements**
+
+* Publishes the logo that Yoast SEO's structured data refers to, even when no page links to it.
+
+**Bug Fixes**
+
+* Prevents a task left behind by a canceled or failed publication from running again in the next one.
+* Prevents bundled `.gitignore` files from hiding plugin files in Git-managed installations.
+
 = 1.14.0 =
 
 Release date: October 16th, 2026.
@@ -127,65 +152,6 @@ Release date: October 16th, 2026.
 * Prevents deployment stalls after interrupted or overlapping publication tasks.
 * Prevents failed database transactions from being treated as successful plugin upgrades.
 * Prevents admin errors and warnings on PHP 7.1.
-
-= 1.13.2 =
-
-Release date: September 27th, 2026.
-
-**Features**
-
-* Introduces the `staatic_origin_rule_paths` filter to supply origin rule paths from code.
-* Defers WordPress background updates while a publication of the main site runs, so an update does not put the site in maintenance mode mid-crawl.
-* Introduces the `staatic_defer_automatic_updates` filter to turn off deferring background updates.
-* Introduces the `staatic_automatic_updates_deferred` action, fired with the publication ID and site ID each time an update run is deferred.
-* Introduces the `staatic_http_retry_options` filter to adjust how failed HTTP requests are retried.
-
-**Improvements**
-
-* Excludes paths that Staatic Cloud origin rules forward to your origin from publications.
-* Caps the pause between crawler retries at 30 seconds and gives up retrying a URL after about two minutes, so a site that is briefly in maintenance mode no longer holds up a publication for 10 minutes per attempt.
-
-= 1.13.1 =
-
-Release date: September 23rd, 2026.
-
-**Features**
-
-* Adds a Publication Retention Count setting under Advanced settings.
-* Introduces the `staatic_publication_tick` action during crawling.
-* Adds Site Health advice for persistent object caches on large sites and crawl queue indexes stored in ascending order.
-
-**Improvements**
-
-* Speeds up crawling on large sites with batched crawl queue dequeues and discovered URL writes.
-* Keeps the crawl pool fed with time-budgeted batches, so publications started from the WordPress admin run as fast as WP-CLI.
-* Corrects the primary key order of the results deployment table on existing installs and indexes publication logs by date.
-
-**Bug Fixes**
-
-* Prevents wp-admin fatal errors when packaged plugin files are missing.
-
-= 1.13.0 =
-
-Release date: September 8th, 2026.
-
-**Features**
-
-* Adds a Publication Time Limit setting under Advanced settings, so publications on large sites can be given more than the default four hours before they are canceled.
-
-**Improvements**
-
-* Speeds up result lookups by build and URL with a new database index, benefiting redirect and configuration post-processing as well as registering uploads on sites with many media files.
-* Replaces the publication test task with a bounded backend-worker survival diagnostic that reports disabled, running, complete, incomplete, and stale states, without claiming to test proxy responses or CPU capacity.
-
-**Bug Fixes**
-
-* Prevents an HTTP Concurrency of zero from being saved, which stalled the crawl batch size.
-* Prevents duplicate publication diagnostics, delays the first recurring run after the initial dispatch, and removes the Site Health status test when diagnostics are intentionally disabled.
-* Prevents large publications from failing when the deployment is initiated from the WordPress admin, by building the deployment manifest in bounded steps that resume across background runs.
-* Gives additional redirects precedence over generated results for the same address on every deployment method, instead of silently dropping the redirect or uploading the generated page alongside it; the publication log now names each result a redirect replaced.
-* Prevents a publication from removing the only remaining version of a page when two addresses that differ by a trailing slash redirect to each other.
-* Removes redirect results that point at their own address instead of publishing them as pages.
 
 = Earlier releases =
 

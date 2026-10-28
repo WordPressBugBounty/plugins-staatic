@@ -57,6 +57,10 @@ final class NetlifyDeployStrategy implements DeployStrategyInterface, LoggerAwar
     /**
      * @var mixed[]
      */
+    private $functions = [];
+    /**
+     * @var mixed[]
+     */
     private $loggerContext = [];
     public function __construct(ResultRepositoryInterface $resultRepository, ResourceRepositoryInterface $resourceRepository, ClientInterface $httpClient, array $options = [])
     {
@@ -76,6 +80,15 @@ final class NetlifyDeployStrategy implements DeployStrategyInterface, LoggerAwar
         $this->accessToken = $options['accessToken'];
         $this->siteId = $options['siteId'];
         $this->concurrency = $options['concurrency'] ?? 4;
+        foreach ($options['functions'] ?? [] as $function) {
+            if (!$function instanceof NetlifyFunction) {
+                throw new InvalidArgumentException(sprintf('Option "functions" expects %s instances', NetlifyFunction::class));
+            }
+            if (isset($this->functions[$function->name()])) {
+                throw new InvalidArgumentException(sprintf('Option "functions" contains function "%s" more than once', $function->name()));
+            }
+            $this->functions[$function->name()] = $function;
+        }
     }
     /**
      * @param Deployment $deployment
@@ -106,8 +119,47 @@ final class NetlifyDeployStrategy implements DeployStrategyInterface, LoggerAwar
         if (count($resultIds)) {
             $this->resultRepository->markManyDeployed($deployment->id(), $resultIds);
         }
-        $this->logger->info(sprintf('Deployment initiated (remote id: "%s", all files: %d, required files: "%s")', $remoteDeployment['id'], count($manifest), implode('", "', array_keys($requiredFiles))), $this->loggerContext);
-        return ['deploymentId' => $remoteDeployment['id'], 'requiredFiles' => $requiredFiles];
+        $requiredFunctions = $this->requiredFunctions($remoteDeployment);
+        $this->logger->info(sprintf('Deployment initiated (remote id: "%s", all files: %d, required files: "%s"%s)', $remoteDeployment['id'], count($manifest), implode('", "', array_keys($requiredFiles)), $this->functions ? sprintf(', functions: %d, required functions: "%s"', count($this->functions), implode('", "', array_keys($requiredFunctions))) : ''), $this->loggerContext);
+        foreach ($requiredFunctions as $name => $sha256) {
+            $this->uploadFunction($remoteDeployment['id'], $this->functions[$name]);
+        }
+        $metadata = ['deploymentId' => $remoteDeployment['id'], 'requiredFiles' => $requiredFiles];
+        if ($this->functions) {
+            $metadata['functions'] = $this->declaredFunctions();
+            $metadata['requiredFunctions'] = $requiredFunctions;
+        }
+        return $metadata;
+    }
+    private function requiredFunctions(array $remoteDeployment): array
+    {
+        $requiredHashes = $remoteDeployment['required_functions'] ?? [];
+        if (!is_array($requiredHashes)) {
+            $requiredHashes = [];
+        }
+        $requiredFunctions = [];
+        foreach ($this->functions as $name => $function) {
+            if (in_array($function->sha256(), $requiredHashes, \true)) {
+                $requiredFunctions[$name] = $function->sha256();
+            }
+        }
+        $unknownHashes = array_diff($requiredHashes, array_values($requiredFunctions));
+        if ($unknownHashes) {
+            throw new RuntimeException(sprintf('Remote deployment requires unknown functions: "%s"', implode('", "', $unknownHashes)));
+        }
+        return $requiredFunctions;
+    }
+    private function declaredFunctions(): array
+    {
+        return array_map(function (NetlifyFunction $function) {
+            return $function->sha256();
+        }, $this->functions);
+    }
+    private function uploadFunction(string $deploymentId, NetlifyFunction $function): void
+    {
+        $this->logger->info("Uploading function \"{$function->name()}\"", $this->loggerContext);
+        $this->httpClient->send($this->createFunctionUploadRequest($deploymentId, $function));
+        $this->logger->info("Deployment of function \"{$function->name()}\" was successful", $this->loggerContext);
     }
     /**
      * @param Deployment $deployment
@@ -136,6 +188,9 @@ final class NetlifyDeployStrategy implements DeployStrategyInterface, LoggerAwar
         $result = $this->apiRequest("/deploys/{$deploymentMetadata['deploymentId']}");
         if (!empty($result['required'])) {
             throw new RuntimeException(sprintf('Remote deployment still awaits required files: "%s"', implode('", "', $result['required'])));
+        }
+        if (!empty($result['required_functions'])) {
+            throw new RuntimeException(sprintf('Remote deployment still awaits required functions: "%s"', implode('", "', $result['required_functions'])));
         }
         $isFinished = !in_array($result['state'], ['enqueued', 'building', 'uploading', 'uploaded', 'preparing', 'prepared', 'processing', 'processed', 'retrying'], \true);
         if ($isFinished) {
@@ -171,10 +226,13 @@ final class NetlifyDeployStrategy implements DeployStrategyInterface, LoggerAwar
     }
     private function createRemoteDeployment(array $manifest): array
     {
-        $files = array_map(function ($result) {
+        $payload = ['files' => array_map(function ($result) {
             return $result->sha1();
-        }, $manifest);
-        return $this->apiRequest("sites/{$this->siteId}/deploys", 'POST', ['json' => ['files' => $files]]);
+        }, $manifest)];
+        if ($this->functions) {
+            $payload['functions'] = $this->declaredFunctions();
+        }
+        return $this->apiRequest("sites/{$this->siteId}/deploys", 'POST', ['json' => $payload]);
     }
     private function apiRequest(string $path, string $method = 'GET', array $options = []): array
     {
@@ -197,6 +255,10 @@ final class NetlifyDeployStrategy implements DeployStrategyInterface, LoggerAwar
             }
             yield $result->id() => $this->createUploadRequest($deploymentId, $filePath, $resource->content());
         }
+    }
+    private function createFunctionUploadRequest(string $deploymentId, NetlifyFunction $function): RequestInterface
+    {
+        return new Request('PUT', sprintf('%s/deploys/%s/functions/%s?runtime=%s', self::API_URL, rawurlencode($deploymentId), rawurlencode($function->name()), rawurlencode($function->runtime())), ['Authorization' => 'Bearer ' . $this->accessToken, 'Content-Type' => 'application/octet-stream'], $function->archive());
     }
     private function createUploadRequest(string $deploymentId, string $filePath, StreamInterface $content): RequestInterface
     {

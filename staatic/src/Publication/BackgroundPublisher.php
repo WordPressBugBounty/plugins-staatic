@@ -63,6 +63,10 @@ final class BackgroundPublisher extends WP_Background_Process
      */
     protected $task;
 
+    /** The chain this request starts when it dispatches from another handler's ajax request.
+     * @var string|null */
+    private $dispatchChainId;
+
     public function __construct(
         LoggerInterface $logger,
         PublicationRepository $publicationRepository,
@@ -98,14 +102,35 @@ final class BackgroundPublisher extends WP_Background_Process
         $firstTask = $this->publicationTaskProvider->firstTask();
         $publication->markInProgress();
         $this->publicationRepository->update($publication);
+        // Only one publication is in progress at a time, so a lock or queued task left now belongs
+        // to one that ended without finishing (an uncaught error, a timeout, a forced cancel); its
+        // queued task would otherwise run first, against this publication.
         if ($this->is_process_running()) {
-            // Unlock background process if an old lock exists due to
-            // a uncaught error or timeout.
             $this->unlock_process();
         }
+        $this->delete_all();
         $this->push_to_queue($firstTask::name())->save()->dispatch();
 
         return \true;
+    }
+
+    /**
+     * The library checks the current ajax request's nonce against this process's action before
+     * reading the chain id, and ends the request with a 403 on a mismatch. A publication started
+     * from another ajax handler (on save or delete) would then never get its next task scheduled,
+     * so only this process's own requests continue a chain; any other request starts one.
+     */
+    public function get_chain_id()
+    {
+        if (wp_doing_ajax() && ($_REQUEST['action'] ?? null) !== $this->identifier) {
+            if ($this->dispatchChainId === null) {
+                $this->dispatchChainId = wp_generate_uuid4();
+            }
+
+            return $this->dispatchChainId;
+        }
+
+        return parent::get_chain_id();
     }
 
     /**

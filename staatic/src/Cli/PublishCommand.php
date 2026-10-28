@@ -65,10 +65,10 @@ class PublishCommand
      * ## OPTIONS
      *
      * [--only-urls=<urls>]
-     * : Optionally a comma-separated list of URLs to update when publishing selectively.
+     * : Optionally a comma-separated list of URLs to publish selectively. The publication contains only the selected URLs and paths, so deploying it can remove other files at the destination, depending on the deployment method.
      *
      * [--only-paths=<paths>]
-     * : Optionally a comma-separated list of filesystem paths to update when publishing selectively.
+     * : Optionally a comma-separated list of filesystem paths to publish selectively, together with any --only-urls.
      *
      * [--[no-]preview]
      * : Whether or not to create a preview build, if supported by the deployment method.

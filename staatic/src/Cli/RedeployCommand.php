@@ -8,6 +8,7 @@ use Staatic\Vendor\Psr\Log\LoggerInterface as PsrLoggerInterface;
 use RuntimeException;
 use Staatic\WordPress\Logging\LoggerInterface;
 use Staatic\WordPress\Publication\PublicationManagerInterface;
+use Staatic\WordPress\Publication\PublicationRedeploy;
 use Staatic\WordPress\Publication\PublicationRepository;
 use Staatic\WordPress\Publication\PublicationTaskProvider;
 use Staatic\WordPress\Service\Formatter;
@@ -118,18 +119,10 @@ class RedeployCommand
                 $publicationId
             ));
         }
-        $publication = $this->publicationManager->createPublication(array_filter([
-            'sourcePublicationId' => $publicationId,
-            'changeEventsSince' => $publication->metadataByKey('changeEventsSince')
-        ], static function ($value) {
-    return $value !== null;
-}), $publication->build(), null, $publication->isPreview());
-        if ($this->publicationManager->claimPublication($publication)) {
-            $this->startPublication($publication);
-        } else {
-            $this->publicationManager->cancelPublication($publication);
-
+        $redeploy = PublicationRedeploy::claim($this->publicationManager, $publication);
+        if ($redeploy === null) {
             throw new RuntimeException(__('Unable to claim publication; another publication is pending', 'staatic'));
         }
+        $this->startPublication($redeploy);
     }
 }
